@@ -82,19 +82,19 @@
 
 (defmethod display-part ((part doclisp-class) (mode (eql :detail)))
   (documenting-page (part)
-    (h2 (lml-format "Class ~:(~A~)" name))
-    (when documentation? (blockquote documentation))
+    (:h2 (lml-format "Class ~:(~A~)" name))
+    (when documentation? (html (:blockquote documentation)))
     
     #+Ignore
     (when (mopu-class-initargs (instance part))
       (lml-princ "Class ")
-      (b (lml-princ name))
+      (:b (lml-princ name))
       (lml-princ " has the following initargs: ")
       (lml-format "~:(~A~)" 
                   (list->formatted-string 
                    (sort (copy-list (mopu-class-initargs (instance part)))
                          #'string-lessp)))
-      (br))
+      (:br))
     
     ;; summaries
     (output-table-summary part :table-summary 2)))
@@ -120,7 +120,7 @@
 
 (defmethod make-part (parent (kind (eql 'slot)) name &rest args &key
                               &allow-other-keys)
-  (declare (parent parent))
+  (declare (ignore parent))
   (apply #'make-instance 'doclisp-slot
     :name name args))
 
@@ -144,48 +144,48 @@
                                                     :key #'second))))
     
     (documenting part
-      (tr :class (if (oddp *current-part-index*) "oddrow" "")
-          (td :valign "top" :width 200 (link-for mode))
-          (td :valign "top"
-              (awhen (getf slot-info :initform) 
-                (lml-format "initform ~:(~S~)" it)
-                (setf add-comma? t))
-              
-              (awhen (getf slot-info :initargs)
-                (when add-comma? (lml-princ ", "))
-                (lml-format "initargs ~:(~A~)" 
-                            (list->formatted-string it ", " ""))
-                (setf add-comma? t))
-              
-              (awhen accessors
-                (when add-comma? (lml-princ ", "))
-                (lml-format "accessors ~:(~A~)" 
-                            (list->formatted-string it ", " ""))
-                (setf add-comma? t))
-              
-              (awhen (getf slot-info :readers)
-                (when add-comma? (lml-princ ", "))
-                (when accessors (lml-princ "additional "))
-                (lml-format "reader~P ~:*~:(~A~)" 
-                            (list->formatted-string it ", " ""))
-                (setf add-comma? t))
-              
-              (awhen (getf slot-info :writers)
-                (when add-comma? (lml-princ ", "))
-                (when accessors (lml-princ "additional "))
-                (lml-format "writer~P ~:*~:(~A~)" 
-                            (list->formatted-string it ", " ""))
-                (setf add-comma? t))
-              
-              (awhen (getf slot-info :allocation)
-                (when add-comma? (lml-princ ", "))
-                (lml-format "allocation ~:(~A~)" it)
-                (setf add-comma? t))
-              
-              (awhen (getf slot-info :type)
-                (when add-comma? (lml-princ ", "))
-                (lml-format "type ~:(~A~)" it)
-                (setf add-comma? t))
-              
-              (when add-comma?
-                (lml-princ ".")))))))
+      ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
+          ((:td :valign "top" :width 200) (link-for mode))
+          ((:td :valign "top")
+           (awhen (getf slot-info :initform) 
+             (lml-format "initform ~:(~S~)" it)
+             (setf add-comma? t))
+           
+           (awhen (getf slot-info :initargs)
+             (when add-comma? (lml-princ ", "))
+             (lml-format "initargs ~:(~A~)" 
+                         (list->formatted-string it ", " ""))
+             (setf add-comma? t))
+           
+           (awhen accessors
+             (when add-comma? (lml-princ ", "))
+             (lml-format "accessors ~:(~A~)" 
+                         (list->formatted-string it ", " ""))
+             (setf add-comma? t))
+           
+           (awhen (getf slot-info :readers)
+             (when add-comma? (lml-princ ", "))
+             (when accessors (lml-princ "additional "))
+             (lml-format "reader~P ~:*~:(~A~)" 
+                         (list->formatted-string it ", " ""))
+             (setf add-comma? t))
+           
+           (awhen (getf slot-info :writers)
+             (when add-comma? (lml-princ ", "))
+             (when accessors (lml-princ "additional "))
+             (lml-format "writer~P ~:*~:(~A~)" 
+                         (list->formatted-string it ", " ""))
+             (setf add-comma? t))
+           
+           (awhen (getf slot-info :allocation)
+             (when add-comma? (lml-princ ", "))
+             (lml-format "allocation ~:(~A~)" it)
+             (setf add-comma? t))
+           
+           (awhen (getf slot-info :type)
+             (when add-comma? (lml-princ ", "))
+             (lml-format "type ~:(~A~)" it)
+             (setf add-comma? t))
+           
+           (when add-comma?
+             (lml-princ ".")))))))

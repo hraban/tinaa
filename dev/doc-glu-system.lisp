@@ -1,18 +1,18 @@
 (in-package doclisp)
 
-(defclass* doclisp-eksl-system (name-holder-mixin doclisp-assembly)
+(defclass* doclisp-glu-system (name-holder-mixin doclisp-assembly)
   ()
   (:default-initargs
-    :header "EKSL System"
-    :part-kind "eksl-system"
+    :header "glu System"
+    :part-kind "glu-system"
     :document? t))
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod make-part (parent (kind (eql 'eksl-system)) name &rest args 
+(defmethod make-part (parent (kind (eql 'glu-system)) name &rest args 
                              &key &allow-other-keys)
   (declare (ignore parent))
-  (apply #'make-instance 'doclisp-eksl-system
+  (apply #'make-instance 'doclisp-glu-system
     :name name args))
 
 ;;; ---------------------------------------------------------------------------
@@ -36,14 +36,14 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod subpart-kinds ((part doclisp-eksl-system))
-  (list 'package 'eksl-system 'file))
+(defmethod subpart-kinds ((part doclisp-glu-system))
+  (list 'package 'glu-system 'file))
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod partname-list ((part doclisp-eksl-system) (part-name (eql 'package)))
+(defmethod partname-list ((part doclisp-glu-system) (part-name (eql 'package)))
   (let ((result nil))
-    (user:map-eksl-system-files
+    (user:map-glu-system-files
      (name part)
      (lambda (file)
        (awhen (file-package file) 
@@ -57,10 +57,10 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod partname-list ((part doclisp-eksl-system) (part-name (eql 'eksl-system)))
+(defmethod partname-list ((part doclisp-glu-system) (part-name (eql 'glu-system)))
   (let ((result nil)
-        (canonical-name (user::canonicalize-eksl-system-name (name part))))
-    (user:map-eksl-sub-systems
+        (canonical-name (user::canonicalize-glu-system-name (name part))))
+    (user:map-glu-sub-systems
      (name part)
      (lambda (system)
        (unless (eq system canonical-name)
@@ -71,9 +71,9 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod partname-list ((part doclisp-eksl-system) (part-name (eql 'file)))
+(defmethod partname-list ((part doclisp-glu-system) (part-name (eql 'file)))
   (let ((result nil))
-    (user:map-eksl-system-files
+    (user:map-glu-system-files
      (name part)
      (lambda (file)
        (push (namestring file) result))
@@ -84,26 +84,25 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod index-kinds ((part doclisp-eksl-system))
+(defmethod index-kinds ((part doclisp-glu-system))
   (list '(class) '(variable constant) '(function generic-function macro) '(package)))
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-eksl-system) (mode (eql :detail)))
-  (let* ()
-    (documenting-page (part)
-      (h2 (lml-format "EKSL System ~A" name))
-      (when documentation (blockquote (lml-princ documentation)))
-      
-      ;; summaries
-      (output-table-summary part :table-summary 1))))
+(defmethod display-part ((part doclisp-glu-system) (mode (eql :detail)))
+  (documenting-page (part)
+    (:h2 (lml-format "glu System ~A" name))
+    (when documentation (html (:blockquote (lml-princ documentation))))
+    
+    ;; summaries
+    (output-table-summary part :table-summary 1)))
 
 ;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((part doclisp-file) (mode (eql :table-summary)))
   (documenting part
-   (tr :class (if (oddp *current-part-index*) "oddrow" "")
-       (td :valign "top" :width 200 (link-for mode)))))
+   ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
+    ((:td :valign "top" :width 200) (link-for mode)))))
 
 #+Ignore
 (defmethod display-part ((part doclisp-file) (mode (eql :table-summary)))

@@ -16,7 +16,7 @@ DISCUSSION
 
 (in-package doclisp)
 
-(defparameter *tinaa-home-page* "http://eksl.cs.umass.edu/~gwking/tinaa/")
+(defparameter *tinaa-home-page* "http://metabang.gotdns.com/project/tinaa/")
 (defparameter *tinaa-version* "0.1")
 (defvar *document-stream* *standard-output*)
 (defvar *document-file* nil)
@@ -492,25 +492,25 @@ to the kind of system you are documenting."
                 (mark-spot (mode)
                   `(make-name-link-for ,mode name url)))
        (with-html-output (*document-stream*)
-         ,@body))))
+         (html ,@body)))))
 
 ;;; ---------------------------------------------------------------------------
 
 (defmacro documenting-page ((part &key title force-contents-link?) &body body)
   `(documenting part
-     (html
-       (head
-         (title (if ,title 
-                  (lml-princ ,title)
-                  (lml-format "tinaa: ~A ~:(~A~)"
-                              (header ,part) (name ,part))))
-         (link :rel "stylesheet" :href (stylesheet-url ,part)))
-       (body
-         (doclisp-header ,part :force-contents-link? ,force-contents-link?)
-         
-         ,@body
-         
-         (doclisp-footer ,part :force-contents-link? ,force-contents-link?)))))
+     (:html
+      (:head
+       (:title (if ,title 
+                 (lml-princ ,title)
+                 (lml-format "tinaa: ~A ~:(~A~)"
+                             (header ,part) (name ,part))))
+       ((:link :rel "stylesheet" :href (stylesheet-url ,part))))
+      (:body
+       (doclisp-header ,part :force-contents-link? ,force-contents-link?)
+       
+       ,@body
+       
+       (doclisp-footer ,part :force-contents-link? ,force-contents-link?)))))
 
 ;;; ---------------------------------------------------------------------------
   
@@ -521,19 +521,22 @@ to the kind of system you are documenting."
 
 (defmethod doclisp-header ((part basic-doclisp-part)
                            &key force-contents-link?)
-  (div :id "header"
-       (add-contents-link part force-contents-link?)
-       (span :id "indexes"
-             (build-index-links part *root-part* *current-index*))))
+  (html
+   ((:div :id "header")
+    (add-contents-link part force-contents-link?)
+    ((:span :id "indexes")
+     (build-index-links part *root-part* *current-index*)))))
 
 ;;; ---------------------------------------------------------------------------
 
 (defun add-tinaa-link (part)
-  (a :id "logo" :href *tinaa-home-page*
-     :title "Go to Tinaa home page"
-     (img (format nil "~Alogo.jpg" *tinaa-home-page*)
-          :width 90
-          :height 82)))
+  (declare (ignore part))
+  (html 
+   ((:a :id "logo" :href *tinaa-home-page*
+        :title "Go to Tinaa home page")
+    ((:img :src (format nil "~Alogo.jpg" *tinaa-home-page*)
+           :width 90
+           :height 82)))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -547,7 +550,7 @@ to the kind of system you are documenting."
 (defun add-contents-link (part force-contents-link?)
   (multiple-value-bind (url root-level?) (make-root-pointing-url part "index.html")
     (when (or force-contents-link? (not root-level?))
-      (a :class "header-link" :href url :title "Go to contents" "Contents")
+      (html ((:a :class "header-link" :href url :title "Go to contents") "Contents"))
       (lml-princ "&nbsp;&nbsp;"))))
 
 ;;; ---------------------------------------------------------------------------
@@ -564,12 +567,13 @@ to the kind of system you are documenting."
 
 (defmethod doclisp-footer ((part basic-doclisp-part)
                            &key force-contents-link?)
-  (div :id "footer"
-       (lml-format "Generated: ~A, version ~A&nbsp;&nbsp;"
-                   (format-date "%a, %b %e, %Y" (get-universal-time))
-                   *tinaa-version*)
-       (add-contents-link part force-contents-link?)
-       (add-tinaa-link part)))
+  (html
+   ((:div :id "footer")
+    (lml-format "Generated: ~A, version ~A&nbsp;&nbsp;"
+                (format-date "%a, %b %e, %Y" (get-universal-time))
+                *tinaa-version*)
+    (add-contents-link part force-contents-link?)
+    (add-tinaa-link part))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -583,7 +587,7 @@ to the kind of system you are documenting."
   (declare (ignore name mode))
   (with-html-output (*document-stream*)
     ;; note the hack
-    (a :name (url-name url))))
+    (html ((:a :name (url-name url))))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -592,18 +596,9 @@ to the kind of system you are documenting."
     (cond ((not url)
            (lml-princ name))
           ((url-name url)
-           (a :href (concatenate 'string "#" (url-name url)) name))
+           (html ((:a :href (concatenate 'string "#" (url-name url))) (lml-princ name))))
           (t
-           (a :href (relative-url url *document-file*) name)))))
-
-;;; ---------------------------------------------------------------------------
-
-#+Ignore
-(defmethod make-link-for ((mode (eql :summary)) name url)
-  (with-html-output (*document-stream*)
-    (if (url-name url)
-      (lml-format "~A" name)
-      (a :href (concatenate 'string #\# (url-name url)) name))))
+           (html ((:a :href (relative-url url *document-file*)) (lml-princ name)))))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -643,19 +638,20 @@ to the kind of system you are documenting."
        
        (when (and (document? subpart-info)
                   (some-key-value-p parts
-                          (lambda (name part)
-                            (declare (ignore name))
-                            (and (document? part)
-                                 (documentation-exists-p part mode)))))
-         (h3 (lml-princ (heading subpart-info)) " Summary")
-         (table
+                                    (lambda (name part)
+                                      (declare (ignore name))
+                                      (and (document? part)
+                                           (documentation-exists-p part mode)))))
+         (html
+          (:h3 (lml-princ (heading subpart-info)) " Summary")
+          (:table
            (iterate-container 
             parts
             (lambda (thing) 
               (when (document? thing)
                 (let ((*current-part-index* count))
                   (display-part thing mode))
-                (incf count))))))))))
+                (incf count)))))))))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -663,8 +659,9 @@ to the kind of system you are documenting."
   (declare (ignore mode))
   (let ((part (find-part parent kind name)))
     (if (and part (documentation-exists-p part :detail))
-      (a :href (relative-url (url part) *document-file*)
-         (lml-princ (part-name part)))
+      (html
+       ((:a :href (relative-url (url part) *document-file*))
+        (lml-princ (part-name part))))
       (lml-princ name))))
 
 ;;; ---------------------------------------------------------------------------

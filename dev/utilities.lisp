@@ -51,6 +51,6 @@
 
 (defun display-function (part)
   (lml-princ "\( ")
-  (b (lml-princ (part-name part)))
+  (html (:b (lml-princ (part-name part))))
   (display-arguments (mopu-arglist (name part)))
   (lml-princ " \)"))

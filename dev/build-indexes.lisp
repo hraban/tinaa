@@ -38,19 +38,19 @@ DISCUSSION
         (documenting-page (part :title (format nil "~:(~A~): Index of ~A"
                                                (part-name part) (heading subpart-info))
                                 :force-contents-link? t)
-          (a :name "top"
-             (h3 (lml-princ (heading subpart-info)) " Index"))
-          (p
+          ((:a :name "top")
+           (:h3 (lml-princ (heading subpart-info)) " Index"))
+          (:p
             (dolist (letter symbol-list)
               (if (some-key-value-p 
                    parts
                    (lambda (name part)
                      (declare (ignore part))
                      (string-equal (subseq (symbol-name name) 0 1) letter)))
-                (a :href (concatenate
-                          'string 
-                          "#" letter "-" (symbol-name (name subpart-info))) 
-                   letter)
+                (html ((:a :href (concatenate
+                                  'string 
+                                  "#" letter "-" (symbol-name (name subpart-info)))) 
+                       (lml-princ letter)))
                 (lml-format "~A" letter))
               (lml-princ "&nbsp;&nbsp;")))
           
@@ -61,14 +61,14 @@ DISCUSSION
                (let ((part-name (part-name part)))
                  (unless (string-equal current-symbol (subseq part-name 0 1))
                    (setf current-symbol (subseq part-name 0 1))
-                   (a :name (concatenate 
-                             'string current-symbol "-" (symbol-name (name subpart-info)))
-                      (table
-                        (tr (td :width 75 :valign "top" :align "left"
-                                (h3 (lml-princ (string-upcase current-symbol))))
-                            (td :valign "top" :align "right"
-                                (a :href "#top" "Back to top"))))))
-                 (p (display-part part :index)))))))))))
+                   (html ((:a :name (concatenate 
+                                     'string current-symbol "-" (symbol-name (name subpart-info))))
+                          (:table
+                           (:tr ((:td :width 75 :valign "top" :align "left")
+                                 (:h3 (lml-princ (string-upcase current-symbol))))
+                                ((:td :valign "top" :align "right")
+                                 ((:a :href "#top") "Back to top")))))))
+                 (html (:p (display-part part :index))))))))))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -79,38 +79,27 @@ DISCUSSION
 
 (defun display-part-for-index (part string)
   (if (documentation-exists-p part :detail)
-    (a :href (relative-url (url part) *document-file*)
-       (lml-princ string))
+    (html ((:a :href (relative-url (url part) *document-file*))
+           (lml-princ string)))
     (lml-princ string)))
 
 ;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((part doclisp-symbol) (mode (eql :index)))
   (let ((name-holder (name-holder part)))
-    (table
-      (tr
-        (td :width 200 (display-part-for-index part (part-name part)))
-        (loop for kinds in (index-kinds (name-holder part)) do
-              (let ((real-part (some (lambda (kind)
-                                       (find-part name-holder kind (name part)))
-                                     kinds)))
-                (when real-part
-                  (td :width "20%"
-                      (display-part-for-index 
-                       real-part (string-downcase (part-kind real-part)))))))))))
-
-#+Old
-(defmethod display-part ((part doclisp-symbol) (mode (eql :index)))
-  (let ((name-holder (name-holder part)))
-    (table
-      (tr
-        (td :width 200 (display-part-for-index part (part-name part)))
-        (loop for kind in '(class generic-function variable) do
-              (td :width "20%"
-                  (let ((real-part (find-part name-holder kind (name part))))
-                    (when real-part
-                      (display-part-for-index 
-                         real-part (string-downcase (symbol-name kind)))))))))))
+    (html
+     (:table
+      (:tr
+       ((:td :width 200) (display-part-for-index part (part-name part)))
+       (loop for kinds in (index-kinds (name-holder part)) do
+             (let ((real-part (some (lambda (kind)
+                                      (find-part name-holder kind (name part)))
+                                    kinds)))
+               (when real-part
+                 (html
+                  ((:td :width "20%")
+                   (display-part-for-index 
+                    real-part (string-downcase (part-kind real-part)))))))))))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -150,19 +139,20 @@ DISCUSSION
 
 (defun build-index-links (for-part index-part current-index)
   (when (any-indexes-p index-part)
-    (table
-      (tr
-        (td "Indexes: ")
-        (td
+    (html
+     (:table
+      (:tr
+        (:td "Indexes: ")
+        (:td
           (map-subpart-kinds
            index-part
            (lambda (subpart-info)
              (when (index-for-kind-p index-part subpart-info)
                (if (eq (name subpart-info) current-index)
                  (lml-format "~:(~A~)" (name subpart-info))
-                 (a :href (index-url-name for-part subpart-info)
-                    (lml-format "~:(~A~)" (name subpart-info))))
-               (lml-princ "&nbsp;&nbsp;")))))))))
+                 (html ((:a :href (index-url-name for-part subpart-info))
+                        (lml-format "~:(~A~)" (name subpart-info)))))
+               (lml-princ "&nbsp;&nbsp;"))))))))))
 
 ;;; ---------------------------------------------------------------------------
 

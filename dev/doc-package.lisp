@@ -177,15 +177,15 @@
          (package-name (string-capitalize (package-name package)))
          (sentence-starter (format nil "Package ~A " package-name)))
     (documenting-page (part)
-      (h2 (lml-format "Package ~A - " package-name)
-          (when (member :internal (symbol-kinds part))
-            (lml-princ "Internal"))
-          (when (member :external (symbol-kinds part))
-            (when (member :internal (symbol-kinds part))
-              (lml-princ " and "))
-            (lml-princ "External"))
-          (lml-princ " Symbols"))
-      (when documentation (blockquote (lml-princ documentation)))
+      (:h2 (lml-format "Package ~A - " package-name)
+           (when (member :internal (symbol-kinds part))
+             (lml-princ "Internal"))
+           (when (member :external (symbol-kinds part))
+             (when (member :internal (symbol-kinds part))
+               (lml-princ " and "))
+             (lml-princ "External"))
+           (lml-princ " Symbols"))
+      (when documentation (html (:blockquote (lml-princ documentation))))
       
       (when (package-use-list package)
         (lml-princ sentence-starter)
@@ -219,7 +219,7 @@
       (lml-format "has ~,,,,D total symbols and ~,,,,D external ones."
                   (symbol-count package :internal)
                   (symbol-count package :external))
-      (br)
+      (:br)
             
       ;; summaries
       (output-table-summary part :table-summary 1))))

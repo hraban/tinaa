@@ -41,20 +41,10 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
+#+Ignore "timeit"
+
 (define-eksl-system :tinaa
   ((("package"
-     "anaphoric"
-     "string-utilities"
-     "file-utilities"
-     "day-and-time"
-     "sequence-utilities"
-     "timeit")
-    :base-dir "tinaa:utils;")
-
-   (("utilities-integration")
-    :base-dir "tinaa:containers;")
-   
-   (("package"
      "class-defs"
      "macros"
      "utilities"
@@ -80,9 +70,14 @@ DISCUSSION
   :bin-identifiers (:platform :vendor)
   :top-level t
   
-  :depends-on (:lift :moptilities :cl-containers
-                     :metatilities :lml2 :bind
-                     :meta-dynamic-classes))
+  :depends-on (:basic-lift
+               :moptilities 
+               :cl-containers
+               :metatilities-base
+               :xmetatilities
+               :lml2
+               :metabang.bind
+               :metabang.dynamic-classes))
 
 #|
 $Log: tinaa.system,v $

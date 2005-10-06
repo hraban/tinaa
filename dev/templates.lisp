@@ -4,9 +4,9 @@
 
 (defmethod display-part ((part basic-doclisp-part) (mode (eql :table-summary)))
   (documenting part
-   (tr :class (if (oddp *current-part-index*) "oddrow" "")
-       (td :valign "top" :width 200 (link-for mode))
-       (td :valign "top" (when documentation (lml-princ short-documentation))))))
+   ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
+       ((:td :valign "top" :width 200) (link-for mode))
+       ((:td :valign "top") (when documentation (lml-princ short-documentation))))))
 
 #+Test
 (progn
@@ -20,6 +20,8 @@
         (document-system 'package 'tinaa "home:tinaa-ei;"
                          :symbol-kinds '(:internal :external)))
 
+(document-system 'package 'tinaa "home:tinaa-ei;"
+                 :symbol-kinds '(:internal :external))
 #+Test
 (timeit (:report t)
         (document-system 'package 'clasp "home:clasp-e;"

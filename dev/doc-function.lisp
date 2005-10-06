@@ -32,11 +32,11 @@
 
 (defmethod display-part ((part doclisp-function) (mode (eql :detail)))
   (documenting-page (part)
-    (h2 (lml-format "Function ~:(~A~)" name))
+    (:h2 (lml-format "Function ~:(~A~)" name))
     
     (display-function part)
     
-    (when documentation? (blockquote (lml-princ documentation)))))
+    (when documentation? (html (:blockquote (lml-princ documentation))))))
 
 
 ;;; ---------------------------------------------------------------------------
@@ -62,43 +62,44 @@
 
 (defmethod display-part ((part doclisp-generic-function) (mode (eql :detail)))
   (documenting-page (part)
-    (h2 (lml-format "Generic Function ~:(~A~)" name))
+    (:h2 (lml-format "Generic Function ~:(~A~)" name))
     
     (display-function part)
-    (when documentation? (blockquote (lml-princ documentation)))
+    (when documentation? (html (:blockquote (lml-princ documentation))))
     
-    (h3 (lml-format "Method Summary \(~D method~:P\)" 
+    (:h3 (lml-format "Method Summary \(~D method~:P\)" 
                     (length (mopu-generic-function-methods (instance part)))))
     
-    (table
+    (:table
       (iterate-container
        (sort 
         (copy-list (mopu-generic-function-methods (instance part)))
         #'method-sorter)
        (lambda (m)
-         (tr :valign "top"
-             (td (lml-format "~(~A ~@[~{~S ~}~]~)"
-                             name
-                             (mopu-method-qualifiers m))
-                 (iterate-container
-                  (mopu-method-specializers m)
-                  (lambda (s)
-                    (let* ((name
-                            (or (mopu-eql-specializer-p s)
-                                (typecase s
-                                  (standard-class (class-name s))
-                                  (built-in-class (class-name s))
-                                  (t (type-of s)))))
-                           (part (find-part (some-parent part) 'class name)))
-                      (let ((*print-case* :downcase))
-                        (cond ((consp name)
-                               (lml-format "~S" name))
-                              (t
-                               (lml-princ "&lt; ")
-                               (if part
-                                 (display-part part :index)
-                                 (lml-format "~S" name))
-                               (lml-princ " &gt;&nbsp;"))))))))))))))
+         (html 
+          ((:tr :valign "top")
+           (:td (lml-format "~(~A ~@[~{~S ~}~]~)"
+                            name
+                            (mopu-method-qualifiers m))
+                (iterate-container
+                 (mopu-method-specializers m)
+                 (lambda (s)
+                   (let* ((name
+                           (or (mopu-eql-specializer-p s)
+                               (typecase s
+                                 (standard-class (class-name s))
+                                 (built-in-class (class-name s))
+                                 (t (type-of s)))))
+                          (part (find-part (some-parent part) 'class name)))
+                     (let ((*print-case* :downcase))
+                       (cond ((consp name)
+                              (lml-format "~S" name))
+                             (t
+                              (lml-princ "&lt; ")
+                              (if part
+                                (display-part part :index)
+                                (lml-format "~S" name))
+                              (lml-princ " &gt;&nbsp;")))))))))))))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -164,12 +165,12 @@
 (defmethod display-part ((part doclisp-method) (mode (eql :table-summary)))
   (let ((gf (find-part (name-holder part) 'generic-function (name part))))
     (documenting part
-      (tr :class (if (oddp *current-part-index*) "oddrow" "")
-          (td :valign "top" :width 200 
+      ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
+          ((:td :valign "top" :width 200) 
               (if gf
                 (make-link-for mode name (url gf))
                 (link-for mode)))
-          (td :valign "top" (when documentation? (lml-princ short-documentation)))))))
+          ((:td :valign "top") (when documentation? (lml-princ short-documentation)))))))
 
 
 ;;; ---------------------------------------------------------------------------
@@ -195,12 +196,12 @@
 (defmethod display-part ((part doclisp-macro) (mode (eql :table-summary)))
   (let ((gf (find-part (some-parent part) 'macro (name part))))
     (documenting part
-      (tr :class (if (oddp *current-part-index*) "oddrow" "")
-          (td :valign "top" :width 200 
+      ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
+          ((:td :valign "top" :width 200) 
               (if gf
                 (make-link-for mode name (url gf))
                 (link-for mode)))
-          (td :valign "top" (when documentation? (lml-princ short-documentation)))))))
+          ((:td :valign "top") (when documentation? (lml-princ short-documentation)))))))
 
 
 ;;; ---------------------------------------------------------------------------
