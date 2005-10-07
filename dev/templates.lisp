@@ -20,6 +20,7 @@
         (document-system 'package 'tinaa "home:tinaa-ei;"
                          :symbol-kinds '(:internal :external)))
 
+#+Ignore
 (document-system 'package 'tinaa "home:tinaa-ei;"
                  :symbol-kinds '(:internal :external))
 #+Test
