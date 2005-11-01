@@ -75,7 +75,7 @@ DISCUSSION
                :moptilities 
                :cl-containers
                :metatilities-base
-               :xmetatilities
+               :metatilities
                :lml2
                :metabang.bind
                :metabang.dynamic-classes))

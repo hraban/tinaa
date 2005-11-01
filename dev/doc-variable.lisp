@@ -32,9 +32,9 @@
 
 (defmethod display-part ((part doclisp-variable) (mode (eql :detail)))
   (documenting-page (part)
-    (h2 (lml-format "Variable ~:(~A~)" name))
+    (:h2 (lml-format "Variable ~:(~A~)" name))
     
-    (when documentation? (blockquote (lml-princ documentation)))))
+    (when documentation? (html (:blockquote (lml-princ documentation))))))
 
 
 ;;; ---------------------------------------------------------------------------
@@ -59,6 +59,6 @@
 
 (defmethod display-part ((part doclisp-constant) (mode (eql :detail)))
   (documenting-page (part)
-    (h2 (lml-format "Constant ~:(~A~)" name))
+    (:h2 (lml-format "Constant ~:(~A~)" name))
     
-    (when documentation? (blockquote (lml-princ documentation)))))
+    (when documentation? (html (:blockquote (lml-princ documentation))))))

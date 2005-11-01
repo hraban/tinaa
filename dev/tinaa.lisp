@@ -16,6 +16,8 @@ DISCUSSION
 
 (in-package doclisp)
 
+(defparameter *tinaa-home-page* "http://common-lisp.net/project/cl-containers/metabang.tinaa/")
+#+Old
 (defparameter *tinaa-home-page* "http://metabang.gotdns.com/projects/metabang.tinaa/")
 (defparameter *tinaa-version* "0.1")
 (defvar *document-stream* *standard-output*)
