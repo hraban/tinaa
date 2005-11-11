@@ -353,6 +353,7 @@ system if you have those loaded...). System-name is the identifier of the
 system. Destination is the location in the file system where you want the 
 documentation to go. Finally, you can pass in other arguments that are specific
 to the kind of system you are documenting."
+  (ecs system-name)
   (let ((*root-part* (apply #'make-part nil system-kind system-name 
                             :document? t args))
         (*packages-to-document* nil)

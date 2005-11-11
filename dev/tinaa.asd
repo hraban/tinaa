@@ -4,10 +4,6 @@
 
 $Id: tinaa.system,v 1.12 2005/09/13 21:11:40 gwking Exp $
 
-Copyright 1992 - 2004 Experimental Knowledge Systems Lab, 
-University of Massachusetts Amherst MA, 01003-4610
-Professor Paul Cohen, Director
-
 Author: Gary King
 
 DISCUSSION
@@ -20,7 +16,7 @@ DISCUSSION
 ;;; Translations
 ;;; ---------------------------------------------------------------------------
 
-(eksl-define-logical-pathname-translations (tinaa)
+(glu-define-logical-pathname-translations (tinaa)
    (source)
    (doc (:back "doc"))
    (utils (:back :back "utils" "dev"))
@@ -33,18 +29,18 @@ DISCUSSION
 ;;; System
 ;;; ---------------------------------------------------------------------------
 
-(setf (eksl-system-source-file :cl-containers)
+(setf (glu-system-source-file :cl-containers)
       "tinaa:containers;cl-containers.system"
-      (eksl-system-source-file :lift)
+      (glu-system-source-file :lift)
       "tinaa:lift;lift.system"
-      (eksl-system-source-file 'moptilities)
+      (glu-system-source-file 'moptilities)
       "tinaa:moptilities;moptilities.system")
 
 ;;; ---------------------------------------------------------------------------
 
 #+Ignore "timeit"
 
-(define-eksl-system :tinaa
+(define-glu-system :tinaa
   ((("package"
      "class-defs"
      "macros"
@@ -55,7 +51,7 @@ DISCUSSION
      "doc-variable"
      "doc-function"
      "doc-symbol"
-     "doc-eksl-system"
+     "doc-glu-system"
      "build-indexes"
      "templates"))
    
@@ -79,46 +75,6 @@ DISCUSSION
                :lml2
                :metabang.bind
                :metabang.dynamic-classes))
-
-#|
-$Log: tinaa.system,v $
-Revision 1.12  2005/09/13 21:11:40  gwking
-clop-mop-utils -> moptilities cleanup
-
-Revision 1.11  2005/07/29 20:34:35  gwking
-moved mop-layer into its own system and changed its name to moptilities
-
-Revision 1.10  2004/12/06 16:02:55  gwking
-Tinaa needs containers
-
-Revision 1.9  2004/05/19 00:32:30  gwking
-another step along the path
-
-Revision 1.8  2004/05/11 21:09:51  gwking
-added epilogue
-
-Revision 1.7  2004/05/04 02:33:38  gwking
-Load order problem fixed
-
-Revision 1.6  2004/04/13 20:46:17  gwking
-mop-layer (not sure I like the name)
-
-Revision 1.5  2004/03/28 18:21:10  gwking
-misc changes
-
-Revision 1.4  2004/03/15 20:21:42  gwking
-minor updates
-
-Revision 1.3  2004/03/02 16:38:04  gwking
-updates
-
-Revision 1.2  2004/02/22 21:18:31  gwking
-a more minimal system def
-
-Revision 1.1  2004/02/16 16:40:01  gwking
-first commit
-
-|#                    
 
 ;;; ***************************************************************************
 ;;; *                              End of File                                *
