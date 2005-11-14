@@ -42,4 +42,4 @@ There are several things it could do more nicely (class diagrams, prettier table
      
      ((:DIV :ID "footer") "Last updated: " 
       (lml-princ (metatilities:format-date "%A, %e %B %Y" (get-universal-time)))
-      "&nbsp;&nbsp;")))))
+      "&nbsp;&nbsp;"))))

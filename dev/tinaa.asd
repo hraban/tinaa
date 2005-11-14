@@ -2,8 +2,6 @@
 
 #| simple-header
 
-$Id: tinaa.system,v 1.12 2005/09/13 21:11:40 gwking Exp $
-
 Author: Gary King
 
 DISCUSSION
@@ -11,61 +9,48 @@ DISCUSSION
 |#
 
 (in-package :common-lisp-user)
+(defpackage :asdf-tinaa (:use #:asdf #:cl))
+(in-package :asdf-tinaa)
 
-;;; ---------------------------------------------------------------------------
-;;; Translations
-;;; ---------------------------------------------------------------------------
+(defsystem tinaa
+  :author "Gary Warren King <gwking@metabang.com>"
+  :version "0.5"
+  :maintainer "Gary Warren King <gwking@metabang.com>"
+  :licence "Various license"
 
-(glu-define-logical-pathname-translations (tinaa)
-   (source)
-   (doc (:back "doc"))
-   (utils (:back :back "utils" "dev"))
-   (containers (:back :back "cl-containers" "dev"))
-   (lift (:back :back "lift" "dev"))
-   (MOPTILITIES (:back :back "MOPTILITIES" "DEV"))
-   (website (:back "website")))
-
-;;; ---------------------------------------------------------------------------
-;;; System
-;;; ---------------------------------------------------------------------------
-
-(setf (glu-system-source-file :cl-containers)
-      "tinaa:containers;cl-containers.system"
-      (glu-system-source-file :lift)
-      "tinaa:lift;lift.system"
-      (glu-system-source-file 'moptilities)
-      "tinaa:moptilities;moptilities.system")
-
-;;; ---------------------------------------------------------------------------
-
-#+Ignore "timeit"
-
-(define-glu-system :tinaa
-  ((("package"
-     "class-defs"
-     "macros"
-     "utilities"
-     "tinaa"
-     "doc-package"
-     "doc-class"
-     "doc-variable"
-     "doc-function"
-     "doc-symbol"
-     "doc-glu-system"
-     "build-indexes"
-     "templates"))
-   
-   (("epilogue"))
-   
-   (("notes"
-     "tinaa.css") 
-    :associates? t
-    :base-dir "tinaa:"))
+  :components ((:file "package")
+               (:file "class-defs"
+                      :depends-on ("package"))
+               (:file "macros"
+                      :depends-on ("package"))
+               (:file "utilities"
+                      :depends-on ("package"))
+               (:file "tinaa"
+                      :depends-on ("package"))
+               (:file "doc-package"
+                      :depends-on ("package"))
+               (:file "doc-class"
+                      :depends-on ("package"))
+               (:file "doc-variable"
+                      :depends-on ("package"))
+               (:file "doc-function"
+                      :depends-on ("package"))
+               (:file "doc-symbol"
+                      :depends-on ("package"))
+               (:file "doc-glu-system"
+                      :depends-on ("package"))
+               (:file "build-indexes"
+                      :depends-on ("package"))
+               (:file "templates"
+                      :depends-on ("package"))
+               (:file "epilogue"
+                      :depends-on ("package")))
   
-  ;; DEFAULTS
-  :base-dir "tinaa:source;"
-  :bin-identifiers (:platform :vendor)
-  :top-level t
+  #+Ignore
+  (("notes"
+    "tinaa.css") 
+   :associates? t
+   :base-dir "tinaa:")
   
   :depends-on (:basic-lift
                :moptilities 
@@ -75,7 +60,3 @@ DISCUSSION
                :lml2
                :metabang.bind
                :metabang.dynamic-classes))
-
-;;; ***************************************************************************
-;;; *                              End of File                                *
-;;; ***************************************************************************
