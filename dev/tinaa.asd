@@ -58,5 +58,5 @@ DISCUSSION
                :metatilities-base
                :metatilities
                :lml2
-               :metabang.bind
-               :metabang.dynamic-classes))
+               :metabang-bind
+               :metabang-dynamic-classes))

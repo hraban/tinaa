@@ -3,7 +3,7 @@ Doesn't handle "/" in symbol names
 system should have list of files
   printing file names
   print files in a 2 or 3 column layout
-  links to CVS
+  links to CVS / Darcs / Etc
     make part of method somewhere
   using htmlize form source + extend with links to rest of (relevant) documentation
 
