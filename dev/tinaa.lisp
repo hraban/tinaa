@@ -16,10 +16,8 @@ DISCUSSION
 
 (in-package doclisp)
 
-(defparameter *tinaa-home-page* "http://common-lisp.net/project/cl-containers/metabang.tinaa/")
-#+Old
-(defparameter *tinaa-home-page* "http://metabang.gotdns.com/projects/metabang.tinaa/")
-(defparameter *tinaa-version* "0.1")
+(defparameter *tinaa-home-page* "http://common-lisp.net/project/tinaa/")
+(defparameter *tinaa-version* "0.2")
 (defvar *document-stream* *standard-output*)
 (defvar *document-file* nil)
 (defvar *document-root* nil)
@@ -353,7 +351,6 @@ system if you have those loaded...). System-name is the identifier of the
 system. Destination is the location in the file system where you want the 
 documentation to go. Finally, you can pass in other arguments that are specific
 to the kind of system you are documenting."
-  (ecs system-name)
   (let ((*root-part* (apply #'make-part nil system-kind system-name 
                             :document? t args))
         (*packages-to-document* nil)
@@ -537,7 +534,7 @@ to the kind of system you are documenting."
   (html 
    ((:a :id "logo" :href *tinaa-home-page*
         :title "Go to Tinaa home page")
-    ((:img :src (format nil "~Alogo.jpg" *tinaa-home-page*)
+    ((:img :src (format nil "~Aimages/logo.jpg" *tinaa-home-page*)
            :width 90
            :height 82)))))
 
