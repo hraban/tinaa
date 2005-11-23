@@ -25,27 +25,31 @@ DISCUSSION
                                      (:file "macros"
                                             :depends-on ("package"))
                                      (:file "utilities"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "macros"))
                                      (:file "tinaa"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "macros"
+                                                         "class-defs"))
                                      (:file "doc-package"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "tinaa"))
                                      (:file "doc-class"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "tinaa"))
                                      (:file "doc-variable"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "tinaa"))
                                      (:file "doc-function"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "tinaa"))
                                      (:file "doc-symbol"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "tinaa"))
+                                     
+                                     #+Ignore
                                      (:file "doc-glu-system"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "tinaa"))
+                                     
                                      (:file "build-indexes"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "tinaa"))
                                      (:file "templates"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "tinaa"))
                                      (:file "epilogue"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "tinaa"))
                                      
                                      (:static-file "notes.text")
                                      (:static-file "tinaa.css"))))

@@ -502,7 +502,7 @@ to the kind of system you are documenting."
       (:head
        (:title (if ,title 
                  (lml-princ ,title)
-                 (lml-format "tinaa: ~A ~:(~A~)"
+                 (lml-format "~A ~:(~A~) [Tinaa]"
                              (header ,part) (name ,part))))
        ((:link :rel "stylesheet" :href (stylesheet-url ,part))))
       (:body
