@@ -54,10 +54,4 @@ DISCUSSION
                                      (:static-file "notes.text")
                                      (:static-file "tinaa.css"))))
   
-  :depends-on (lift
-               moptilities 
-               cl-containers
-               metatilities
-               lml2
-               metabang-bind
-               metabang-dynamic-classes))
+  :depends-on (lift metatilities lml2))
