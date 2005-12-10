@@ -14,7 +14,7 @@ DISCUSSION
 ;;; Translations
 ;;; ---------------------------------------------------------------------------
 
-(eksl-define-logical-pathname-translations (tinaa)
+(glu-define-logical-pathname-translations (tinaa)
    (source)
    (doc (:back "doc"))
    (utils (:back :back "utils" "dev"))
@@ -27,18 +27,18 @@ DISCUSSION
 ;;; System
 ;;; ---------------------------------------------------------------------------
 
-(setf (eksl-system-source-file :cl-containers)
+(setf (glu-system-source-file :cl-containers)
       "tinaa:containers;cl-containers.system"
-      (eksl-system-source-file :lift)
+      (glu-system-source-file :lift)
       "tinaa:lift;lift.system"
-      (eksl-system-source-file 'moptilities)
+      (glu-system-source-file 'moptilities)
       "tinaa:moptilities;moptilities.system")
 
 ;;; ---------------------------------------------------------------------------
 
 #+Ignore "timeit"
 
-(define-eksl-system :tinaa
+(define-glu-system :tinaa
   ((("package"
      "class-defs"
      "macros"
@@ -49,7 +49,7 @@ DISCUSSION
      "doc-variable"
      "doc-function"
      "doc-symbol"
-     "doc-eksl-system"
+     "doc-glu-system"
      "build-indexes"
      "templates"))
    
