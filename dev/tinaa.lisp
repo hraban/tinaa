@@ -97,6 +97,11 @@ Change +short-documentation-length+ to determine how much is returned."))
 
 ;;; ---------------------------------------------------------------------------
 
+(defgeneric document-part-to-file (part &optional file)
+  (:documentation ""))
+
+;;; ---------------------------------------------------------------------------
+
 (defgeneric url-for-part (part)
   (:documentation "Returns the url for the part, creating it if necessary."))
 
@@ -141,6 +146,13 @@ Change +short-documentation-length+ to determine how much is returned."))
 
 (defun some-parent (part)
   (first (parents part)))
+
+;;; ---------------------------------------------------------------------------
+
+(defun tinaa-home ()
+  (or #+ASDF
+      (slot-value (asdf:find-system 'tinaa) 'asdf::relative-pathname)
+      (error "cannot determine Tinaa's home")))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -243,7 +255,7 @@ Change +short-documentation-length+ to determine how much is returned."))
 (defmethod name-holder ((part basic-doclisp-part))
   (awhen (parents part)
     (name-holder (car it))))
-
+    
 ;;; ---------------------------------------------------------------------------
 
 (defmethod part-name ((part basic-doclisp-part))
@@ -364,7 +376,13 @@ to the kind of system you are documenting."
 
 (defun write-css-file (destination &rest args &key (if-exists :supersede)
                                    &allow-other-keys)
-  (apply #'copy-file "tinaa:tinaa.css"
+  (apply #'copy-file 
+         (or 
+          #+ASDF
+          (metabang-project-manager:pathname-for-system-file 'tinaa "tinaa.css") 
+          #+GLU
+          "tinaa:tinaa.css"
+          (error "can't find tinaa home"))
          (merge-pathnames "tinaa.css" destination)
          :if-exists if-exists args))
 
@@ -462,8 +480,9 @@ to the kind of system you are documenting."
 
 (defmethod url-for-part ((part basic-doclisp-part))
   (bind ((name-holder (name-holder part))
-         (name-holder-name (symbol-name (name name-holder)))
-         (part-name (part-name part))
+         (name-holder-name (make-name-safe-for-filesystem
+                            (symbol-name (name name-holder))))
+         (part-name (make-name-safe-for-filesystem (part-name part)))
          (part-kind (part-kind part)))
     (cond ((eq part name-holder)
            (string-downcase
@@ -475,6 +494,26 @@ to the kind of system you are documenting."
            nil
            #+Old
            (concatenate 'string name-holder-name "#" part-name)))))
+
+;;; ---------------------------------------------------------------------------
+
+(defun make-name-safe-for-filesystem (name)
+  (let* ((array (make-array (* 2 (length name)) :fill-pointer 0 :adjustable t)))
+    (flet ((add-char (ch)
+             (vector-push-extend ch array)))
+      (loop for ch across name do
+            (cond ((char-equal ch #\/)
+                   (add-char #\-)
+                   (add-char #\1))
+                  ((char-equal ch #\*)
+                   (add-char #\-)
+                   (add-char #\2))
+                  ((char-equal ch #\-)
+                   (add-char #\-)
+                   (add-char #\-))
+                  (t
+                   (add-char ch))))
+      (coerce array 'string))))
 
 ;;; ---------------------------------------------------------------------------
 

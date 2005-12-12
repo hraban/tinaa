@@ -1,6 +1,6 @@
 FUTURE: make it easy to change style sheet
 
-Doesn't handle "/" in symbol names
+Doesn't handle #\/ or #\* in symbol names
 
 system should have list of files
   printing file names
