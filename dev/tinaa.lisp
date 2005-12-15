@@ -511,6 +511,9 @@ to the kind of system you are documenting."
                   ((char-equal ch #\-)
                    (add-char #\-)
                    (add-char #\-))
+                  ((char-equal ch #\\)
+                   (add-char #\-)
+                   (add-char #\3))
                   (t
                    (add-char ch))))
       (coerce array 'string))))

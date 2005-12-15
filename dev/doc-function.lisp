@@ -68,24 +68,24 @@
     (when documentation? (html (:blockquote (lml-princ documentation))))
     
     (:h3 (lml-format "Method Summary \(~D method~:P\)" 
-                    (length (mopu-generic-function-methods (instance part)))))
+                    (length (mopu:generic-function-methods (instance part)))))
     
     (:table
       (iterate-container
        (sort 
-        (copy-list (mopu-generic-function-methods (instance part)))
+        (copy-list (mopu:generic-function-methods (instance part)))
         #'method-sorter)
        (lambda (m)
          (html 
           ((:tr :valign "top")
            (:td (lml-format "~(~A ~@[~{~S ~}~]~)"
                             name
-                            (mopu-method-qualifiers m))
+                            (method-qualifiers m))
                 (iterate-container
-                 (mopu-method-specializers m)
+                 (mopu:method-specializers m)
                  (lambda (s)
                    (let* ((name
-                           (or (mopu-eql-specializer-p s)
+                           (or (mopu:eql-specializer-p s)
                                (typecase s
                                  (standard-class (class-name s))
                                  (built-in-class (class-name s))
@@ -104,21 +104,21 @@
 ;;; ---------------------------------------------------------------------------
 
 (defun method-sorter (m1 m2)
-  (cond ((string-lessp (mopu-method-name m1) (mopu-method-name m2))
+  (cond ((string-lessp (method-name m1) (method-name m2))
          (values t))
-        ((string-lessp (mopu-method-name m2) (mopu-method-name m1))
+        ((string-lessp (method-name m2) (method-name m1))
          (values nil))
         (t
          (block sort-specializers
-           (let ((s1 (mopu-method-specializers m1))
-                 (s2 (mopu-method-specializers m2)))
+           (let ((s1 (mopu:method-specializers m1))
+                 (s2 (mopu:method-specializers m2)))
              (loop for sp1 in s1
                    for sp2 in s2 do
                    ;; the format here is a bit of a hack to handle eql specializers
                    ;; that specialize on things other than symbols
-                   (let ((eq1? (awhen (mopu-eql-specializer-p sp1) 
+                   (let ((eq1? (awhen (eql-specializer-p sp1) 
                                  (format nil "~S" it)))
-                         (eq2? (awhen (mopu-eql-specializer-p sp2) 
+                         (eq2? (awhen (eql-specializer-p sp2) 
                                  (format nil "~S" it))))
                      (cond ((and (null eq1?) (null eq2?))
                             (cond ((string-lessp (class-name sp1) (class-name sp2))
@@ -133,8 +133,8 @@
                                   ((string-lessp eq2? eq1?)
                                    (return-from sort-specializers nil))))))))
            
-           (let ((q1 (mopu-method-qualifiers m1))
-                 (q2 (mopu-method-qualifiers m2)))
+           (let ((q1 (method-qualifiers m1))
+                 (q2 (method-qualifiers m2)))
              (loop for qp1 in q1
                    for qp2 in q2 do
                    (cond ((string-lessp qp1 qp2)

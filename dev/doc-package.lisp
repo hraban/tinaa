@@ -106,15 +106,15 @@
          (format t " ~A ~A"
                  (typep (symbol-function symbol) 'standard-generic-function)
                  (some (lambda (m)
-                         (not (or (mopu-reader-method-p m)
-                                  (mopu-writer-method-p m))))
-                       (mopu-generic-function-methods (symbol-function symbol))))))
+                         (not (or (reader-method-p m)
+                                  (writer-method-p m))))
+                       (generic-function-methods (symbol-function symbol))))))
      (and (fboundp symbol)
           (typep (symbol-function symbol) 'standard-generic-function)
           (some (lambda (m)
-                  (not (or (mopu-reader-method-p m)
-                           (mopu-writer-method-p m))))
-                (mopu-generic-function-methods (symbol-function symbol)))))))
+                  (not (or (reader-method-p m)
+                           (writer-method-p m))))
+                (mopu:generic-function-methods (symbol-function symbol)))))))
 
 ;;; ---------------------------------------------------------------------------
 

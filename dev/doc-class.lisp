@@ -19,7 +19,7 @@
 
 (defmethod find-part ((parent doclisp-assembly) (kind (eql 'slot)) name)
   (iterate-container
-   (mopu-class-precedence-list (instance parent))
+   (mopu:superclasses (instance parent))
    (lambda (class)
      (let ((class-part (make-part (some-parent parent) 'class (class-name class))))
        (return-from find-part (item-at (item-at (subparts class-part) 'slot) name)))))
@@ -52,7 +52,7 @@
 
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'slot)))
   (sort
-   (mopu-class-slot-names (name part))
+   (slot-names (name part))
    #'string-lessp))
 
 ;;; ---------------------------------------------------------------------------
@@ -62,7 +62,7 @@
    (delete-if
     (lambda (class-name)
       (class-uninteresting-p part class-name)) 
-    (mapcar #'class-name (mopu-class-direct-superclasses (name part))))
+    (mapcar #'class-name (direct-superclasses (name part))))
    #'string-lessp))
 
 ;;; ---------------------------------------------------------------------------
@@ -127,7 +127,7 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((part doclisp-slot) (mode (eql :table-summary)))
-  (let ((slot-info (mopu-class-slot-information 
+  (let ((slot-info (slot-properties 
                     (instance (some-parent part)) (name part)))
         (add-comma? nil)
         (accessors nil))
