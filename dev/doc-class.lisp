@@ -114,7 +114,10 @@
 
 ;;?? Gary King 2004-01-31: this is a hack based on my defclass-patch
 (defmethod part-documentation ((part doclisp-slot))
-  (documentation (name part) 'ccl::slot))
+  #+MCL
+  (documentation (name part) 'ccl::slot)
+  #-MCL
+  nil)
 
 ;;; ---------------------------------------------------------------------------
 

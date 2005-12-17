@@ -376,15 +376,17 @@ to the kind of system you are documenting."
 
 (defun write-css-file (destination &rest args &key (if-exists :supersede)
                                    &allow-other-keys)
-  (apply #'copy-file 
-         (or 
-          #+ASDF
-          (metabang-project-manager:pathname-for-system-file 'tinaa "tinaa.css") 
-          #+GLU
-          "tinaa:tinaa.css"
-          (error "can't find tinaa home"))
-         (merge-pathnames "tinaa.css" destination)
-         :if-exists if-exists args))
+  (let ((output (merge-pathnames "tinaa.css" destination)))
+    (ensure-directories-exist output)
+    (apply #'copy-file 
+           (or 
+            #+ASDF
+            (metabang-project-manager:pathname-for-system-file 'tinaa "tinaa.lisp") 
+            #+GLU
+            "tinaa:tinaa.css"
+            (error "can't find tinaa home"))
+           output
+           :if-exists if-exists args)))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -428,6 +430,7 @@ to the kind of system you are documenting."
 (defmethod document-part-to-file ((part basic-doclisp-part) 
                                   &optional file)
   (let ((*document-file* (or file (url->file (url part)))))
+    (ensure-directories-exist *document-file*)
     (with-open-file (*document-stream* *document-file* 
                                        :direction :output
                                        :if-exists :supersede
