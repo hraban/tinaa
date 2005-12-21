@@ -57,8 +57,10 @@ no sense at all.")
 ;;; ---------------------------------------------------------------------------
 
 (defgeneric partname-list (part part-kind)
-  (:documentation "Returns a list of the names \(as symbols\) of the subparts of part 
-of type 'part-kind'."))
+  (:documentation "Returns a list of the names \(as symbols\) of the subparts of part of type 'part-kind'.")
+  (:method :around (part part-kind)
+	   (handler-case (call-next-method)
+	     (error () nil))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -381,7 +383,9 @@ to the kind of system you are documenting."
     (apply #'copy-file 
            (or 
             #+ASDF
-            (metabang-project-manager:pathname-for-system-file 'tinaa "tinaa.lisp") 
+            (make-pathname :type "css"
+                           :defaults (metabang-project-manager:pathname-for-system-file
+                                      'tinaa "tinaa.lisp")) 
             #+GLU
             "tinaa:tinaa.css"
             (error "can't find tinaa home"))
