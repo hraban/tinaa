@@ -384,7 +384,7 @@ to the kind of system you are documenting."
            (or 
             #+ASDF
             (make-pathname :type "css"
-                           :defaults (metabang-project-manager:pathname-for-system-file
+                           :defaults (pathname-for-system-file
                                       'tinaa "tinaa.lisp")) 
             #+GLU
             "tinaa:tinaa.css"
