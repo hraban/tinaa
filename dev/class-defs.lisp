@@ -8,7 +8,8 @@
    (flag? nil a)
    (document? nil ir)
    (header "" ia)
-   (part-kind "" ir))
+   (part-kind "" ir)
+   (name-holder nil ir))
   (:default-initargs
     :header ""))
 
@@ -16,12 +17,15 @@
 
 (defmethod initialize-instance :after ((object basic-doclisp-part) &key)
   (setf (slot-value object 'document?)
-        (or (document? object) (document-part-p object))))
+        (or (document? object) (document-part-p (name-holder object) object)))
+  (when (eq (name-holder object) :self)
+    (setf (slot-value object 'name-holder) object)))
 
 ;;; ---------------------------------------------------------------------------
 
 (defclass* subpart-kind ()
-  ((name "" ir)
+  ((name nil ir)
+   (part-kind :unbound ir)
    (heading :unbound ir)
    (document? t ir)
    (index? t ir)))
@@ -31,7 +35,10 @@
 (defmethod initialize-instance :after ((object subpart-kind) &key)
   (unless (and (slot-boundp object 'heading) (heading object))
     (setf (slot-value object 'heading) 
-          (string-capitalize (symbol-name (name object))))))
+          (string-capitalize (symbol-name (name object)))))
+  (unless (and (slot-boundp object 'part-kind) (part-kind object))
+    (setf (slot-value object 'part-kind)
+          (name object))))
 
 ;;; ---------------------------------------------------------------------------
 

@@ -1,6 +1,34 @@
+If doing both internal and external, show this somehow
+  similar for direct / all
+
+Make it clear that is is tinaa version in footer, not software
+
+Full Class diagram
+
+Provide some mechanism (HTTP redirection to link all packages, etc)
+index does not show SLOTs (it shows their names but any description)
+
+Generic functions has links to classes that aren't documented (b/c not exported)
+
+main page does not show SLOTS 
+
+from inspector package
+(defun symbol-has-bindings-p (sym)
+  (or (constantp sym) (proclaimed-special-p sym) (boundp sym)
+      (special-form-p sym) (macro-function sym) (fboundp sym)
+      (type-specifier-p sym) (record-type-p sym nil)
+      (find-class sym nil)))
+
+switch from some-parent to name-holder
+
+what is this?? display-part ((part doclisp-macro) (mode (eql :table-summary)))
+  doing???
+
+Make part parents a union-find container
+
 FUTURE: make it easy to change style sheet
 
-Doesn't handle #\/ or #\* in symbol names
+ok - Doesn't handle #\/ or #\* in symbol names
 
 system should have list of files
   printing file names
@@ -21,7 +49,6 @@ CVS access
 
 (setf sp (document-system 'eksl-system 'tinaa "home:tinaa-system;"))
   The root part contains two instance of itself - it has itself as a parent
-
 
 *default-packages-to-ignore* needs to be updated as other systems are loaded
 

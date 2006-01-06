@@ -90,7 +90,7 @@
                                  (standard-class (class-name s))
                                  (built-in-class (class-name s))
                                  (t (type-of s)))))
-                          (part (find-part (some-parent part) 'class name)))
+                          (part (find-part (name-holder part) 'class name)))
                      (let ((*print-case* :downcase))
                        (cond ((consp name)
                               (lml-format "~S" name))

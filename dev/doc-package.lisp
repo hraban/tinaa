@@ -19,6 +19,19 @@
 
 ;;; ---------------------------------------------------------------------------
 
+(defmethod document-part-p ((name-holder doclisp-package) (part basic-doclisp-part))
+  (and (call-next-method)
+       (multiple-value-bind (found? status) 
+                            (find-symbol (symbol-name (part-symbol-name part))
+                                         (instance name-holder))
+         (declare (ignore found?))
+         (cond ((member status (symbol-kinds name-holder))
+                (values t))
+               (t
+                (values nil))))))
+
+;;; ---------------------------------------------------------------------------
+
 (defmethod make-part (parent (kind (eql 'package)) name &rest args &key
                               &allow-other-keys)
   (declare (ignore parent))
@@ -169,6 +182,13 @@
 
 (defmethod start-grovel :before ((part doclisp-package))
   (add-package-to-document (name part)))
+
+;;; ---------------------------------------------------------------------------
+
+#+Ignore
+(defmethod start-grovel :around ((part doclisp-package))
+  (let ((*package* (instance part)))
+    (call-next-method)))
 
 ;;; ---------------------------------------------------------------------------
 

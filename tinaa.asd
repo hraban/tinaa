@@ -54,4 +54,4 @@ DISCUSSION
                                      (:static-file "notes.text")
                                      (:static-file "tinaa.css"))))
   
-  :depends-on (lift metatilities lml2))
+  :depends-on (lift metatilities lml2 cl-graph))

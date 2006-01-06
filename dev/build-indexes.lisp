@@ -62,7 +62,8 @@ DISCUSSION
                  (unless (string-equal current-symbol (subseq part-name 0 1))
                    (setf current-symbol (subseq part-name 0 1))
                    (html ((:a :name (concatenate 
-                                     'string current-symbol "-" (symbol-name (name subpart-info))))
+                                     'string current-symbol "-" 
+                                     (symbol-name (name subpart-info))))
                           (:table
                            (:tr ((:td :width 75 :valign "top" :align "left")
                                  (:h3 (lml-princ (string-upcase current-symbol))))

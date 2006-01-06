@@ -17,6 +17,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
+#+Remove
+;;??Gary King 2005-12-30: 
 (defmethod find-part ((parent doclisp-assembly) (kind (eql 'slot)) name)
   (iterate-container
    (mopu:superclasses (instance parent))
@@ -36,7 +38,13 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds ((part doclisp-class))
-  (list '(class :heading "Direct Superclass") 'slot 'method))
+  (list '(superclass :heading "Direct Superclass" :part-kind class)
+        '(subclass :heading "Direct Subclass" :part-kind class)
+        'slot 'method))
+
+(defmethod subpart-kinds ((part doclisp-class))
+  (list '(class :heading "Direct Superclass")
+        'slot 'method))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -61,15 +69,42 @@
   (sort
    (delete-if
     (lambda (class-name)
-      (class-uninteresting-p part class-name)) 
+      (class-uninteresting-p class-name)) 
     (mapcar #'class-name (direct-superclasses (name part))))
    #'string-lessp))
 
 ;;; ---------------------------------------------------------------------------
 
-(defun class-uninteresting-p (part class-name)
-  (declare (ignore part))
-  (member (symbol-package class-name)
+(defmethod partname-list ((part doclisp-class) (part-name (eql 'superclass)))
+  (sort
+   (delete-if
+    (lambda (class-name)
+      (class-uninteresting-p class-name)) 
+    (mapcar #'class-name (direct-superclasses (name part))))
+   #'string-lessp))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod partname-list ((part doclisp-class) (part-name (eql 'subclass)))
+  (sort
+   (delete-if
+    (lambda (class-name)
+      (class-uninteresting-p class-name)) 
+    (mapcar #'class-name (direct-subclasses (name part))))
+   #'string-lessp))
+
+;;; ---------------------------------------------------------------------------
+
+#+Remove
+(defmethod find-part ((part doclisp-assembly) (kind (eql 'class)) name)
+  (or (call-next-method) 
+      (find-part part 'superclass name)
+      (find-part part 'subclass name)))
+
+;;; ---------------------------------------------------------------------------
+
+(defun class-uninteresting-p (class-name)
+  (member (symbol-package (class-name-of (get-class class-name)))
           (list (find-package :common-lisp)
                 (find-package :common-lisp-user))))
                               
@@ -192,3 +227,70 @@
            
            (when add-comma?
              (lml-princ ".")))))))
+
+;;; ---------------------------------------------------------------------------
+
+(defclass* tinaa-part-graph (cl-graph:graph-container)
+  ((root-part nil ir))
+  (:default-initargs
+    :vertex-class 'tinaa-part-vertex))
+
+;;; ---------------------------------------------------------------------------
+  
+(defclass* tinaa-part-vertex (cl-graph:graph-container-vertex)
+  ((part nil ir)))
+
+;;; ---------------------------------------------------------------------------
+
+(defun make-local-class-graph (class-part)
+  (bind ((g (cl-graph:make-graph 'tinaa-part-graph
+                                 :root-part (root-parent class-part)))
+         (instance (class-name (instance class-part)))
+         (vertex (cl-graph:add-vertex g instance :part class-part))
+         (root-part (root-parent class-part)))
+    (iterate-elements
+     (direct-superclasses instance)
+     (lambda (superclass)
+       (unless (class-uninteresting-p superclass)
+         (bind ((super-part-name (class-name superclass))
+                (super-part (find-part root-part 'class super-part-name))) 
+           (cl-graph:add-edge-between-vertexes
+            g (cl-graph:add-vertex g super-part-name :part super-part) vertex
+            :edge-type :directed)))))
+    (iterate-elements
+     (direct-subclasses instance)
+     (lambda (subclass)
+       (unless (class-uninteresting-p subclass)
+         (bind ((sub-part-name (class-name subclass))
+                (sub-part (find-part root-part 'class sub-part-name))) 
+           (cl-graph:add-edge-between-vertexes
+            g instance (cl-graph:add-vertex g sub-part-name :part sub-part)
+            :edge-type :directed)))))
+    g))
+
+;;; ---------------------------------------------------------------------------
+
+(defun class-graph->dot (graph)
+  "Returns a string describing graph in DOT format."
+  (cl-graph:graph->dot 
+   graph
+   nil
+   :graph-formatter (lambda (g stream)
+                      (declare (ignore g))
+                      (format stream "rankdir=LR"))
+   
+   :vertex-labeler
+   (lambda (vertex stream)
+     (format stream "~(~A~)" (symbol-name (element vertex))))
+   
+   :vertex-formatter 
+   (lambda (vertex stream)
+     (let ((part (part vertex))) 
+       (when part
+         (format stream "URL=\"~A\"," (url-for-part part)))
+       (cond ((leaf-class-p (element vertex))
+              (format stream "color=\"black\", style=\"filled\", fontcolor=\"white\", ~
+                              fillcolor=\"blue\""))
+             ((empty-p (direct-superclasses (element vertex)))
+              (format stream "color=\"black\", style=\"filled\", fontcolor=\"white\", ~
+                              fillcolor=\"green\"")))))))

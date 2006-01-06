@@ -2,10 +2,11 @@
 
 (defpackage "TINAA"
   (:use "COMMON-LISP" "MOPTILITIES" "METATILITIES" "LML2" "METABANG.BIND" 
-        "CL-CONTAINERS")
+        "CL-CONTAINERS" "DEFSYSTEM-COMPATIBILITY")
   (:nicknames "DOCLISP")
   (:documentation "A simple, yet extensible, Common Lisp documentation package.")
   (:import-from "METATILITIES" #:fn #:depth #:value #:name)
+  (:import-from "DEFSYSTEM-COMPATIBILITY" #:pathname-for-system-file)
   (:export
    #:subpart-kinds
    #:partname-list
