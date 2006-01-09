@@ -401,7 +401,7 @@ to the kind of system you are documenting."
                                    &allow-other-keys)
   (let ((output (merge-pathnames "tinaa.css" destination)))
     (ensure-directories-exist output)
-    (apply #'cl-fad:copy-file 
+    (apply #'copy-file 
            (or 
             (pathname-for-system-file 'tinaa "tinaa.css")
             (error "can't find tinaa.css"))
