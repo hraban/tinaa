@@ -52,6 +52,9 @@ DISCUSSION
                                             :depends-on ("package" "tinaa"))
                                      
                                      (:static-file "notes.text")
-                                     (:static-file "tinaa.css"))))
+                                     (:static-file "tinaa.css")))
+               (:module "website"
+                        :components ((:module "source"
+                                              :components ((:static-file "index.lml"))))))
   
   :depends-on (lift metatilities lml2 cl-graph))
