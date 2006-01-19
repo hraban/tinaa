@@ -3,65 +3,64 @@
 (in-package rw)
 
 (html-file-page ("index")
-  (html
-   (:HEAD
-    (:TITLE "Tinaa is a Lisp Documentation system, not an acronym")
-    (generate-shared-headers))
-   (:BODY
-    ((:DIV :ID "header") "&nbsp;"
-     ((:IMG :ALT "logo" :FLOAT "right" :SRC "images/logo.jpg" :WIDTH "90" :HEIGHT "82")))
-    ((:H2 :FLOAT "right") "Tinaa is not an acronym")
-    "Tinaa is a flexible and general purpose Lisp documentation system."
-    
-    ((:TABLE :CLASS "system-overview")
-     (:tr
-      (generate-system-sidebar)
-      
-      ((:TD :CLASS "system-description")
-       (:H3 "How it works") 
-       (:P "Tinaa documentation is based on the idea that a system is made up of 
+                (html
+                 (:HEAD
+                  (:TITLE "Tinaa is a Lisp Documentation system, not an acronym")
+                  (generate-shared-headers))
+                 (:BODY
+                  ((:DIV :ID "header") "&nbsp;"
+                   ((:IMG :ALT "logo" :FLOAT "right" :SRC "images/logo.jpg" :WIDTH "90" :HEIGHT "82")))
+                  ((:H2 :FLOAT "right") "Tinaa is not an acronym")
+                  "Tinaa is a flexible and general purpose Lisp documentation system."
+                  
+                  ((:TABLE :CLASS "system-overview")
+                   (:tr
+                    (generate-system-sidebar)
+                    
+                    ((:TD :CLASS "system-description")
+                     (:H3 "How it works") 
+                     (:P "Tinaa documentation is based on the idea that a system is made up of 
 parts and subparts and sub-subparts (all resting on the back of turtle). 
 Tinaa can document anything as long as you tell it:")
-       (:OL (:LI "What kind of sub-parts it has") 
-            (:LI "How to iterate over the sub-parts")
-            (:LI "How to display information about it"))
-       
-       ((:A :NAME "mailing-lists")
-        (:h3 "Mailing Lists")
-        (:ul 
-         (:li ((:a :href "http://common-lisp.net/cgi-bin/mailman/listinfo/tinaa-announce") "tinaa-announce")
-              ": A low volume, read only list for announcements.")
-         
-         (:li ((:a :href "http://common-lisp.net/cgi-bin/mailman/listinfo/tinaa-devel") "tinaa-devel")
-              ": A list for questions, patches, bug reports, and so on; It's for everything 
-other than announcements.")))
-       
-       ((:A :NAME "downloads")
-        (:H3 "Getting it") 
-        (:P "A " (rw:link :darcs) " repository is available. The commands are listed below:")
-        (:UL
-         (:LI "darcs get http://common-lisp.net/project/tinaa/darcs/"))
-        (:P "Tinaa is " (rw:link :asdf-install :title "ASDF installable") ". Its CLiki home is right " (rw:link :tinaa-cliki :title "where") " you'd expect.")
-        (:P "There's also a handy " (rw:link :tinaa-package :title "gzipped tar file") "."))
-       
-       (:H3 "What it does now")
-       "Tinaa currently knows how to document packages 
+                     (:OL (:LI "What kind of sub-parts it has") 
+                          (:LI "How to iterate over the sub-parts")
+                          (:LI "How to display information about it"))
+                     
+                     ((:A :HREF "mailing-lists"))
+                     (:h3 "Mailing Lists")
+                     (:ul 
+                      (:li ((:a :href "http://common-lisp.net/cgi-bin/mailman/listinfo/tinaa-announce") "tinaa-announce")
+                           ": A low volume, read only list for announcements.")
+                      
+                      (:li ((:a :href "http://common-lisp.net/cgi-bin/mailman/listinfo/tinaa-devel") "tinaa-devel")
+                           ": A list for questions, patches, bug reports, and so on; It's for everything 
+other than announcements."))
+                     
+                     ((:A :HREF "downloads"))
+                     (:H3 "Getting it") 
+                     (:P "A " (rw:link :darcs) " repository is available. The commands are listed below:")
+                     (:PRE "darcs get http://common-lisp.net/project/tinaa/darcs/")
+                     (:P "Tinaa is " (rw:link :asdf-install :title "ASDF installable") ". Its CLiki home is right " (rw:link :tinaa-cliki :title "where") " you'd expect.")
+                     (:P "There's also a handy " (rw:link :tinaa-package :title "gzipped tar file") ".")
+                     
+                     (:H3 "What it does now")
+                     "Tinaa currently knows how to document packages 
 (consisting of variables, constants, functions, classes, generic function, macros and symbols). "
-       ((:A :HREF "documentation/index.html") "Here") 
-       " is Tinaa's documentation about Tinaa." 
-       
-       (:H3 "What it doesn't do")
-       "Tinaa doesn't know about systems (neither ASDF nor GLU nor any others). 
+                     ((:A :HREF "documentation/index.html") "Here") 
+                     " is Tinaa's documentation about Tinaa." 
+                     
+                     (:H3 "What it doesn't do")
+                     "Tinaa doesn't know about systems (neither ASDF nor GLU nor any others). 
 There are several things it could do more nicely (class diagrams, prettier tables, and so forth). "
-       
-       ((:A :NAME "news")
-        (:H3 "What is happening")
-        ((:TABLE :BORDER "0") 
-         ((:TR :ALIGN "left" :VALIGN "top")
-          ((:TD :width "100px") "17 Dec 2005")
-          (:TD "Modulo some minor details, Tinaa now works with Allegro 7.0")))))))
-    
-    ((:DIV :CLASS "footer")
-     (generate-button-row 
-      (format nil "Last updated: ~A" 
-              (format-date "%A, %e %B %Y" (get-universal-time))))))))
+                     
+                     ((:A :HREF "news"))
+                     (:H3 "What is happening")
+                     ((:TABLE :BORDER "0") 
+                      ((:TR :ALIGN "left" :VALIGN "top")
+                       ((:TD) "17 Dec 2005")
+                       (:TD "Modulo some minor details, Tinaa now works with Allegro 7.0"))))))
+                  
+                  ((:DIV :CLASS "footer")
+                   (generate-button-row 
+                    (format nil "Last updated: ~A" 
+                            (format-date "%A, %e %B %Y" (get-universal-time))))))))
