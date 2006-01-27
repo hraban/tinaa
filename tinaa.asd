@@ -57,4 +57,7 @@ DISCUSSION
                         :components ((:module "source"
                                               :components ((:static-file "index.lml"))))))
   
-  :depends-on (lift metatilities lml2 cl-graph))
+  :depends-on (defsystem-compatibility
+               metatilities
+               lml2
+               cl-graph))

@@ -24,7 +24,7 @@ DISCUSSION
 (defvar *root-part* nil)
 (defvar *current-index* nil)
 (defvar *current-part-index* "")
-(defconstant +short-documentation-length+ 100
+(defparameter *short-documentation-length* 100
   "The number of characters of documentation to show in summaries.")
 (defvar *packages-to-document* nil)
 (defvar *default-packages-to-ignore* nil) 
@@ -102,7 +102,7 @@ no sense at all.")
 
 (defgeneric short-documentation (part)
   (:documentation "Returns the first bit of the documentation for part.
-Change +short-documentation-length+ to determine how much is returned."))
+Change *short-documentation-length* to determine how much is returned."))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -148,7 +148,7 @@ Change +short-documentation-length+ to determine how much is returned."))
 
 ;;; ---------------------------------------------------------------------------
 
-(defgeneric documentation-exists-p (part mode)
+defgeneric documentation-exists-p (part mode)
   (:documentation "")
   (:method (part mode)
            ;; one around method -- oh vey!
@@ -171,9 +171,7 @@ Change +short-documentation-length+ to determine how much is returned."))
 ;;; ---------------------------------------------------------------------------
 
 (defun tinaa-home ()
-  (or #+ASDF
-      (slot-value (asdf:find-system 'tinaa) 'asdf::relative-pathname)
-      (error "cannot determine Tinaa's home")))
+  (system-source-directory 'tinaa))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -267,8 +265,8 @@ Change +short-documentation-length+ to determine how much is returned."))
 
 (defmethod short-documentation ((part basic-doclisp-part))
   (let ((doc (part-documentation part)))
-    (if (> (length doc) (- +short-documentation-length+ 3))
-      (concatenate 'string (subseq doc 0 (- +short-documentation-length+ 3))
+    (if (> (length doc) (- *short-documentation-length* 3))
+      (concatenate 'string (subseq doc 0 (- *short-documentation-length* 3))
                    "...")
       doc)))
 

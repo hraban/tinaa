@@ -1,3 +1,6 @@
+Several symbols are left out when doing portable-threads.
+  This is because the symbols are in CCL and CCL isn't a *package-to-document*
+
 If doing both internal and external, show this somehow
   similar for direct / all
 

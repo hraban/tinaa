@@ -21,7 +21,7 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod documentation-exists-p ((part doclisp-variable) (mode (eql :detail)))
-  (> (length (part-documentation part)) +short-documentation-length+))
+  (> (length (part-documentation part)) *short-documentation-length*))
 
 ;;; ---------------------------------------------------------------------------
 
