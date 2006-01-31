@@ -141,19 +141,18 @@ DISCUSSION
 (defun build-index-links (for-part index-part current-index)
   (when (any-indexes-p index-part)
     (html
-     (:table
-      (:tr
-        (:td "Indexes: ")
-        (:td
-          (map-subpart-kinds
-           index-part
-           (lambda (subpart-info)
-             (when (index-for-kind-p index-part subpart-info)
-               (if (eq (name subpart-info) current-index)
-                 (lml-format "~:(~A~)" (name subpart-info))
-                 (html ((:a :href (index-url-name for-part subpart-info))
-                        (lml-format "~:(~A~)" (name subpart-info)))))
-               (lml-princ "&nbsp;&nbsp;"))))))))))
+     ((:DIV :CLASS "index-links")
+      "Indexes:"
+      (map-subpart-kinds
+       index-part
+       (lambda (subpart-info)
+         (when (index-for-kind-p index-part subpart-info)
+           (html
+            ((:DIV :CLASS "index")
+             (if (eq (name subpart-info) current-index)
+               (lml-format "~:(~A~)" (name subpart-info))
+               (html ((:a :href (index-url-name for-part subpart-info))
+                      (lml-format "~:(~A~)" (name subpart-info))))))))))))))
 
 ;;; ---------------------------------------------------------------------------
 
