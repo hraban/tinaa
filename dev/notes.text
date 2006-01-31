@@ -1,3 +1,15 @@
+document classes
+document functions
+docuemtn package
+
+improve 
+  "directed-edge-class initform 'Cl-Graph::Basic-Directed-Edge, initargs Directed-Edge-Class."
+
+slot documentation
+
+use CSS to make indexes wrap nicely, etc.
+
+
 Several symbols are left out when doing portable-threads.
   This is because the symbols are in CCL and CCL isn't a *package-to-document*
 
