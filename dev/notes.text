@@ -1,27 +1,24 @@
-document classes
+class - default-initargs
+
 document functions
 docuemtn package
-
-improve 
-  "directed-edge-class initform 'Cl-Graph::Basic-Directed-Edge, initargs Directed-Edge-Class."
 
 slot documentation
 
 use CSS to make indexes wrap nicely, etc.
-
-
-Several symbols are left out when doing portable-threads.
-  This is because the symbols are in CCL and CCL isn't a *package-to-document*
+Can Css make graph-vertex-not-found-in-edge-error wrap more nicely?
 
 If doing both internal and external, show this somehow
   similar for direct / all
 
-Make it clear that is is tinaa version in footer, not software
+~ Make it clear that is is tinaa version in footer, not software
+~ Several symbols are left out when doing portable-threads .
+  This is because the symbols are in CCL and CCL isn't a *package-to-document*
 
 Full Class diagram
 
 Provide some mechanism (HTTP redirection to link all packages, etc)
-index does not show SLOTs (it shows their names but any description)
+index does not show SLOTs (it shows their names but not any description)
 
 Generic functions has links to classes that aren't documented (b/c not exported)
 
@@ -43,8 +40,6 @@ Make part parents a union-find container
 
 FUTURE: make it easy to change style sheet
 
-ok - Doesn't handle #\/ or #\* in symbol names
-
 system should have list of files
   printing file names
   print files in a 2 or 3 column layout
@@ -62,16 +57,7 @@ Setfs
 List of bugs, etc...
 CVS access
 
-(setf sp (document-system 'eksl-system 'tinaa "home:tinaa-system;"))
-  The root part contains two instance of itself - it has itself as a parent
-
 *default-packages-to-ignore* needs to be updated as other systems are loaded
-
-This fails because eksl-systems don't know how to handle symbol-kinds
-
-(timeit (:report t)
-        (document-system 'eksl-system 'hac "home:hac;"
-                         :symbol-kinds '(:external)))
 
 #|
 index doesn't know about packages
@@ -275,5 +261,9 @@ ok - don't include readers / writers in gf summary
 ok - each kind will need its own url/page
   i.e., the gf foo needs to be different than the class foo
 ok - index includes undocumented symbols
+ok - Doesn't handle #\/ or #\* in symbol names
+ok - improve 
+  "directed-edge-class initform 'Cl-Graph::Basic-Directed-Edge, initargs Directed-Edge-Class."
+
 
 defer - alphabet if more than k-entries for a section

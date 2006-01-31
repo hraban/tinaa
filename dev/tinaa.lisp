@@ -455,13 +455,6 @@ to the kind of system you are documenting."
 
 ;;; ---------------------------------------------------------------------------
 
-(defun add-back-link (part)
-  (when (some-parent part)
-    ;; (a :href (relative-url (url (name-holder part)) *document-file*) "back")
-    (lml-princ "&nbsp;&nbsp;")))
-
-;;; ---------------------------------------------------------------------------
-
 (defun add-contents-link (part force-contents-link?)
   (multiple-value-bind (url root-level?) 
                        (make-root-pointing-url part "index.html")
@@ -484,7 +477,7 @@ to the kind of system you are documenting."
                            &key force-contents-link?)
   (html
    ((:div :id "footer")
-    (lml-format "Generated: ~A, version ~A&nbsp;&nbsp;"
+    (lml-format "Generated: ~A [Tinaa version ~A]"
                 (format-date "%a, %b %e, %Y" (get-universal-time))
                 *tinaa-version*)
     (add-contents-link part force-contents-link?)
