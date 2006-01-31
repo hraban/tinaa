@@ -95,14 +95,6 @@
 
 ;;; ---------------------------------------------------------------------------
 
-#+Remove
-(defmethod find-part ((part doclisp-assembly) (kind (eql 'class)) name)
-  (or (call-next-method) 
-      (find-part part 'superclass name)
-      (find-part part 'subclass name)))
-
-;;; ---------------------------------------------------------------------------
-
 (defun class-uninteresting-p (class-name)
   (member (symbol-package (class-name-of (get-class class-name)))
           (list (find-package :common-lisp)
@@ -136,6 +128,30 @@
 
 
 ;;; ---------------------------------------------------------------------------
+;;; conditions
+;;; ---------------------------------------------------------------------------
+
+(defclass doclisp-condition (doclisp-class)
+  ()
+  (:default-initargs
+    :header "Condition"
+    :part-kind "condition"))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod initialize-instance :after ((object doclisp-condition) &key)
+  (setf (slot-value object 'instance) (find-class (name object))))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod make-part (parent (kind (eql 'condition)) name &rest args &key
+                              &allow-other-keys)
+  (declare (ignore parent))
+  (apply #'make-instance 'doclisp-condition
+    :name name args))
+
+
+;;; ---------------------------------------------------------------------------
 ;;; doclisp-slot
 ;;; ---------------------------------------------------------------------------
 
@@ -165,12 +181,15 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((part doclisp-slot) (mode (eql :table-summary)))
-  (let ((slot-info (slot-properties 
-                    (instance (some-parent part)) (name part)))
-        (add-comma? nil)
-        (accessors nil))
+  (let* ((parent (some-element-p (parents part)
+                                 (lambda (parent) 
+                                   (member (name part) 
+                                           (direct-slot-names (instance parent)))))) 
+         (slot-info (slot-properties (instance parent) (name part)))
+         (add-comma? nil)
+         (accessors nil))
     
-    ;; merge readers/writers
+    ;; merge readers/writers into accessors
     (let ((readers (getf slot-info :readers))
           (writers (getf slot-info :writers)))
       (loop for reader in readers do
@@ -186,43 +205,54 @@
           ((:td :valign "top" :width 200) (link-for mode))
           ((:td :valign "top")
            (awhen (getf slot-info :initform) 
-             (lml-format "initform ~:(~S~)" it)
+             (html ((:SPAN :CLASS "property-heading") "Initform:")
+                   ((:SPAN :CLASS "property-value") (lml-format "~(~A~)" it)))
              (setf add-comma? t))
            
            (awhen (getf slot-info :initargs)
              (when add-comma? (lml-princ ", "))
-             (lml-format "initargs ~:(~A~)" 
-                         (list->formatted-string it ", " ""))
+             (html ((:SPAN :CLASS "property-heading") "Initargs:")
+                   ((:SPAN :CLASS "property-value") 
+                    (lml-format "~(~A~)" (list->formatted-string it ", " ""))))
              (setf add-comma? t))
            
            (awhen accessors
-             (when add-comma? (lml-princ ", "))
-             (lml-format "accessors ~:(~A~)" 
-                         (list->formatted-string it ", " ""))
+             (when add-comma? (lml-princ "; "))
+             (html ((:SPAN :CLASS "property-heading") "Accessors:")
+                   ((:SPAN :CLASS "property-value") 
+                    (lml-format "~(~A~)" (list->formatted-string it ", " ""))))
              (setf add-comma? t))
            
            (awhen (getf slot-info :readers)
-             (when add-comma? (lml-princ ", "))
-             (when accessors (lml-princ "additional "))
-             (lml-format "reader~P ~:*~:(~A~)" 
-                         (list->formatted-string it ", " ""))
+             (when add-comma? (lml-princ "; "))
+             (html ((:SPAN :CLASS "property-heading")
+                    (when accessors (lml-princ "Additional ")) 
+                    (lml-format "Reader~P:" (size it)))
+                   ((:SPAN :CLASS "property-value") 
+                    (lml-format "~(~A~)" (list->formatted-string it ", " ""))))
              (setf add-comma? t))
            
            (awhen (getf slot-info :writers)
-             (when add-comma? (lml-princ ", "))
-             (when accessors (lml-princ "additional "))
-             (lml-format "writer~P ~:*~:(~A~)" 
-                         (list->formatted-string it ", " ""))
+             (when add-comma? (lml-princ "; "))
+             (html ((:SPAN :CLASS "property-heading")
+                    (when accessors (lml-princ "Additional "))
+                    (lml-format "Writer~P:" (size it)))
+                   ((:SPAN :CLASS "property-value") 
+                    (lml-format "~(~A~)" (list->formatted-string it ", " ""))))
              (setf add-comma? t))
            
            (awhen (getf slot-info :allocation)
-             (when add-comma? (lml-princ ", "))
-             (lml-format "allocation ~:(~A~)" it)
+             (when add-comma? (lml-princ "; "))
+             (html ((:SPAN :CLASS "property-heading") "Allocation:")
+                   ((:SPAN :CLASS "property-value") 
+                    (lml-format "~(~A~)" it)))
              (setf add-comma? t))
            
            (awhen (getf slot-info :type)
-             (when add-comma? (lml-princ ", "))
-             (lml-format "type ~:(~A~)" it)
+             (when add-comma? (lml-princ "; "))
+             (html ((:SPAN :CLASS "property-heading") "Type:")
+                   ((:SPAN :CLASS "property-value") 
+                    (lml-format "~(~A~)" it)))
              (setf add-comma? t))
            
            (when add-comma?

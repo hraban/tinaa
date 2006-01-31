@@ -20,7 +20,10 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod document-part-p ((name-holder doclisp-package) (part basic-doclisp-part))
-  (and (call-next-method)
+  (and #+Ignore
+       ;;?? Gary King 2006-01-30: having this prevents imported exported symbols from 
+       ;; appearing in documentation. e.g., process-wait in portable-threads.
+       (call-next-method)
        (multiple-value-bind (found? status) 
                             (find-symbol (symbol-name (part-symbol-name part))
                                          (instance name-holder))
@@ -41,14 +44,14 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds ((part doclisp-package))
-  (list 'class 'variable 'constant 'function 'generic-function
-        'macro
-        '(symbol :document? nil)))
+  (list 'condition 'class 'variable 'constant 'function 'generic-function
+        'macro '(symbol :document? nil)))
 
 ;;; ---------------------------------------------------------------------------
 
 (defmethod index-kinds ((part doclisp-package))
-  (list '(class) '(variable constant) '(function generic-function macro)))
+  (list '(class) '(condition) '(variable constant)
+        '(function generic-function macro)))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -63,14 +66,32 @@
     part
     (lambda (symbol access package)
       (declare (ignore access package))
+      (let ((class (find-class symbol nil))) 
+        (and class 
+             (typep class 'standard-class)
+             (not (mopu:subclassp class 'condition))))))
+   #'class-sorter))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod partname-list ((part doclisp-package) (part-name (eql 'condition)))
+  (sort
+   (filtered-package-symbols 
+    part
+    (lambda (symbol access package)
+      (declare (ignore access package))
       (aand (find-class symbol nil)
-            (typep it 'standard-class))))
-   (lambda (a b)
-     (let ((ca (find-class a))
-           (cb (find-class b)))
-       (cond ((subtypep ca cb) nil)
-             ((subtypep cb ca) t)
-             (t (string-lessp a b)))))))
+            (mopu:subclassp it 'condition))))
+   #'class-sorter))
+
+;;; ---------------------------------------------------------------------------
+
+(defun class-sorter (a b)
+  (let ((ca (find-class a))
+        (cb (find-class b)))
+    (cond ((subtypep ca cb) nil)
+          ((subtypep cb ca) t)
+          (t (string-lessp a b)))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -110,18 +131,6 @@
    part
    (lambda (symbol access package)
      (declare (ignore access package))
-     #+Ignore
-     (progn
-       (format t "~%~40,A ~A"
-               symbol
-               (not (null (fboundp symbol))))
-       (when (fboundp symbol)
-         (format t " ~A ~A"
-                 (typep (symbol-function symbol) 'standard-generic-function)
-                 (some (lambda (m)
-                         (not (or (reader-method-p m)
-                                  (writer-method-p m))))
-                       (generic-function-methods (symbol-function symbol))))))
      (and (fboundp symbol)
           (typep (symbol-function symbol) 'standard-generic-function)
           (some (lambda (m)
@@ -182,13 +191,6 @@
 
 (defmethod start-grovel :before ((part doclisp-package))
   (add-package-to-document (name part)))
-
-;;; ---------------------------------------------------------------------------
-
-#+Ignore
-(defmethod start-grovel :around ((part doclisp-package))
-  (let ((*package* (instance part)))
-    (call-next-method)))
 
 ;;; ---------------------------------------------------------------------------
 
