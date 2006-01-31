@@ -17,7 +17,7 @@ DISCUSSION
 (in-package doclisp)
 
 (defparameter *tinaa-home-page* "http://common-lisp.net/project/tinaa/")
-(defparameter *tinaa-version* "0.2")
+(defparameter *tinaa-version* "0.3")
 (defvar *document-stream* *standard-output*)
 (defvar *document-file* nil)
 (defvar *document-root* nil)
@@ -32,11 +32,6 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
-(defgeneric document-part-p (name-holder part)
-  (:documentation ""))
-
-;;; ---------------------------------------------------------------------------
-
 ;; from utils
 (defmethod name (object)
   (type-of object))
@@ -48,113 +43,18 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
-(defgeneric subpart-kinds (assembly)
-  (:documentation "Returns a list of the kinds of the subparts of assembly.
-This is a list of instances of subpart-kind."))
+(defmethod make-part (parent kind name &key &allow-other-keys)
+  (declare (ignore parent kind name))
+  (values nil))
 
 ;;; ---------------------------------------------------------------------------
 
-(defgeneric index-kinds (part)
-  (:documentation "Returns a list of lists of part kinds that should be
-grouped when determining how to link a symbol from its index. That makes
-no sense at all.")
-  (:method ((part t))
-           (subpart-kinds part)))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric partname-list (part part-kind)
-  (:documentation "Returns a list of the names \(as symbols\) of the subparts of part of type 'part-kind'.")
-  (:method :around (part part-kind)
-	   (handler-case (call-next-method)
-	     (error () nil))))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric display-part (part mode)
-  (:documentation "Output information about a part. Example modes are 
-:subpart-list, :detail, :summary.")
-  (:method :around (part mode)
-           (when (documentation-exists-p part mode)
-             (call-next-method)))) 
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric document-system-part (system part stream)
-  (:documentation ""))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric make-system-part (system part-kind part-name &key)
-  (:documentation ""))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric part-name (part)
-  (:documentation "Returns the name of the part as a string"))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric part-documentation (part)
-  (:documentation "Returns whatever documentation is available for part using the Common Lisp documentation function."))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric short-documentation (part)
-  (:documentation "Returns the first bit of the documentation for part.
-Change *short-documentation-length* to determine how much is returned."))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric document-part-to-file (part &optional file)
-  (:documentation ""))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric url-for-part (part)
-  (:documentation "Returns the url for the part, creating it if necessary."))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric make-part (parent kind name &key)
-  (:documentation "Make a part named 'name' of kind 'kind' whose parent is 'parent'.")
-  (:method (parent kind name &key &allow-other-keys)
-           (declare (ignore parent kind name))
-           (values nil))
-  (:method :around (parent kind name &key &allow-other-keys)
-           (aprog1
-             (aif (find-part (name-holder parent) kind name)
-                  it
-                  (call-next-method))
-             (pushnew parent (parents it)))))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric find-part (ancester kind name)
-  (:documentation "Returns a existing part if it can be found.")
-  (:method (parent kind name)
-           (declare (ignore parent kind name))
-           (values nil)))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric grovel-part (part)
-  (:documentation ""))
-
-;;; ---------------------------------------------------------------------------
-
-(defgeneric finish-grovel (part)
-  (:documentation ""))
-
-;;; ---------------------------------------------------------------------------
-
-defgeneric documentation-exists-p (part mode)
-  (:documentation "")
-  (:method (part mode)
-           ;; one around method -- oh vey!
-           (length-at-least-p 
-            (compute-applicable-methods #'display-part (list part mode))
-            2)))
+(defmethod make-part :around (parent kind name &key &allow-other-keys)
+  (aprog1
+    (aif (find-part (name-holder parent) kind name)
+         it
+         (call-next-method))
+    (pushnew parent (parents it))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -276,30 +176,6 @@ defgeneric documentation-exists-p (part mode)
   (or (aand (item-at (subparts part) kind)
             (item-at it name))
       (call-next-method)))
-
-;;; ---------------------------------------------------------------------------
-    
-#+Remove
-(defmethod find-part ((part doclisp-assembly) kind name)
-  (when (parents part)
-    ;; any parent will do in a storm
-    (find-part (car (parents part)) kind name)))
-
-;;?? NO
-#+Ignore
-(defmethod find-part ((part doclisp-assembly) kind name)
-  (let ((visited (make-container 'simple-associative-container)))
-    (some-element-p (parents part)
-                    (lambda (parent)
-                      (unless (item-at-1 visited parent)
-                        (setf (item-at-1 visited parent) t)
-                        (find-part parent kind name))))))
-
-#+No
-(defmethod find-part ((part doclisp-assembly) kind name)
-  (some-element-p (parents part)
-                  (lambda (parent)
-                    (find-part parent kind name))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -564,8 +440,7 @@ to the kind of system you are documenting."
   (html
    ((:div :id "header")
     (add-contents-link part force-contents-link?)
-    ((:span :id "indexes")
-     (build-index-links part *root-part* *current-index*)))))
+    (build-index-links part *root-part* *current-index*))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -588,10 +463,10 @@ to the kind of system you are documenting."
 ;;; ---------------------------------------------------------------------------
 
 (defun add-contents-link (part force-contents-link?)
-  (multiple-value-bind (url root-level?) (make-root-pointing-url part "index.html")
+  (multiple-value-bind (url root-level?) 
+                       (make-root-pointing-url part "index.html")
     (when (or force-contents-link? (not root-level?))
-      (html ((:a :class "header-link" :href url :title "Go to contents") "Contents"))
-      (lml-princ "&nbsp;&nbsp;"))))
+      (html ((:a :class "header-link" :href url :title "Go to contents") "Contents")))))
 
 ;;; ---------------------------------------------------------------------------
 
