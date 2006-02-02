@@ -155,20 +155,46 @@
 ;;; doclisp-slot
 ;;; ---------------------------------------------------------------------------
 
-(defclass doclisp-slot (doclisp-part)
-  ()
+(defclass* doclisp-slot (doclisp-part)
+  ((direct-parent :unbound w))
   (:default-initargs
     :header "Slot"
     :part-kind "slot"))
 
 ;;; ---------------------------------------------------------------------------
 
-;;?? Gary King 2004-01-31: this is a hack based on my defclass-patch
+;;?? bit of a hack in progress
+(defmethod direct-instance ((slot doclisp-slot))
+  (let ((parent (direct-parent slot)))
+    (if parent
+      (instance parent)
+      ;; no direct parent found, probably not an exported symbol so fake it...
+      (iterate-elements
+       (parents slot)
+       (lambda (parent)
+         (awhen (some-element-p 
+                 (superclasses (instance parent) :proper? t)
+                 (lambda (superclass)
+                   (member (name slot) 
+                           (direct-slot-names superclass))))
+           (return-from direct-instance it)))))))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod direct-parent ((slot doclisp-slot))
+  (unless (and (slot-boundp slot 'direct-parent)
+               (slot-value slot 'direct-parent))
+    (setf (direct-parent slot)
+          (some-element-p (parents slot)
+                          (lambda (parent) 
+                            (member (name slot) 
+                                    (direct-slot-names (instance parent)))))))
+  (slot-value slot 'direct-parent))
+
+;;; ---------------------------------------------------------------------------
+
 (defmethod part-documentation ((part doclisp-slot))
-  #+MCL
-  (documentation (name part) 'ccl::slot)
-  #-MCL
-  nil)
+  (documentation (get-slot-definition (instance (direct-parent part)) (name part)) t))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -181,11 +207,8 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((part doclisp-slot) (mode (eql :table-summary)))
-  (let* ((parent (some-element-p (parents part)
-                                 (lambda (parent) 
-                                   (member (name part) 
-                                           (direct-slot-names (instance parent)))))) 
-         (slot-info (slot-properties (instance parent) (name part)))
+  (let* ((instance (direct-instance part)) 
+         (slot-info (slot-properties instance (name part)))
          (add-comma? nil)
          (accessors nil))
     
@@ -202,8 +225,11 @@
     
     (documenting part
       ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
-          ((:td :valign "top" :width 200) (link-for mode))
-          ((:td :valign "top")
+          (:th (link-for mode))
+          (:td
+           (awhen (getf slot-info :documentation)
+             (html ((:DIV :CLASS "documentation") (lml-princ it))))
+           
            (awhen (getf slot-info :initform) 
              (html ((:SPAN :CLASS "property-heading") "Initform:")
                    ((:SPAN :CLASS "property-value") (lml-format "~(~A~)" it)))
