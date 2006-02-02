@@ -447,7 +447,7 @@ to the kind of system you are documenting."
 (defun add-tinaa-link (part)
   (declare (ignore part))
   (html 
-   ((:a :id "logo" :href *tinaa-home-page*
+   ((:a :id "tinaa-logo" :href *tinaa-home-page*
         :title "Go to Tinaa home page")
     ((:img :src (format nil "~Aimages/logo.jpg" *tinaa-home-page*)
            :width 90
@@ -459,7 +459,7 @@ to the kind of system you are documenting."
   (multiple-value-bind (url root-level?) 
                        (make-root-pointing-url part "index.html")
     (when (or force-contents-link? (not root-level?))
-      (html ((:a :class "header-link" :href url :title "Go to contents") "Contents")))))
+      (html ((:a :class "contents-link" :href url :title "Go to contents") "Contents")))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -477,9 +477,11 @@ to the kind of system you are documenting."
                            &key force-contents-link?)
   (html
    ((:div :id "footer")
-    (lml-format "Generated: ~A [Tinaa version ~A]"
-                (format-date "%a, %b %e, %Y" (get-universal-time))
-                *tinaa-version*)
+    ((:span :class "date") 
+     (lml-format "Generated: ~A"
+                 (format-date "%a, %b %e, %Y" (get-universal-time))))
+    ((:span :class "version") 
+     (lml-format "[Tinaa version ~A]" *tinaa-version*))
     (add-contents-link part force-contents-link?)
     (add-tinaa-link part))))
 
@@ -516,6 +518,8 @@ to the kind of system you are documenting."
 
 ;;; ---------------------------------------------------------------------------
 
+#+Remove
+;;?? Gary King 2006-02-01: 
 (defun map-parts-from-leaves (part fn)
   (let ((seen (make-container 'associative-container)))
     (labels ((do-it (part fn)
@@ -526,7 +530,21 @@ to the kind of system you are documenting."
                   (lambda (subpart-info)
                     (iterate-container (item-at (subparts part) (name subpart-info))
                                        (lambda (sub-part) (do-it sub-part fn))))))
+               ;;?? Wrong 
                (funcall fn part)))
+      (do-it part fn))))
+
+(defun map-parts-from-leaves (part fn)
+  (let ((seen (make-container 'associative-container)))
+    (labels ((do-it (part fn)
+               (unless (item-at seen part)
+                 (setf (item-at seen part) t)
+                 (map-subpart-kinds 
+                  part
+                  (lambda (subpart-info)
+                    (iterate-container (item-at (subparts part) (name subpart-info))
+                                       (lambda (sub-part) (do-it sub-part fn)))))
+                 (funcall fn part))))
       (do-it part fn))))
 
 ;;; ---------------------------------------------------------------------------
@@ -551,15 +569,16 @@ to the kind of system you are documenting."
                                       (and (document? part)
                                            (documentation-exists-p part mode)))))
          (html
-          (:h3 (lml-princ (heading subpart-info)) " Summary")
-          (:table
-           (iterate-container 
-            parts
-            (lambda (thing) 
-              (when (document? thing)
-                (let ((*current-part-index* count))
-                  (display-part thing mode))
-                (incf count)))))))))))
+          ((:div :class "table-summary")
+           (:h3 (lml-princ (heading subpart-info)) " Summary")
+           ((:table :id (string-downcase (heading subpart-info)))
+            (iterate-container 
+             parts
+             (lambda (thing) 
+               (when (document? thing)
+                 (let ((*current-part-index* count))
+                   (display-part thing mode))
+                 (incf count))))))))))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -583,6 +602,32 @@ to the kind of system you are documenting."
          (lml-princ ", "))
        (maybe-display-part part name subpart-kind :index)
        (setf first? nil)))))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod display-part ((part basic-doclisp-part) (mode (eql :table-summary)))
+  (documenting part
+   ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
+       (:th (link-for mode))
+       (:td (when documentation (lml-princ short-documentation))))))
+
+;;; ---------------------------------------------------------------------------
+
+(defun parts-with-no-documentation (part)
+  (let ((result nil))
+    (map-parts-from-leaves
+     part
+     (lambda (subpart)
+       (when (and (document-part-p part subpart)
+                  (not (typep subpart 'doclisp-symbol))         ; won't have any
+                  (not (typep subpart 'doclisp-method))         ; can't have any
+                  (or (not (part-documentation subpart))
+                      (zerop (size (part-documentation subpart)))))
+         (push subpart result))))
+    result))
+
+;;; ---------------------------------------------------------------------------
+
 
 
 ;;; ***************************************************************************

@@ -2,12 +2,6 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part basic-doclisp-part) (mode (eql :table-summary)))
-  (documenting part
-   ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
-       ((:td :valign "top" :width 200) (link-for mode))
-       ((:td :valign "top") (when documentation (lml-princ short-documentation))))))
-
 #+Test
 (progn
   (setf pp (make-part nil 'package 'doclisp))
