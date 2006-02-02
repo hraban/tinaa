@@ -45,8 +45,10 @@ DISCUSSION
               (if (some-key-value-p 
                    parts
                    (lambda (name part)
-                     (declare (ignore part))
-                     (string-equal (subseq (symbol-name name) 0 1) letter)))
+                     (and 
+                      (string-equal (subseq (symbol-name name) 0 1) letter)
+                      (index-part-p part))))
+                   
                 (html ((:a :href (concatenate
                                   'string 
                                   "#" letter "-" (symbol-name (name subpart-info)))) 
@@ -142,7 +144,7 @@ DISCUSSION
   (when (any-indexes-p index-part)
     (html
      ((:DIV :CLASS "index-links")
-      "Indexes:"
+      ((:DIV :CLASS "index") "Indexes:")
       (map-subpart-kinds
        index-part
        (lambda (subpart-info)
