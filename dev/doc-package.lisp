@@ -207,41 +207,43 @@
                (lml-princ " and "))
              (lml-princ "External"))
            (lml-princ " Symbols"))
-      (when documentation (html (:blockquote (lml-princ documentation))))
-      
-      (when (package-use-list package)
-        (lml-princ sentence-starter)
-        (lml-princ "uses the packages ")
-        (display-list-of-potential-parts
-         part (sort
-               (mapcar #'nice-package-name (package-use-list package))
-               #'string-lessp) 'package)
-        (lml-princ ".  ")
-        (setf sentence-starter "It "))
-      
-      (when (package-used-by-list package)
-        (lml-princ sentence-starter)
-        (lml-princ "is used by the packages ")
-        (display-list-of-potential-parts
-         part (sort (mapcar #'nice-package-name (package-used-by-list package))
-                    #'string-lessp) 'package)
-        (lml-princ ".  ")
-        (setf sentence-starter "It "))
-      
-      (when (package-nicknames package)
-        (lml-princ sentence-starter)
-        (lml-princ "is also known as ")
-        (display-list-of-potential-parts
-         part (sort (mapcar #'string-capitalize (package-nicknames package))
-                    #'string-lessp) 'package)
-        (lml-princ ".  ")
-        (setf sentence-starter "It "))
-      
-      (lml-princ sentence-starter)
-      (lml-format "has ~,,,,D total symbols and ~,,,,D external ones."
-                  (symbol-count package :internal)
-                  (symbol-count package :external))
-      (:br)
+      (html
+       (:blockquote
+        (when documentation (html (:P (lml-princ documentation))))
+        
+        (:P
+         (when (package-use-list package)
+           (lml-princ sentence-starter)
+           (lml-princ "uses the packages ")
+           (display-list-of-potential-parts
+            part (sort
+                  (mapcar #'nice-package-name (package-use-list package))
+                  #'string-lessp) 'package)
+           (lml-princ ".  ")
+           (setf sentence-starter "It "))
+         
+         (when (package-used-by-list package)
+           (lml-princ sentence-starter)
+           (lml-princ "is used by the packages ")
+           (display-list-of-potential-parts
+            part (sort (mapcar #'nice-package-name (package-used-by-list package))
+                       #'string-lessp) 'package)
+           (lml-princ ".  ")
+           (setf sentence-starter "It "))
+         
+         (when (package-nicknames package)
+           (lml-princ sentence-starter)
+           (lml-princ "is also known as ")
+           (display-list-of-potential-parts
+            part (sort (mapcar #'string-capitalize (package-nicknames package))
+                       #'string-lessp) 'package)
+           (lml-princ ".  ")
+           (setf sentence-starter "It "))
+         
+         (lml-princ sentence-starter)
+         (lml-format "has ~,,,,D total symbols and ~,,,,D external ones."
+                     (symbol-count package :internal)
+                     (symbol-count package :external)))))
             
       ;; summaries
       (output-table-summary part :table-summary 1))))
