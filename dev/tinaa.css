@@ -1,12 +1,89 @@
-/* top right bot left */#footer{   background: steelblue;  color: white;  border: 1px solid black;  font-family: sans-serif;  margin-top: 0.5em;   padding: 0.5em;}#footer a[href] { color: gold; text-decoration: none }#footer a[href]:hover { background: transparent; color: gold }#header{   background: steelblue;  color: white;  border: 1px solid black;  font-family: sans-serif;  margin-top: 0.5em; padding: 0.5em;  height: 22px;}#header a[href] { color: gold; text-decoration: none }#header a[href]:hover { background: transparent; color: gold }#header-link{  clear: both;}body {    background: white;  color: black;  font-family: Times New Roman, Times, serif;  margin: 0.5em 1.5em 0.5em 1.5em;   /* padding: 0.5em; */}h1, h2, h3, h4 {   color: #333333;  font-family: Arial, Helvetica, sans-serif;}a.internal { color: #0077bb ; }a:visited.internal { color: #004488; } a.hyperspec { font-weight: bold; }a[href]:hover { background: #ff9 }table {   border-collapse: collapse;   /* border: 1px solid #aaa;  */}.oddrow {  background-color: rgb(220, 255, 255)}th {   font-family: sans-serif;   background: royalblue;  color: white;  text-transform: lowercase }th, td { padding: 0.2em 0.3em }pre{   background: #cdf;   border: 1px solid #679;   color: #235;   font-size: 90%;  padding: 0.3em;}#content{   clear: both;  margin: 0;   padding: 0 1.5em;}#logo{   font-variant: small-caps;  float: right;  font-family: fantasy;  font-size: 150%;  letter-spacing: 0.05em;}a.logo .sub {   color: green;  font-size: 90%;   position: relative; top: -0.3em; }
+#header{   background: #009933;  color: white;  border: 1px solid black;  font-family: sans-serif;  margin-top: 0.5em; padding: 0.5em;  height: 22px;}
 
-.index-links {
-	float: right;
+#header a[href] { color: #ffff33; text-decoration: none;
+	border-bottom-style: none;
 }
 
-.index {
-	float: right;
-	padding-right: 0.4em;
+#header a[href]:hover { background: transparent; color: #ffff00;
+	font-style: italic;
+	font-variant: small-caps;
+}
+
+#contents-link{  clear: both;}
+
+#footer{   background: #009933;  color: white;  border: 1px solid black;  margin-top: 0.5em;   padding: 0.5em;
+	font: 80%   Arial, Helvetica, sans-serif;
+}
+
+#footer a[href] { color: #ffff33; text-decoration: none;
+	border-bottom-style: none;
+}
+
+#footer a[href]:hover { background: transparent; color: #ffff00;
+	font-style: italic;
+	font-variant: small-caps;
+}
+
+#tinaa-logo{   font-variant: small-caps;  float: right;  font-family: fantasy;  font-size: 150%;  letter-spacing: 0.05em;}
+
+.date {
+	margin-right: 2em;
+}
+
+.version {
+	margin-right: 2em;
+}
+
+h1, h2, h3, h4 {   color: #333333;  font-family: Arial, Helvetica, sans-serif;}
+
+h3 {
+	margin-right: 0;
+	margin-bottom: 0.5em;
+	margin-left: 0;
+}
+
+body {
+	font: 90% Times New Roman, Times, serif;
+}
+
+.table-summary {
+  border-collapse: collapse;
+	vertical-align: top;
+	margin-right: 1em;
+	margin-left: 1em;
+	text-align: left;
+}
+
+.table-summary tr {
+	text-align: left;
+	vertical-align: top;
+}
+
+.table-summary td {
+	text-align: left;
+	padding-bottom: 0.5em;
+	padding-top: 0.2em;
+}
+
+.table-summary th {
+	text-align: left;
+	font-weight: normal;
+	width: 200px;
+	font-variant: small-caps;
+}
+
+a[href] {
+	text-decoration: none;
+	border-bottom: 1px dotted black;
+}
+
+a[href]:hover { background: #ff9;
+	font-style: italic;
+}
+
+.documentation {
+	text-align: left;
+	margin-bottom: 0.4em;
 }
 
 .property-heading {
@@ -16,4 +93,15 @@
 
 .property-value {
 	
+}
+
+.oddrow {  background-color: #ccffcc}
+
+.index-links {
+	float: right;
+}
+
+.index {
+	float: left;
+	padding-left: 0.4em;
 }
