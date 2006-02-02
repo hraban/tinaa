@@ -166,11 +166,11 @@
   (let ((gf (find-part (name-holder part) 'generic-function (name part))))
     (documenting part
       ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
-          ((:td :valign "top" :width 200) 
-              (if gf
-                (make-link-for mode name (url gf))
-                (link-for mode)))
-          ((:td :valign "top") (when documentation? (lml-princ short-documentation)))))))
+       (:th
+        (if gf
+          (make-link-for mode name (url gf))
+          (link-for mode)))
+       (:td (when documentation? (lml-princ short-documentation)))))))
 
 
 ;;; ---------------------------------------------------------------------------
@@ -197,11 +197,11 @@
   (let ((gf (find-part (some-parent part) 'macro (name part))))
     (documenting part
       ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
-          ((:td :valign "top" :width 200) 
-              (if gf
-                (make-link-for mode name (url gf))
-                (link-for mode)))
-          ((:td :valign "top") (when documentation? (lml-princ short-documentation)))))))
+       (:th 
+        (if gf
+          (make-link-for mode name (url gf))
+          (link-for mode)))
+       (:td (when documentation? (lml-princ short-documentation)))))))
 
 
 ;;; ---------------------------------------------------------------------------
