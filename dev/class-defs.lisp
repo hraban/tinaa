@@ -66,3 +66,17 @@
 
 (defclass* name-holder-mixin ()
   ())
+
+;;; ---------------------------------------------------------------------------
+
+(defcondition cannot-make-part (error)
+  ((parent nil ir)
+   (kind nil ir)
+   (name nil ir)
+   (reason nil ir))
+  (:export-p t)
+  (:documentation "This error is signaled when a part cannot be created.")
+  (:report (lambda (c s)
+             (format s "Unable to make part named ~A of kind ~A because ~A" 
+                     (name c) (kind c) (reason c)))))
+  

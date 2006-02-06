@@ -82,7 +82,7 @@ DISCUSSION
 
 (defun display-part-for-index (part string)
   (if (documentation-exists-p part :detail)
-    (html ((:a :href (relative-url (url part) *document-file*))
+    (html ((:a :href (relative-url (url part)))
            (lml-princ string)))
     (lml-princ string)))
 

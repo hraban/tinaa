@@ -40,8 +40,11 @@
 (defmethod subpart-kinds ((part doclisp-class))
   (list '(superclass :heading "Direct Superclass" :part-kind class)
         '(subclass :heading "Direct Subclass" :part-kind class)
-        'slot 'method))
+        'slot 
+        '(direct-method :heading "Direct Method" :part-kind method)
+        '(other-method :heading "Other Method" :part-kind method)))
 
+#+Old
 (defmethod subpart-kinds ((part doclisp-class))
   (list '(class :heading "Direct Superclass")
         'slot 'method))
@@ -52,6 +55,29 @@
   (sort
    (direct-specializers-of 
     (name part) :readers? nil :writers? nil :other? t :short-form? t)
+   (lambda (a b)
+     (string-lessp (if (consp a) (second a) a)
+                   (if (consp b) (second b) b)))))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod partname-list ((part doclisp-class) (part-name (eql 'direct-method)))
+  (sort
+   (direct-specializers-of 
+    (name part) :readers? nil :writers? nil :other? t :short-form? t)
+   (lambda (a b)
+     (string-lessp (if (consp a) (second a) a)
+                   (if (consp b) (second b) b)))))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod partname-list ((part doclisp-class) (part-name (eql 'other-method)))
+  (sort
+   (set-difference
+    (specializers-of 
+     (name part) :readers? nil :writers? nil :other? t :short-form? t)
+    (direct-specializers-of 
+     (name part) :readers? nil :writers? nil :other? t :short-form? t))
    (lambda (a b)
      (string-lessp (if (consp a) (second a) a)
                    (if (consp b) (second b) b)))))
@@ -110,19 +136,33 @@
 (defmethod display-part ((part doclisp-class) (mode (eql :detail)))
   (documenting-page (part)
     (:h2 (lml-format "Class ~:(~A~)" name))
-    (when documentation? (html (:blockquote documentation)))
+    (when documentation? (html (:blockquote (lml-princ documentation))))
     
-    #+Ignore
-    (when (mopu-class-initargs (instance part))
-      (lml-princ "Class ")
-      (:b (lml-princ name))
-      (lml-princ " has the following initargs: ")
-      (lml-format "~:(~A~)" 
-                  (list->formatted-string 
-                   (sort (copy-list (mopu-class-initargs (instance part)))
-                         #'string-lessp)))
-      (:br))
-    
+    (awhen (default-initargs (instance part))
+      (html 
+       ((:div :class "table-summary")
+        (:H3 "Default initargs")
+        ((:table :id "default-initargs")
+         (let ((iterator (make-iterator it))
+               (count 1))
+           (flet ((one-thing (thing)
+                    (bind (((name value nil) thing))
+                      (html
+                       (:th (lml-format "~(~S~) &rarr; ~S" name value)))))
+                  (no-thing ()
+                    (html
+                     (:th ""))))
+             (iterate-elements 
+              iterator
+              (lambda (default-initarg)
+                (html
+                 ((:tr :class (if (oddp count) "oddrow" ""))
+                  (one-thing default-initarg)
+                  (move-forward iterator)
+                  (if (current-element-p iterator)
+                    (one-thing (current-element iterator))
+                    (no-thing))))))))))))
+                
     ;; summaries
     (output-table-summary part :table-summary 2)))
 

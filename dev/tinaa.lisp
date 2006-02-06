@@ -251,13 +251,15 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
-(defun document-system (system-kind system-name destination &rest args)
+(defun document-system (system-kind system-name destination &rest args
+                                    &key (show-parts-without-documentation? t))
   "Create TINAA documentation for a system. System-kind should be 'package or 
 some other value for which it makes sense (e.g., an EKSL-system or an ASDF
 system if you have those loaded...). System-name is the identifier of the 
 system. Destination is the location in the file system where you want the 
 documentation to go. Finally, you can pass in other arguments that are specific
 to the kind of system you are documenting."
+  (assert (fad:directory-pathname-p destination))
   (let ((*root-part* (apply #'make-part nil system-kind system-name 
                             :document? t 
                             :name-holder :self 
@@ -265,8 +267,17 @@ to the kind of system you are documenting."
         (*packages-to-document* nil)
         (*output-calls* (make-container 'associative-container)))
     (grovel-part *root-part*)
-    (write-css-file destination)
+    (ensure-directories-exist destination)
     (build-documentation *root-part* destination)
+    (write-css-file destination)
+    
+    (when show-parts-without-documentation?
+      (format t "~%The following parts appear to have no documentation:")
+      (iterate-elements
+       (parts-with-no-documentation *root-part*)
+       (lambda (part)
+         (format t "~%  ~A" (part-name part)))))
+    
     *root-part*))
 
 ;;; ---------------------------------------------------------------------------
@@ -274,7 +285,6 @@ to the kind of system you are documenting."
 (defun write-css-file (destination &rest args &key (if-exists :supersede)
                                    &allow-other-keys)
   (let ((output (merge-pathnames "tinaa.css" destination)))
-    (ensure-directories-exist output)
     (apply #'copy-file 
            (or 
             (pathname-for-system-file 'tinaa "tinaa.css")
@@ -310,6 +320,7 @@ to the kind of system you are documenting."
 ;;; ---------------------------------------------------------------------------
 
 (defmethod build-documentation ((part basic-doclisp-part) root)
+  (error "not called?")
   (let ((*document-root* root))
     (when (documentation-exists-p part :detail)
       (document-part-to-file part))))
@@ -334,7 +345,7 @@ to the kind of system you are documenting."
 ;;; ---------------------------------------------------------------------------
 
 (defun url->file (url &optional (extension "html"))
-  "Returns a file spec for the url rooted at *document-root*."
+  "Returns a file spec for the url rooted at *document-root*. The URL must be delimited using forward slashes \(#\/\). The *document-root* can be a logical pathname or a physical pathname on the current platform."
   (bind ((full-path (tokenize-string url :delimiter #\/))
          (name (first (last full-path)))
          (path (butlast full-path)))
@@ -348,12 +359,17 @@ to the kind of system you are documenting."
 
 ;;; ---------------------------------------------------------------------------
 
-(defun relative-url (url file)
+(defun relative-url (url)
+  "Returns a URL that points to the same things as `url` but relative to *document-file*"
   (bind ((split-url (tokenize-string url :delimiter #\/))
-         (file-name (namestring file))
-         (root-pos (search (namestring *document-root*) file-name))
-         (file-name (subseq file-name (+ root-pos (length (namestring *document-root*))))) 
-         (split-file (tokenize-string file-name :delimiter #\;))
+         (file-name (namestring (translate-logical-pathname *document-file*)))
+         (root-name (namestring (translate-logical-pathname *document-root*)))
+         (physical-pathname-delimiter (physical-pathname-directory-separator)) 
+         (root-pos (search root-name file-name))
+         (file-name (subseq file-name (+ root-pos (length root-name)))) 
+         (split-file (tokenize-string file-name :delimiter 
+                                      ;; assuming single character delimiter
+                                      (aref physical-pathname-delimiter 0)))
          (file-path (butlast split-file))
          (url-last (first (last split-url)))
          (url-path (butlast split-url)))
@@ -370,8 +386,9 @@ to the kind of system you are documenting."
          (leaf (namestring (url->file url)))
          (pos 0))
     (setf pos (search root leaf))
-    (when pos
-      (count #\; (subseq leaf (+ pos (length root)))))))
+    (if pos
+      (count #\; (subseq leaf (+ pos (length root))))
+      0)))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -508,7 +525,7 @@ to the kind of system you are documenting."
           ((url-name url)
            (html ((:a :href (concatenate 'string "#" (url-name url))) (lml-princ name))))
           (t
-           (html ((:a :href (relative-url url *document-file*)) (lml-princ name)))))))
+           (html ((:a :href (relative-url url)) (lml-princ name)))))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -585,11 +602,18 @@ to the kind of system you are documenting."
 (defun maybe-display-part (parent name kind mode)
   (declare (ignore mode))
   (let ((part (find-part parent kind name)))
-    (if (and part (documentation-exists-p part :detail))
-      (html
-       ((:a :href (relative-url (url part) *document-file*))
-        (lml-princ (part-name part))))
-      (lml-princ name))))
+    (cond ((and part (documentation-exists-p part :detail))
+           (html
+            ((:a :href (relative-url (url part)))
+             (lml-princ (part-name part)))))
+          (part
+           (lml-princ (part-name part)))
+          (name
+           (lml-princ name))
+          (t
+           ;; no-op
+           nil
+           ))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -625,9 +649,6 @@ to the kind of system you are documenting."
                       (zerop (size (part-documentation subpart)))))
          (push subpart result))))
     result))
-
-;;; ---------------------------------------------------------------------------
-
 
 
 ;;; ***************************************************************************

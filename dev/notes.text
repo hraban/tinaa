@@ -1,26 +1,51 @@
+LIFT: testing with unwind-protect... testing wtih variables you want to reset
+LIFT: removing tests at an upper level without removing lower level tests
+LIFT: constant HTML output / even text output
+
+- For some reason, the [generic] function documentation does not show the arguments (but it does show them for methods) -  this for links from index.html, but see below
+
+- Within various pages, all liknks Contents, Function, Generic-function, Symbol are wrong
+
+? - Within class pages, all links to methods are wrong.
+
+- You can see all this in the generated doc for tinaa in the enclosed tinaa.zip
+
+- The only format for the <destination> argument in tinaa:document-system is the local OS directory path format, including the final "/" or "\\". The Unix format does not work under Windows, even if that is otherwise common practice.  Rather restrictive, how about accepting logical pathnames and, at least, working internally only with such names? This might save you crashes of the type appearing in the enclosed "tinaa.log".
+
+- I also got another crash playing with document-system. Actually they are caused by:
+  = make-root-pointing-url coughs if file-depth-below-root does not return a number - well, it may return nil
+
+= relative-url: binding file-name crashes if searching for root-pos does not find - this is the crash in tinaa.log  
+
+Hope this is useful, I am really attracted by what tinaa tries to do
+ 
+
+find . -path "*/dev/*" -and -not -path "*/_darcs/*" -type f -name "*.lisp" -print -exec grep -iq "copyright" {} \;
+
+
+
 class - default-initargs
+  could summarize: readers, writers, initargs...
 
 document functions
 docuemtn package
 
 slot documentation
 
-use CSS to make indexes wrap nicely, etc.
 Can Css make graph-vertex-not-found-in-edge-error wrap more nicely?
 
 If doing both internal and external, show this somehow
   similar for direct / all
 
-~ Make it clear that is is tinaa version in footer, not software
-~ Several symbols are left out when doing portable-threads .
-  This is because the symbols are in CCL and CCL isn't a *package-to-document*
-
 Full Class diagram
+Mini-class diagrams
+Callers, etc... (use swank code?)
 
 Provide some mechanism (HTTP redirection to link all packages, etc)
 index does not show SLOTs (it shows their names but not any description)
 
 Generic functions has links to classes that aren't documented (b/c not exported)
+  that's ok? 
 
 main page does not show SLOTS 
 
@@ -31,14 +56,13 @@ from inspector package
       (type-specifier-p sym) (record-type-p sym nil)
       (find-class sym nil)))
 
-switch from some-parent to name-holder
-
 what is this?? display-part ((part doclisp-macro) (mode (eql :table-summary)))
   doing???
 
 Make part parents a union-find container
 
 FUTURE: make it easy to change style sheet
+  an argument?
 
 system should have list of files
   printing file names
@@ -87,7 +111,10 @@ Current simple mode is that we create pages for everyone that has a
   :detail display-part method.
 
 linking is still a bit of mystery
-From Zach Beane: Random blue sky: why limit symbol documentation lookup to the HyperSpec? It'd be nice if package authors provided a way to map from symbols to documentation URLs, preferably in a programmatic way that integrates with SLIME.
+From Zach Beane: Random blue sky: why limit symbol documentation 
+lookup to the HyperSpec? It'd be nice if package authors provided a 
+way to map from symbols to documentation URLs, preferably in a 
+programmatic way that integrates with SLIME.
 
 Should we allow different views of a thing
 
@@ -264,6 +291,9 @@ ok - index includes undocumented symbols
 ok - Doesn't handle #\/ or #\* in symbol names
 ok - improve 
   "directed-edge-class initform 'Cl-Graph::Basic-Directed-Edge, initargs Directed-Edge-Class."
+ok - Make it clear that is is tinaa version in footer, not software
+ok - Several symbols are left out when doing portable-threads .
+  This is because the symbols are in CCL and CCL isn't a *package-to-document*
 
 
 defer - alphabet if more than k-entries for a section

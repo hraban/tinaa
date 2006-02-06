@@ -36,10 +36,12 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'package)) name &rest args &key
-                              &allow-other-keys)
-  (declare (ignore parent))
-  (apply #'make-instance 'doclisp-package
-    :name (intern (package-name (find-package name))) args))
+                             &allow-other-keys)
+  (if (find-package name)
+    (apply #'make-instance 'doclisp-package
+           :name (intern (package-name (find-package name))) args)
+    (error 'cannot-make-part :parent parent :kind kind :name name
+           :reason "package not found.")))
 
 ;;; ---------------------------------------------------------------------------
 
