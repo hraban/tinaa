@@ -4,15 +4,19 @@
 	border-bottom-style: none;
 }
 
-#header a[href]:hover { background: transparent; color: #ffff00;
-	font-style: italic;
-	font-variant: small-caps;
+#header a[href]:hover { 
+    background: transparent; 
+    color: #ffff00;
+    font-variant: small-caps;
+    font-style: italic;
 }
 
 #contents-link{  clear: both;}
 
 #footer{   background: #009933;  color: white;  border: 1px solid black;  margin-top: 0.5em;   padding: 0.5em;
-	font: 80%   Arial, Helvetica, sans-serif;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 80%;
+  clear: both;
 }
 
 #footer a[href] { color: #ffff33; text-decoration: none;
@@ -74,11 +78,11 @@ body {
 
 a[href] {
 	text-decoration: none;
-	border-bottom: 1px dotted black;
 }
 
-a[href]:hover { background: #ff9;
-	font-style: italic;
+a[href]:hover { 
+    background: #ff9;
+	border-bottom: 1px dotted black;
 }
 
 .documentation {
@@ -104,4 +108,62 @@ a[href]:hover { background: #ff9;
 .index {
 	float: left;
 	padding-left: 0.4em;
+}
+
+.index-contents {
+	margin-bottom: 2.0em;
+}
+
+.index-contents pre {
+	clear: both;
+}
+
+.index-letters {
+	margin-left: 2em;
+}
+
+.used-letter {
+	float: left;
+	margin-right: 6px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+.dead-letter {
+	float: left;
+	margin-right: 6px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #999999;
+}
+
+.index-letter {
+	float: left;
+	width: 90%;
+	margin-top: 1.5em;
+	border: 1px  #000000;
+	border-top: 1px dotted #666666;
+	padding-top: 0.4em;
+}
+
+.the-letter {
+	text-transform: uppercase;
+	float: left;
+	font: 150% Verdana, Arial, Helvetica, sans-serif;
+}
+
+.back-to-top {
+	float: right;
+}
+
+.index-name {
+	width: 200px;
+	float: left;
+	clear: left;
+	margin-left: 3em;
+     text-indent: -1em;
+	margin-top: 0.2em;
+}
+
+.index-kind {
+	float: left;
+	padding-right: 2.0em;
 }
