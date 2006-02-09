@@ -268,8 +268,7 @@ to the kind of system you are documenting."
         (*output-calls* (make-container 'associative-container)))
     (grovel-part *root-part*)
     (ensure-directories-exist destination)
-    (build-documentation *root-part* destination)
-    (write-css-file destination)
+    (build-documentation *root-part* destination) 
     
     (when show-parts-without-documentation?
       (format t "~%The following parts appear to have no documentation:")
@@ -315,15 +314,9 @@ to the kind of system you are documenting."
             sub-part
             (when (eq sub-part part)
               (url->file "index.html")))))))
-    (build-indexes part)))
+    (build-indexes part))
 
-;;; ---------------------------------------------------------------------------
-
-(defmethod build-documentation ((part basic-doclisp-part) root)
-  (error "not called?")
-  (let ((*document-root* root))
-    (when (documentation-exists-p part :detail)
-      (document-part-to-file part))))
+  (write-css-file root))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -629,11 +622,17 @@ to the kind of system you are documenting."
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part basic-doclisp-part) (mode (eql :table-summary)))
+(defmethod display-part ((part basic-doclisp-part) (mode (eql :table-summary))
+                          &key &allow-other-keys)
   (documenting part
    ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
        (:th (link-for mode))
        (:td (when documentation (lml-princ short-documentation))))))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod include-kind-in-index-p ((part basic-doclisp-part) (kind t))
+  nil)
 
 ;;; ---------------------------------------------------------------------------
 
@@ -643,13 +642,18 @@ to the kind of system you are documenting."
      part
      (lambda (subpart)
        (when (and (document-part-p part subpart)
-                  (not (typep subpart 'doclisp-symbol))         ; won't have any
-                  (not (typep subpart 'doclisp-method))         ; can't have any
+                  (part-can-have-documention-p subpart)
                   (or (not (part-documentation subpart))
                       (zerop (size (part-documentation subpart)))))
          (push subpart result))))
     result))
 
+;;; ---------------------------------------------------------------------------
+
+(defun part-can-have-documention-p (part)
+  (not (or (typep part 'doclisp-symbol)         ; won't have any
+           (typep part 'doclisp-method)         ; can't have any
+           )))
 
 ;;; ***************************************************************************
 ;;; *                              End of File                                *

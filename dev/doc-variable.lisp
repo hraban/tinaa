@@ -30,7 +30,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-variable) (mode (eql :detail)))
+(defmethod display-part ((part doclisp-variable) (mode (eql :detail))
+                          &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "Variable ~:(~A~)" name))
     
@@ -57,7 +58,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-constant) (mode (eql :detail)))
+(defmethod display-part ((part doclisp-constant) (mode (eql :detail))
+                         &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "Constant ~:(~A~)" name))
     

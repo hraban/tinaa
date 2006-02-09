@@ -12,11 +12,8 @@ This is a list of instances of subpart-kind."))
 ;;; ---------------------------------------------------------------------------
 
 (defgeneric index-kinds (part)
-  (:documentation "Returns a list of lists of part kinds that should be
-grouped when determining how to link a symbol from its index. That makes
-no sense at all.")
-  (:method ((part t))
-           (subpart-kinds part)))
+  (:documentation "Returns a list describing what indexes to generate for this part. This list is a list of lists of subpart kinds. Each item in the list generates one index and the index will include all of these part kinds.")
+  (:method ((part t)) nil))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -24,14 +21,14 @@ no sense at all.")
   (:documentation "Returns a list of the names \(as symbols\) of the subparts of part of type 'part-kind'.")
   (:method :around (part part-kind)
 	   (handler-case (call-next-method)
-	     (error () nil))))
+	     (error () (princ ".") nil))))
 
 ;;; ---------------------------------------------------------------------------
 
-(defgeneric display-part (part mode)
+(defgeneric display-part (part mode &key &allow-other-keys)
   (:documentation "Output information about a part. Example modes are 
 :subpart-list, :detail, :summary.")
-  (:method :around (part mode)
+  (:method :around (part mode &key &allow-other-keys)
            (when (documentation-exists-p part mode)
              (call-next-method)))) 
 
@@ -103,3 +100,10 @@ Change *short-documentation-length* to determine how much is returned."))
 
 (defgeneric make-part (parent kind name &key)
   (:documentation "Make a part named 'name' of kind 'kind' whose parent is 'parent'."))
+
+;;; ---------------------------------------------------------------------------
+
+(defgeneric include-kind-in-index-p (part kind)
+  (:documentation "Returns true if part should include kind in it's index."))
+
+

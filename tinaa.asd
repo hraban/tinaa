@@ -40,6 +40,8 @@ DISCUSSION
                                             :depends-on ("tinaa"))
                                      (:file "doc-symbol"
                                             :depends-on ("tinaa"))
+                                     (:file "doc-asdf-system"
+                                            :depends-on ("tinaa"))
                                      
                                      #+Ignore
                                      (:file "doc-glu-system"
@@ -47,6 +49,8 @@ DISCUSSION
                                      
                                      (:file "build-indexes"
                                             :depends-on ("tinaa"))
+                                     (:file "permuted-index"
+                                            :depends-on ("build-indexes"))
                                      (:file "templates"
                                             :depends-on ("tinaa"))
                                      (:file "epilogue"

@@ -5,7 +5,7 @@
 ;;; ---------------------------------------------------------------------------
 
 (defclass* doclisp-package (name-holder-mixin doclisp-assembly)
-  ((symbol-kinds (list :external) ir))
+  ((symbol-kinds (list :internal :external) ia))
   (:default-initargs
     :header "Package"
     :part-kind "package"
@@ -16,6 +16,11 @@
 (defmethod initialize-instance :after ((object doclisp-package) &key)
   (print (name object))
   (setf (slot-value object 'instance) (find-package (name object))))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod document-part-p ((name-holder doclisp-package) (part doclisp-package))
+  (values t))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -45,6 +50,21 @@
 
 ;;; ---------------------------------------------------------------------------
 
+(defmethod include-kind-in-index-p ((part doclisp-package) (kind (eql 'symbol)))
+  nil)
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod include-kind-in-index-p ((part doclisp-package) (kind (eql 'method)))
+  nil)
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod include-kind-in-index-p ((part doclisp-package) (kind t))
+  t)
+
+;;; ---------------------------------------------------------------------------
+
 (defmethod subpart-kinds ((part doclisp-package))
   (list 'condition 'class 'variable 'constant 'function 'generic-function
         'macro '(symbol :document? nil)))
@@ -52,8 +72,17 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod index-kinds ((part doclisp-package))
-  (list '(class) '(condition) '(variable constant)
-        '(function generic-function macro)))
+  (list '((class))
+        '((condition)) 
+        '((variable constant))
+        '((function generic-function))
+        '((macro))
+        '((symbol))
+        '((symbol) 
+          :heading "Permuted"
+          :index-name "permuted-symbols"
+          :build-using build-permuted-index
+          :index-kind permuted)))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -196,7 +225,48 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-package) (mode (eql :detail)))
+(defun update-document-part-p (package)
+  (map-parts-from-leaves 
+   package 
+   (lambda (subpart)
+     (setf (document? subpart) (document-part-p package subpart)))))
+
+;;; ---------------------------------------------------------------------------
+
+#+No
+(defmethod document-part-to-file ((part doclisp-package) &optional file)
+  (fluid-bind (((symbol-kinds part) '(:external)))
+    (update-document-part-p part)
+    (call-next-method))
+  
+  (fluid-bind (((symbol-kinds part) '(:internal :external)))
+    (update-document-part-p part)
+    (call-next-method 
+     part
+     (make-pathname :name "internal-index"
+                    :type "html"
+                    :defaults file))))
+
+;;; ---------------------------------------------------------------------------
+
+#+Ignore
+;; sort of works but has a lot of duplication
+(defmethod build-documentation ((part doclisp-package) root)
+  (fluid-bind (((symbol-kinds part) '(:external)))
+    (update-document-part-p part)
+    (call-next-method))
+  
+  (fluid-bind (((symbol-kinds part) '(:internal :external)))
+    (update-document-part-p part)
+    (call-next-method 
+     part
+     (merge-pathnames (make-pathname :directory `(:relative "internal"))
+                      root))))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod display-part ((part doclisp-package) (mode (eql :detail))
+                          &key &allow-other-keys)
   (let* ((package (find-package (name part)))
          (package-name (string-capitalize (package-name package)))
          (sentence-starter (format nil "Package ~A " package-name)))
@@ -224,6 +294,7 @@
            (lml-princ ".  ")
            (setf sentence-starter "It "))
          
+         #+Ignore
          (when (package-used-by-list package)
            (lml-princ sentence-starter)
            (lml-princ "is used by the packages ")

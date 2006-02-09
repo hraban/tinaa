@@ -30,7 +30,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-function) (mode (eql :detail)))
+(defmethod display-part ((part doclisp-function) (mode (eql :detail))
+                          &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "Function ~:(~A~)" name))
     
@@ -60,15 +61,52 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-generic-function) (mode (eql :detail)))
+#+Ignore
+(defun gf-info (symbol)
+  (let ((gf (symbol-function symbol)))
+    (list 
+     :declarations (generic-function-declarations gf)
+     :lambda-list (generic-function-lambda-list gf)
+     :method-class (generic-function-method-class gf)
+     :method-combination (generic-function-method-combination  gf)
+     :methods (generic-function-methods  gf) 
+     :name (generic-function-name  gf))))
+
+;;; ---------------------------------------------------------------------------
+
+#+Ignore
+(defun write-gf-template (symbol stream)
+  (let ((info (gf-info symbol)))
+    (format stream "\(defgeneric ~(~A~) " (getf info :name))
+    (format stream "~(~A~)" (getf info :lambda-list))
+    (when (and (getf info :method-combination)
+               (not (eq (ccl::method-combination-name (getf info :method-combination)) 
+                        'standard)))
+      (format stream "~%  \(:method-combination ~(~A~)\)" (getf info :method-combination)))
+    (if (documentation symbol 'function)
+      (format stream "~%  \(:documentation ~S\)\)" (documentation symbol 'function))
+      (format stream "~%  \(:documentation \"\"\)\)~%")))
+  (terpri stream)
+  (values))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod display-part ((part doclisp-generic-function) (mode (eql :detail))
+                          &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "Generic Function ~:(~A~)" name))
     
     (display-function part)
     (when documentation? (html (:blockquote (lml-princ documentation))))
     
+    #+Ignore
+    (when (aand (generic-function-method-combination (instance part))
+                (not (eq it (generic-function-method-combination #'display-part))))
+      (html 
+       (:P "Method combination")))
+    
     (:h3 (lml-format "Method Summary \(~D method~:P\)" 
-                    (length (mopu:generic-function-methods (instance part)))))
+                    (length (generic-function-methods (instance part)))))
     
     (:table
       (iterate-container
@@ -162,7 +200,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-method) (mode (eql :table-summary)))
+(defmethod display-part ((part doclisp-method) (mode (eql :table-summary))
+                          &key &allow-other-keys)
   (let ((gf (find-part (name-holder part) 'generic-function (name part))))
     (documenting part
       ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
@@ -193,7 +232,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-macro) (mode (eql :table-summary)))
+(defmethod display-part ((part doclisp-macro) (mode (eql :table-summary))
+                          &key &allow-other-keys)
   (let ((gf (find-part (some-parent part) 'macro (name part))))
     (documenting part
       ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))

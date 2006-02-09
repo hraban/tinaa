@@ -6,7 +6,7 @@
    (instance nil ir :documentation "An instance of this part.")
    (url nil a)
    (flag? nil a)
-   (document? nil ir)
+   (document? nil ia)
    (header "" ia)
    (part-kind "" ir)
    (name-holder nil ir))

@@ -133,7 +133,8 @@
   
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-class) (mode (eql :detail)))
+(defmethod display-part ((part doclisp-class) (mode (eql :detail))
+                          &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "Class ~:(~A~)" name))
     (when documentation? (html (:blockquote (lml-princ documentation))))
@@ -246,7 +247,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-slot) (mode (eql :table-summary)))
+(defmethod display-part ((part doclisp-slot) (mode (eql :table-summary))
+                          &key &allow-other-keys)
   (let* ((instance (direct-instance part)) 
          (slot-info (slot-properties instance (name part)))
          (add-comma? nil)
