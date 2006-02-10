@@ -106,22 +106,6 @@
     ;; summaries
     (output-table-summary part :table-summary 1)))
 
-;;; ---------------------------------------------------------------------------
-
-(defmethod display-part ((part doclisp-file) (mode (eql :table-summary))
-                         &key &allow-other-keys)
-  (documenting part
-   ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
-    ((:td :valign "top" :width 200) (link-for mode)))))
-
-#+Ignore
-(defmethod display-part ((part doclisp-file) (mode (eql :table-summary)))
-  (documenting part
-    (if (oddp *current-part-index*)
-      (td :valign "top" :width 200 (link-for mode))
-      (tr (td :valign "top" :width 200 (link-for mode))))))
-
-
 
 ;;; ---------------------------------------------------------------------------
 ;;; doclisp-file
@@ -148,6 +132,23 @@
 
 (defmethod part-name ((part doclisp-file))
   (string-downcase (filename part)))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod display-part ((part doclisp-file) (mode (eql :table-summary))
+                         &key &allow-other-keys)
+  (documenting part
+   ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
+    ((:td :valign "top" :width 200) (link-for mode)))))
+
+;;; ---------------------------------------------------------------------------
+
+#+Ignore
+(defmethod display-part ((part doclisp-file) (mode (eql :table-summary)))
+  (documenting part
+    (if (oddp *current-part-index*)
+      (td :valign "top" :width 200 (link-for mode))
+      (tr (td :valign "top" :width 200 (link-for mode))))))
 
 
 

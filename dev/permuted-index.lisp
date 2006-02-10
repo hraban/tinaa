@@ -10,7 +10,7 @@
                       (search-for-item subparts (part-name symbol-part)
                                        :key #'part-name)))
                  (if (or (eq symbol-part matching)
-                         (part-can-have-documention-p matching))
+                         (not (part-can-have-documention-p matching)))
                    (setf value nil)
                    (setf value matching))))
      :transform (lambda (x) (declare (ignore x)) value))))

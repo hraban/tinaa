@@ -641,10 +641,13 @@ to the kind of system you are documenting."
     (map-parts-from-leaves
      part
      (lambda (subpart)
-       (when (and (document-part-p part subpart)
-                  (part-can-have-documention-p subpart)
-                  (or (not (part-documentation subpart))
-                      (zerop (size (part-documentation subpart)))))
+       (when 
+         ;;?? HACK
+         (ignore-errors
+              (and (document-part-p part subpart)
+                   (part-can-have-documention-p subpart)
+                   (or (not (part-documentation subpart))
+                       (zerop (size (part-documentation subpart))))))
          (push subpart result))))
     result))
 
