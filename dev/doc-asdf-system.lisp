@@ -93,7 +93,22 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod index-kinds ((part doclisp-asdf-system))
-  (list '(class) '(variable constant) '(function generic-function macro) '(package)))
+  (list '((package)))
+  
+  #+NotYet
+  (list '((class))
+        '((condition)) 
+        '((variable constant))
+        '((function generic-function))
+        '((macro))
+        '((package))
+        '((symbol))
+        '((symbol) 
+          :heading "Permuted"
+          :index-name "permuted-symbols"
+          :build-using build-permuted-index
+          :index-kind 
+          permuted)))
 
 ;;; ---------------------------------------------------------------------------
 

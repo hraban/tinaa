@@ -23,6 +23,11 @@
 
 ;;; ---------------------------------------------------------------------------
 
+(defmethod span-class-for-part-name ((name-holder t) (part basic-doclisp-part))
+  "")
+
+;;; ---------------------------------------------------------------------------
+
 (defclass* subpart-kind ()
   ((name nil ir)
    (part-kind :unbound ir)

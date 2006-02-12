@@ -82,7 +82,8 @@
           :heading "Permuted"
           :index-name "permuted-symbols"
           :build-using build-permuted-index
-          :index-kind permuted)))
+          :index-kind 
+          permuted)))
 
 ;;; ---------------------------------------------------------------------------
 

@@ -106,4 +106,11 @@ Change *short-documentation-length* to determine how much is returned."))
 (defgeneric include-kind-in-index-p (part kind)
   (:documentation "Returns true if part should include kind in it's index."))
 
+;;; ---------------------------------------------------------------------------
+
+(defgeneric span-class-for-part-name (name-holder part)
+  (:documentation "Returns the class to be used when displaying the part's name."))
+
+
+
 

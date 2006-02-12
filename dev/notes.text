@@ -11,6 +11,7 @@ new method of determining what indexes to include...
 (setf g (document-system 'package 'cl-graph "user-home:docs;cl-graph;"))
 (setf tinaa (document-system 'package 'tinaa "user-home:docs;tinaa;"))
 (setf m (document-system 'package 'moptilities "user-home:docs;moptilities;"))
+(setf ma (document-system 'asdf-system 'moptilities "user-home:docs;asdf;moptilities;"))
 
 functions display arguments using :index, this now breaks because of float left, etc.., 
 

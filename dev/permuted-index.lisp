@@ -111,8 +111,14 @@
                          &key (spaces 0) &allow-other-keys)
   (html
    (:pre (lml-princ (make-string-of-size spaces #\ )) 
-         (display-part-for-index part (part-name part)))))
+         (display-part-for-index part (part-name part))
+         (lml-format " \(~(~A~)\)" (part-kind-abbreviation part)))))
 
+;;; ---------------------------------------------------------------------------
+
+(defmethod part-kind-abbreviation (part)
+  (part-kind part))
+  
 ;;; ---------------------------------------------------------------------------
 
 (defun permuted-index-delimiter-p (ch)
