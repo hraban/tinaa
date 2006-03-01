@@ -31,7 +31,7 @@ parts and subparts and sub-subparts (all resting on the " ((:A :HREF "http://en.
            (:LI "How to iterate over the sub-parts")
            (:LI "How to display information about the parts"))
       
-      ((:A :NAME "mailing-lists"))
+      ((:A :id "mailing-lists"))
       (:h3 "Mailing Lists")
       (:ul 
        (:li ((:a :href "http://common-lisp.net/cgi-bin/mailman/listinfo/tinaa-announce") "tinaa-announce")
@@ -40,7 +40,7 @@ parts and subparts and sub-subparts (all resting on the " ((:A :HREF "http://en.
        (:li ((:a :href "http://common-lisp.net/cgi-bin/mailman/listinfo/tinaa-devel") "tinaa-devel")
             ": A list for questions, patches, bug reports, and so on; It's for everything other than announcements."))
       
-      ((:A :NAME "downloads"))
+      ((:A :id "downloads"))
       (:H3 "Getting it") 
       (:P "A " (rw:link :darcs) " repository is available. The commands are listed below:")
       (:PRE "darcs get http://common-lisp.net/project/tinaa/darcs/")
@@ -57,7 +57,7 @@ parts and subparts and sub-subparts (all resting on the " ((:A :HREF "http://en.
       "Tinaa doesn't know about systems (neither ASDF nor GLU nor any others). 
 There are several things it could do more nicely (class diagrams, prettier tables, and so forth). "
       
-      ((:A :NAME "news"))
+      ((:A :id "news"))
       (:H3 "What is happening")
       ((:TABLE :CLASS "system-news") 
        (:TR
