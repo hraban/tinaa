@@ -48,7 +48,7 @@ DISCUSSION
                                             :depends-on ("package" "tinaa"))
                                      
                                      (:file "build-indexes"
-                                            :depends-on ("tinaa"))
+                                            :depends-on ("tinaa" "doc-symbol"))
                                      (:file "permuted-index"
                                             :depends-on ("build-indexes"))
                                      (:file "templates"

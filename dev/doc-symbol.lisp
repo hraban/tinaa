@@ -14,3 +14,9 @@
   (apply #'make-instance 'doclisp-symbol
     :name name args))
 
+;;; ---------------------------------------------------------------------------
+
+(defmethod span-class-for-part-name ((name-holder doclisp-package)
+                                     (part doclisp-symbol))
+  (symbol-name
+   (nth-value 1 (find-symbol (symbol-name (name part)) (instance name-holder)))))

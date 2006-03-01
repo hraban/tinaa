@@ -24,7 +24,7 @@ DISCUSSION
 
 (defun build-index-of-kind (part subpart-info)
   (bind ((parts (item-at (subparts part) (name subpart-info)))
-        (symbol-list (sort
+         (symbol-list (sort
                        (delete-duplicates
                         (append *required-index-contents*
                                 (collect-elements 
@@ -33,7 +33,7 @@ DISCUSSION
                                               (string-upcase (subseq (part-name part) 0 1)))))
                         :test #'string-equal)
                        #'string-lessp))
-        (current-symbol nil))
+         (current-symbol nil))
     (when (and (index? subpart-info)
                (plusp (size parts)))
       (let ((*current-index* (name subpart-info)))
