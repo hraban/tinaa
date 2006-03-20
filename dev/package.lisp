@@ -1,12 +1,12 @@
 (in-package common-lisp-user)
 
-(defpackage "TINAA"
-  (:use "COMMON-LISP" "MOPTILITIES" "METATILITIES" "LML2" "METABANG.BIND" 
-        "CL-CONTAINERS" "DEFSYSTEM-COMPATIBILITY")
-  (:nicknames "DOCLISP")
+(defpackage #:tinaa
+  (:use #:common-lisp #:moptilities #:metatilities #:lml2 #:metabang.bind 
+        #:cl-containers #:defsystem-compatibility)
+  (:nicknames #:doclisp)
   (:documentation "A simple, yet extensible, Common Lisp documentation package.")
-  (:import-from "METATILITIES" #:fn #:depth #:value #:name)
-  (:import-from "DEFSYSTEM-COMPATIBILITY" #:pathname-for-system-file)
+  (:import-from metatilities #:fn #:depth #:value #:name)
+  (:import-from defsystem-compatibility #:pathname-for-system-file)
   (:export
    #:subpart-kinds
    #:partname-list
