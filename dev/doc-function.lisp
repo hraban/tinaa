@@ -4,7 +4,8 @@
   ()
   (:default-initargs
     :header "Function"
-    :part-kind "function"))
+    :part-kind "function"
+    :part-type 'function))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -48,7 +49,8 @@
   ()
   (:default-initargs
     :header "Generic Function"
-    :part-kind "generic function"))
+    :part-kind "generic function"
+    :part-type 'generic-function))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -135,9 +137,21 @@
                              (t
                               (lml-princ "&lt; ")
                               (if part
-                                (display-part part :index)
+                                (display-part part :function)
                                 (lml-format "~S" name))
                               (lml-princ " &gt;&nbsp;")))))))))))))))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod display-part ((part basic-doclisp-part) (mode (eql :function))
+                         &key &allow-other-keys)
+  (html 
+   ((:span :class "function-parameter")
+    ;;?? Gary King 2006-03-31: this is also in display-part-for-index
+    (if (documentation-exists-p part :detail)
+      (html ((:a :href (relative-url (url part)))
+             (lml-princ (part-name part))))
+      (lml-princ (part-name part))))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -188,7 +202,8 @@
   ()
   (:default-initargs
     :header "Method"
-    :part-kind "method"))
+    :part-kind "method"
+    :part-type 'method))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -220,7 +235,8 @@
   ()
   (:default-initargs
     :header "Macro"
-    :part-kind "macro"))
+    :part-kind "macro"
+    :part-type 'macro))
 
 ;;; ---------------------------------------------------------------------------
 

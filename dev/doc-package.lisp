@@ -9,7 +9,8 @@
   (:default-initargs
     :header "Package"
     :part-kind "package"
-    :document? t))
+    :document? t
+    :part-type 'package))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -29,6 +30,10 @@
        ;;?? Gary King 2006-01-30: having this prevents imported exported symbols from 
        ;; appearing in documentation. e.g., process-wait in portable-threads.
        (call-next-method)
+       
+       ;; Thanks to Todd Mokros
+       (symbolp (part-symbol-name part))
+       
        (multiple-value-bind (found? status) 
                             (find-symbol (symbol-name (part-symbol-name part))
                                          (instance name-holder))
@@ -101,7 +106,7 @@
       (let ((class (find-class symbol nil))) 
         (and class 
              (typep class 'standard-class)
-             (not (mopu:subclassp class 'condition))))))
+             (not (conditionp class))))))
    #'class-sorter))
 
 ;;; ---------------------------------------------------------------------------
@@ -113,8 +118,14 @@
     (lambda (symbol access package)
       (declare (ignore access package))
       (aand (find-class symbol nil)
-            (mopu:subclassp it 'condition))))
+            (conditionp it))))
    #'class-sorter))
+
+;;; ---------------------------------------------------------------------------
+
+(defun  conditionp (thing)
+  "Returns true if and only if thing is a condition"
+  (mopu:subclassp thing 'condition))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -315,7 +326,7 @@
            (setf sentence-starter "It "))
          
          (lml-princ sentence-starter)
-         (lml-format "has ~,,,,D total symbols and ~,,,,D external ones."
+         (lml-format "has ~,,,D total symbols and ~,,,D external ones."
                      (symbol-count package :internal)
                      (symbol-count package :external)))))
             

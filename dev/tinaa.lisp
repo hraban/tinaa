@@ -198,12 +198,13 @@ DISCUSSION
                  (map-subpart-kinds 
                   part
                   (lambda (subpart-info)
-                    (let (;;?? Gary King 2005-12-30:  bad name here
-                          (subpart-kind (part-kind subpart-info))
-                          (kind (name subpart-info)))
+                    (let* (;;?? Gary King 2005-12-30:  bad name here
+                           (subpart-kind (part-kind subpart-info))
+                           (kind (name subpart-info))
+                           (parts-list (partname-list part kind)))
                       ;; we make all parts at this level and then grovel over 'em
                       (loop for sub-part in 
-                            (loop for part-name in (partname-list part kind)
+                            (loop for part-name in parts-list
                                   collect
                                   (let ((sub-part (make-part
                                                    part subpart-kind part-name
@@ -214,9 +215,12 @@ DISCUSSION
                                               sub-part))
                                       
                                       ;;?? Gary King 2005-12-30: perhaps a hack
-                                      (setf (item-at (item-at (subparts main-part) subpart-kind) part-name)
-                                            sub-part
-                                            (item-at (item-at (subparts part) subpart-kind) part-name)
+                                      ;;?? Gary King 2006-03-31: perhaps another hack <smile>
+                                      ;;   make-part needn't return a part of the same kind as subpart-kind (cf class / conditions)
+                                      (when (eq subpart-kind (part-type sub-part)) 
+                                        (setf (item-at (item-at (subparts main-part) subpart-kind) part-name)
+                                              sub-part))
+                                      (setf (item-at (item-at (subparts part) subpart-kind) part-name)
                                             sub-part))))
                             when (document? sub-part) do
                             (do-it sub-part)))))
@@ -305,15 +309,15 @@ to the kind of system you are documenting."
     (map-parts-from-leaves 
      part
      (lambda (sub-part)
-       (setf (url sub-part) (url-for-part sub-part))
+       ;;?? Gary King 2006-03-31:  remove
+       ;; (setf (url sub-part) (url-for-part sub-part))
        (when (not (flag? sub-part))
          (setf (flag? sub-part) t)
          (when (and (document? sub-part) 
                     (documentation-exists-p sub-part :detail))
            (document-part-to-file 
             sub-part
-            (when (eq sub-part part)
-              (url->file "index.html")))))))
+            (when (eq sub-part part) (url->file "index.html")))))))
     (build-indexes part))
 
   (write-css-file root))

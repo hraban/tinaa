@@ -4,7 +4,8 @@
   ()
   (:default-initargs
     :header "symbol"
-    :part-kind "symbol"))
+    :part-kind "symbol"
+    :part-type 'symbol))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -18,5 +19,7 @@
 
 (defmethod span-class-for-part-name ((name-holder doclisp-package)
                                      (part doclisp-symbol))
+  ;; is the symbol internal or external in it's package?
   (symbol-name
    (nth-value 1 (find-symbol (symbol-name (name part)) (instance name-holder)))))
+

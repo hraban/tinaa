@@ -8,7 +8,8 @@
   ()
   (:default-initargs
     :header "Class"
-    :part-kind "class"))
+    :part-kind "class"
+    :part-type 'class))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -32,7 +33,8 @@
 (defmethod make-part (parent (kind (eql 'class)) name &rest args &key
                               &allow-other-keys)
   (declare (ignore parent))
-  (apply #'make-instance 'doclisp-class
+  (apply #'make-instance (if (conditionp name) 
+                           'doclisp-condition 'doclisp-class)
     :name name args))
 
 ;;; ---------------------------------------------------------------------------
@@ -102,21 +104,31 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'superclass)))
-  (sort
-   (delete-if
-    (lambda (class-name)
-      (class-uninteresting-p class-name)) 
-    (mapcar #'class-name (direct-superclasses (name part))))
-   #'string-lessp))
+  (interesting-superclasses (name part)))
 
 ;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'subclass)))
+  (interesting-subclasses (name part)))
+
+;;; ---------------------------------------------------------------------------
+
+(defun interesting-superclasses (thing)
   (sort
    (delete-if
     (lambda (class-name)
       (class-uninteresting-p class-name)) 
-    (mapcar #'class-name (direct-subclasses (name part))))
+    (mapcar #'class-name (direct-superclasses thing)))
+   #'string-lessp))
+
+;;; ---------------------------------------------------------------------------
+
+(defun interesting-subclasses (thing)
+  (sort
+   (delete-if
+    (lambda (class-name)
+      (class-uninteresting-p class-name)) 
+    (mapcar #'class-name (direct-subclasses thing)))
    #'string-lessp))
 
 ;;; ---------------------------------------------------------------------------
@@ -136,7 +148,7 @@
 (defmethod display-part ((part doclisp-class) (mode (eql :detail))
                           &key &allow-other-keys)
   (documenting-page (part)
-    (:h2 (lml-format "Class ~:(~A~)" name))
+    (:h2 (lml-format "~A ~:(~A~)" (header part) name))
     (when documentation? (html (:blockquote (lml-princ documentation))))
     
     (awhen (default-initargs (instance part))
@@ -176,7 +188,8 @@
   ()
   (:default-initargs
     :header "Condition"
-    :part-kind "condition"))
+    :part-kind "condition"
+    :part-type 'condition))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -185,10 +198,20 @@
 
 ;;; ---------------------------------------------------------------------------
 
+(defmethod subpart-kinds ((part doclisp-condition))
+  (list '(superclass :heading "Direct Superclass" :part-kind condition)
+        '(subclass :heading "Direct Subclass" :part-kind condition)
+        'slot 
+        '(direct-method :heading "Direct Method" :part-kind method)
+        '(other-method :heading "Other Method" :part-kind method)))
+
+;;; ---------------------------------------------------------------------------
+
 (defmethod make-part (parent (kind (eql 'condition)) name &rest args &key
                               &allow-other-keys)
   (declare (ignore parent))
-  (apply #'make-instance 'doclisp-condition
+  (apply #'make-instance (if (conditionp name) 
+                           'doclisp-condition 'doclisp-class)
     :name name args))
 
 
@@ -200,7 +223,8 @@
   ((direct-parent :unbound w))
   (:default-initargs
     :header "Slot"
-    :part-kind "slot"))
+    :part-kind "slot"
+    :part-type 'slot))
 
 ;;; ---------------------------------------------------------------------------
 

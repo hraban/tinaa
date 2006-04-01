@@ -8,7 +8,8 @@
   ()
   (:default-initargs
     :header "Variable"
-    :part-kind "variable"))
+    :part-kind "variable"
+    :part-type 'variable))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -33,9 +34,14 @@
 (defmethod display-part ((part doclisp-variable) (mode (eql :detail))
                           &key &allow-other-keys)
   (documenting-page (part)
-    (:h2 (lml-format "Variable ~:(~A~)" name))
+    (:h2 (lml-format "~A ~:(~A~)" (header part) name))
     
-    (when documentation? (html (:blockquote (lml-princ documentation))))))
+    (when documentation? (html (:blockquote (lml-princ documentation))))
+    
+    (:h3 "Value: " 
+         (if (boundp (name part))
+           (lml-format "~S" (symbol-value (name part)))
+           (lml-princ "&lt;&nbsp; unbound &nbsp;&gt;")))))
 
 
 ;;; ---------------------------------------------------------------------------
@@ -46,7 +52,8 @@
   ()
   (:default-initargs
     :header "Constant"
-    :part-kind "constant"))
+    :part-kind "constant"
+    :part-type 'constant))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -56,11 +63,3 @@
   (apply #'make-instance 'doclisp-constant
     :name name args))
 
-;;; ---------------------------------------------------------------------------
-
-(defmethod display-part ((part doclisp-constant) (mode (eql :detail))
-                         &key &allow-other-keys)
-  (documenting-page (part)
-    (:h2 (lml-format "Constant ~:(~A~)" name))
-    
-    (when documentation? (html (:blockquote (lml-princ documentation))))))

@@ -128,6 +128,7 @@ DISCUSSION
 (defun display-part-for-index (part string)
   (html
    ((:span :class (span-class-for-part-name (name-holder part) part))
+    ;;?? Gary King 2006-03-31: this is also in display-part <part> <eql :function>
     (if (documentation-exists-p part :detail)
       (html ((:a :href (relative-url (url part)))
              (lml-princ string)))

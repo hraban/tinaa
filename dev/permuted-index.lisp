@@ -127,5 +127,9 @@
 ;;; ---------------------------------------------------------------------------
 
 (defun permuted-index-locations (symbol delimiter-p)
-  (loop for x across (symbol-name symbol) 
-        for i = 0 then (1+ i) when (funcall delimiter-p x) collect (1+ i)))
+  (bind ((name (symbol-name symbol))
+	 (largest-possible-delimiter-location (1- (size name))))
+    (loop for x across name
+       for i = 0 then (1+ i) 
+       when (and (< i largest-possible-delimiter-location)
+		 (funcall delimiter-p x)) collect (1+ i))))
