@@ -5,7 +5,8 @@
   (:default-initargs
     :header "ASDF System"
     :part-kind "asdf-system"
-    :document? t))
+    :document? t
+    :part-type 'asdf-system))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -131,7 +132,8 @@
   (:default-initargs
     :header "File"
     :part-kind "file"
-    :document? t))
+    :document? t
+    :part-type 'file))
 
 ;;; ---------------------------------------------------------------------------
 
