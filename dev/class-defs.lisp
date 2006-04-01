@@ -9,7 +9,8 @@
    (document? nil ia)
    (header "" ia)
    (part-kind "" ir)
-   (name-holder nil ir))
+   (name-holder nil ir)
+   (part-type nil ir))
   (:default-initargs
     :header ""))
 
@@ -19,7 +20,9 @@
   (setf (slot-value object 'document?)
         (or (document? object) (document-part-p (name-holder object) object)))
   (when (eq (name-holder object) :self)
-    (setf (slot-value object 'name-holder) object)))
+    (setf (slot-value object 'name-holder) object))
+  (unless (part-type object)
+    (error "The part-kind must be specified \(use default-initargs\)")))
 
 ;;; ---------------------------------------------------------------------------
 
