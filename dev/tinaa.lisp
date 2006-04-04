@@ -45,7 +45,17 @@ DISCUSSION
 
 (defmethod make-part (parent kind name &key &allow-other-keys)
   (declare (ignore parent kind name))
+  ;;(break)
   (values nil))
+
+;;; ---------------------------------------------------------------------------
+
+;;?? Gary King 2006-04-02:  fowls things up...
+#+Ignore
+(defmethod make-part :around (parent kind (name string) &rest args 
+                                     &key &allow-other-keys)
+  (declare (dynamic-extent args))
+  (apply #'make-part parent kind (string->symbol name) args))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -211,16 +221,16 @@ DISCUSSION
                                                    :name-holder main-part)))
                                     (when sub-part
                                       (unless (eq subpart-kind kind)
-                                        (setf (item-at (item-at (subparts part) kind) part-name)
+                                        (setf (item-at (item-at (subparts part) kind) (name sub-part))
                                               sub-part))
                                       
                                       ;;?? Gary King 2005-12-30: perhaps a hack
                                       ;;?? Gary King 2006-03-31: perhaps another hack <smile>
                                       ;;   make-part needn't return a part of the same kind as subpart-kind (cf class / conditions)
                                       (when (eq subpart-kind (part-type sub-part)) 
-                                        (setf (item-at (item-at (subparts main-part) subpart-kind) part-name)
+                                        (setf (item-at (item-at (subparts main-part) subpart-kind) (name sub-part))
                                               sub-part))
-                                      (setf (item-at (item-at (subparts part) subpart-kind) part-name)
+                                      (setf (item-at (item-at (subparts part) subpart-kind) (name sub-part))
                                             sub-part))))
                             when (document? sub-part) do
                             (do-it sub-part)))))
@@ -531,22 +541,6 @@ to the kind of system you are documenting."
         (funcall fn subpart-info)))
 
 ;;; ---------------------------------------------------------------------------
-
-#+Remove
-;;?? Gary King 2006-02-01: 
-(defun map-parts-from-leaves (part fn)
-  (let ((seen (make-container 'associative-container)))
-    (labels ((do-it (part fn)
-               (unless (item-at seen part)
-                 (setf (item-at seen part) t)
-                 (map-subpart-kinds 
-                  part
-                  (lambda (subpart-info)
-                    (iterate-container (item-at (subparts part) (name subpart-info))
-                                       (lambda (sub-part) (do-it sub-part fn))))))
-               ;;?? Wrong 
-               (funcall fn part)))
-      (do-it part fn))))
 
 (defun map-parts-from-leaves (part fn)
   (let ((seen (make-container 'associative-container)))

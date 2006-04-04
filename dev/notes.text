@@ -1,3 +1,51 @@
+ASDF-systems 
+  show files from root (not full names)
+
+  missing indexes (none built)
+    probably want sub-indexs for packages PLUS overall indexes
+
+  parse files
+
+  if package is part of a system, include link back to system
+
+Package
+  in index and in detail page, show internal / external [in general, 
+    allow some sort of modifier, perhaps in combination with a style sheet]
+
+  Missing indexes links on details
+
+  ok - function 
+    move # methods to title (out of method summary section)
+
+  Change heading to Package X then a sub-heading of symbol kinds
+
+Design
+
+  allow additional stuff to get generated on a page via plug-ins
+
+  allow filters for documentation -> HTML
+
+                           
+
+(progn
+  (fad:delete-directory-and-files "user-home:docs;asdf;moptilities;"
+                                  :if-does-not-exist :ignore)
+  (document-system 'asdf-system 'moptilities "user-home:docs;asdf;moptilities;"))
+
+;; why are making package parts multiply?
+  the packages in other-package are not eq to those in package
+Package: METABANG.MOPTILITIES (NIL)
+Package: CLOSER-MOP (NIL)
+Package: LISPWORKS (NIL)
+Package: CLOSER-MOP (NIL)
+Package: LISPWORKS (NIL)
+Package: LISPWORKS (NIL)
+
+(progn
+  (fad:delete-directory-and-files "user-home:docs;moptilities;")
+  (document-system 'package 'moptilities "user-home:docs;moptilities;"))
+
+
 for packages
   want shared 'contents'
   separate sets of indexes
@@ -6,31 +54,21 @@ for packages
 permuted index is missing conditions and classes?
   includes only generic functions?
 
-new method of determining what indexes to include... 
-
 (setf g (document-system 'package 'cl-graph "user-home:docs;cl-graph;"))
 (setf tinaa (document-system 'package 'tinaa "user-home:docs;tinaa;"))
 (setf m (document-system 'package 'moptilities "user-home:docs;moptilities;"))
 (setf ma (document-system 'asdf-system 'moptilities "user-home:docs;asdf;moptilities;"))
 
-functions display arguments using :index, this now breaks because of float left, etc.., 
-
 ASDF-Systems: 
-  * capitalize ASDF in header 
   * only show 'direct' files (not all files)
-  * separate out direct dependencies and all dependencies
   * tinaa, e.g. says it has 10 extenal symbols but shows only 9
   * bind says two, shows none
   * cl-containers only shows a few
   * want a nicer way to show files (extract the "common root")
   * sort files
   * sort packages
-  * moptilities doesn't show itself as a package...
-  * don't show packages used by 
   * more indexes
   ok - We seem to be missing a lot of packages
-
-IDE: if it's a slot, tell me IRA, etc.
 
 How do we deal with edge->dot in a permuted index?
   need to skip non-words?
@@ -40,7 +78,6 @@ Permuted indexes
   use absolute positioning for a back to top link
   back to top graphic
     unicode?
-  need way to add permuted index to list of indexes...
 
 LIFT: testing with unwind-protect... testing wtih variables you want to reset
 LIFT: removing tests at an upper level without removing lower level tests

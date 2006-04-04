@@ -252,7 +252,8 @@ DISCUSSION
 ;;; ---------------------------------------------------------------------------
 
 (defun index-for-kind-p (part kind)
-  (and (index? (subpart-info part kind))
+  (and (subpart-info part kind)
+       (index? (subpart-info part kind))
        (some-element-p
         (item-at (subparts part) kind)
         #'index-part-p)))

@@ -95,51 +95,54 @@
 
 (defmethod display-part ((part doclisp-generic-function) (mode (eql :detail))
                           &key &allow-other-keys)
-  (documenting-page (part)
-    (:h2 (lml-format "Generic Function ~:(~A~)" name))
-    
-    (display-function part)
-    (when documentation? (html (:blockquote (lml-princ documentation))))
-    
-    #+Ignore
-    (when (aand (generic-function-method-combination (instance part))
-                (not (eq it (generic-function-method-combination #'display-part))))
-      (html 
-       (:P "Method combination")))
-    
-    (:h3 (lml-format "Method Summary \(~D method~:P\)" 
-                    (length (generic-function-methods (instance part)))))
-    
-    (:table
-      (iterate-container
-       (sort 
-        (copy-list (mopu:generic-function-methods (instance part)))
-        #'method-sorter)
-       (lambda (m)
-         (html 
-          ((:tr :valign "top")
-           (:td (lml-format "~(~A ~@[~{~S ~}~]~)"
-                            name
-                            (method-qualifiers m))
-                (iterate-container
-                 (mopu:method-specializers m)
-                 (lambda (s)
-                   (let* ((name
-                           (or (mopu:eql-specializer-p s)
-                               (typecase s
-                                 (standard-class (class-name s))
-                                 (built-in-class (class-name s))
-                                 (t (type-of s)))))
-                          (part (find-part (name-holder part) 'class name)))
-                     (let ((*print-case* :downcase))
-                       (cond ((consp name)
-                              (lml-format "~S" name))
-                             (t
-                              (lml-princ "&lt; ")
-                              (if part
-                                (display-part part :function)
-                                (lml-format "~S" name))
-                              (lml-princ " &gt;&nbsp;")))))))))))))))
+  (let ((method-count (length (generic-function-methods (instance part)))))
+    (documenting-page (part)
+      (:h2 (lml-format "Generic Function ~:(~A~) \(~D method~:P\)"
+                       name method-count))
+      
+      (display-function part)
+      (when documentation? (html (:blockquote (lml-princ documentation))))
+      
+      #+Ignore
+      (when (aand (generic-function-method-combination (instance part))
+                  (not (eq it (generic-function-method-combination #'display-part))))
+        (html 
+         (:P "Method combination")))
+      
+      (:h3 (lml-format "Method Summary")
+           #+Ignore
+           (when (> method-count 1) (lml-format " \(~D method~:P\)" method-count)))
+      
+      (:table
+       (iterate-container
+        (sort 
+         (copy-list (mopu:generic-function-methods (instance part)))
+         #'method-sorter)
+        (lambda (m)
+          (html 
+           ((:tr :valign "top")
+            (:td (lml-format "~(~A ~@[~{~S ~}~]~)"
+                             name
+                             (method-qualifiers m))
+                 (iterate-container
+                  (mopu:method-specializers m)
+                  (lambda (s)
+                    (let* ((name
+                            (or (mopu:eql-specializer-p s)
+                                (typecase s
+                                  (standard-class (class-name s))
+                                  (built-in-class (class-name s))
+                                  (t (type-of s)))))
+                           (part (find-part (name-holder part) 'class name)))
+                      (let ((*print-case* :downcase))
+                        (cond ((consp name)
+                               (lml-format "~S" name))
+                              (t
+                               (lml-princ "&lt; ")
+                               (if part
+                                 (display-part part :function)
+                                 (lml-format "~S" name))
+                               (lml-princ " &gt;&nbsp;"))))))))))))))))
 
 ;;; ---------------------------------------------------------------------------
 

@@ -15,7 +15,7 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object doclisp-package) &key)
-  (print (name object))
+  (format t "~%Package: ~A (~A)" (name object) (parents object))
   (setf (slot-value object 'instance) (find-package (name object))))
 
 ;;; ---------------------------------------------------------------------------

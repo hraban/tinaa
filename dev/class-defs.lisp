@@ -16,6 +16,11 @@
 
 ;;; ---------------------------------------------------------------------------
 
+(defmethod index-kinds ((part basic-doclisp-part))
+  (index-kinds (name-holder part)))
+
+;;; ---------------------------------------------------------------------------
+
 (defmethod initialize-instance :after ((object basic-doclisp-part) &key)
   (setf (slot-value object 'document?)
         (or (document? object) (document-part-p (name-holder object) object)))

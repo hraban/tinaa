@@ -18,7 +18,7 @@ This is a list of instances of subpart-kind."))
 ;;; ---------------------------------------------------------------------------
 
 (defgeneric partname-list (part part-kind)
-  (:documentation "Returns a list of the names \(as symbols\) of the subparts of part of type 'part-kind'.")
+  (:documentation "Returns a list of the names of the subparts of part of type 'part-kind'. Usually, these will be symbols but they could be strings too.")
   (:method :around (part part-kind)
 	   (handler-case (call-next-method)
 	     (error () (princ ".") nil))))
