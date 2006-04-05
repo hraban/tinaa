@@ -43,7 +43,7 @@ parts and subparts and sub-subparts (all resting on the " ((:A :HREF "http://en.
       ((:A :id "downloads"))
       (:H3 "Getting it") 
       (:P "A " (rw:link :darcs) " repository is available. The commands are listed below:")
-      (:PRE "darcs get http://common-lisp.net/project/tinaa/darcs/")
+      (:PRE "darcs get http://common-lisp.net/project/tinaa/darcs/tinaa")
       (:P "Tinaa is " (rw:link :asdf-install :title "ASDF installable") ". Its CLiki home is right " (rw:link :tinaa-cliki :title "where") " you'd expect.")
       (:P "There's also a handy " (rw:link :tinaa-package :title "gzipped tar file") ".")
       
