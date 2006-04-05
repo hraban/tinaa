@@ -88,7 +88,7 @@
 
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'slot)))
   (sort
-   (slot-names (name part))
+   (slot-names (instance part))
    #'string-lessp))
 
 ;;; ---------------------------------------------------------------------------
@@ -214,6 +214,12 @@
                            'doclisp-condition 'doclisp-class)
     :name name args))
 
+;;; ---------------------------------------------------------------------------
+
+(defmethod part-documentation ((part doclisp-condition))
+  ;; this works around what may or may not be a glitch in SBCL 
+  ;; (see lisppaste 18639 for details
+  (documentation (class-name (instance part)) 'type))
 
 ;;; ---------------------------------------------------------------------------
 ;;; doclisp-slot

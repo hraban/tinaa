@@ -297,7 +297,9 @@ to the kind of system you are documenting."
 
 (defun write-css-file (destination &rest args &key (if-exists :supersede)
                                    &allow-other-keys)
-  (let ((output (merge-pathnames "tinaa.css" destination)))
+  (let ((output (merge-pathnames 
+		 "tinaa.css"
+		 (namestring (translate-logical-pathname destination)))))
     (apply #'copy-file 
            (or 
             (pathname-for-system-file 'tinaa "tinaa.css")
@@ -308,7 +310,7 @@ to the kind of system you are documenting."
 ;;; ---------------------------------------------------------------------------
 
 (defmethod build-documentation ((part doclisp-assembly) root)
-  (let ((*document-root* root)
+  (let ((*document-root* (namestring (translate-logical-pathname root)))
         (*root-part* part))
     (map-parts-from-leaves 
      part
@@ -341,7 +343,8 @@ to the kind of system you are documenting."
 
 (defmethod document-part-to-file ((part basic-doclisp-part) 
                                   &optional file)
-  (let ((*document-file* (or file (url->file (url part)))))
+  (let ((*document-file* (namestring (translate-logical-pathname 
+                                      (or file (url->file (url part)))))))
     (ensure-directories-exist *document-file*)
     (with-open-file (*document-stream* *document-file* 
                                        :direction :output
@@ -358,19 +361,20 @@ to the kind of system you are documenting."
          (path (butlast full-path)))
     (awhen (position #\. name)
       (setf name (subseq name 0 it)))
-    (merge-pathnames
-     (make-pathname :name name
-                    :type extension 
-                    :directory `(:relative ,@path))
-     *document-root*)))
+    (namestring
+     (merge-pathnames
+      (make-pathname :name name
+		     :type extension 
+		     :directory `(:relative ,@path))
+      *document-root*))))
 
 ;;; ---------------------------------------------------------------------------
 
 (defun relative-url (url)
   "Returns a URL that points to the same things as `url` but relative to *document-file*"
   (bind ((split-url (tokenize-string url :delimiter #\/))
-         (file-name (namestring (translate-logical-pathname *document-file*)))
-         (root-name (namestring (translate-logical-pathname *document-root*)))
+         (file-name *document-file*)
+         (root-name *document-root*)
          (physical-pathname-delimiter (physical-pathname-directory-separator)) 
          (root-pos (search root-name file-name))
          (file-name (subseq file-name (+ root-pos (length root-name)))) 
@@ -394,7 +398,10 @@ to the kind of system you are documenting."
          (pos 0))
     (setf pos (search root leaf))
     (if pos
-      (count #\; (subseq leaf (+ pos (length root))))
+      (count 
+       ;; assuming single character delimiter
+       (aref (physical-pathname-directory-separator) 0)
+       (subseq leaf (+ pos (length root))) :test #'char-equal)
       0)))
 
 ;;; ---------------------------------------------------------------------------

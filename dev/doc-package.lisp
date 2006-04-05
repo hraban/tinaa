@@ -93,7 +93,7 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod part-documentation ((part doclisp-package))
-  (documentation (instance part) 'package))
+  (documentation (instance part) t))
 
 ;;; ---------------------------------------------------------------------------
 

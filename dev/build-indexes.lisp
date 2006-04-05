@@ -191,11 +191,11 @@ DISCUSSION
            
            (build-index-of-kind part subpart-info))))))
   
-  (let ((*document-file* (make-pathname 
+  (let ((*document-file* (namestring (make-pathname 
                           :name (format nil "permuted-index-~(~A~)"
                                         (name part))
                           :type "html"
-                          :defaults *document-root*))) 
+                          :defaults *document-root*)))) 
     (with-new-file (*document-stream* *document-file*)
       (build-permuted-index part))))
 
@@ -203,10 +203,11 @@ DISCUSSION
 
 (defun index-file-name (part subpart-name) 
   (declare (ignore part))
-  (make-pathname 
+  (namestring
+   (make-pathname 
    :name (format nil "index-of-~(~A~)" subpart-name)
    :type "html"
-   :defaults *document-root*))
+   :defaults *document-root*)))
 
 ;;; ---------------------------------------------------------------------------
 
