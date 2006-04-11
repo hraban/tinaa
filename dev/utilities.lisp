@@ -55,3 +55,30 @@
   (display-arguments (function-arglist (name part)))
   (lml-princ " \)"))
 
+;;; ---------------------------------------------------------------------------
+
+(defun map-subpart-kinds (part fn)
+  (loop for subpart-info in (subpart-kinds part) do
+        (funcall fn subpart-info)))
+
+;;; ---------------------------------------------------------------------------
+
+(defun map-parts-from-leaves (part fn)
+  (let ((seen (make-container 'associative-container)))
+    (labels ((do-it (part fn)
+               (unless (item-at seen part)
+                 (setf (item-at seen part) t)
+                 (map-subpart-kinds 
+                  part
+                  (lambda (subpart-info)
+                    (iterate-container (item-at (subparts part) (name subpart-info))
+                                       (lambda (sub-part) (do-it sub-part fn)))))
+                 (funcall fn part))))
+      (do-it part fn))))
+
+;;; ---------------------------------------------------------------------------
+
+(defun set-flags (part value)
+  (map-parts-from-leaves part (lambda (p) (setf (flag? p) value))))
+
+

@@ -35,10 +35,11 @@
                           &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "Function ~:(~A~)" name))
+    (show-part-parents part)
     
     (display-function part)
     
-    (when documentation? (html (:blockquote (lml-princ documentation))))))
+    (maybe-show-documentation part)))
 
 
 ;;; ---------------------------------------------------------------------------
@@ -101,6 +102,9 @@
                        name method-count))
       
       (display-function part)
+      
+      (show-part-parents part)
+    
       (when documentation? (html (:blockquote (lml-princ documentation))))
       
       #+Ignore
@@ -109,18 +113,16 @@
         (html 
          (:P "Method combination")))
       
-      (:h3 (lml-format "Method Summary")
-           #+Ignore
-           (when (> method-count 1) (lml-format " \(~D method~:P\)" method-count)))
+      (:h3 "Method Summary")
       
-      (:table
+      ((:table :class "method-table")
        (iterate-container
         (sort 
          (copy-list (mopu:generic-function-methods (instance part)))
          #'method-sorter)
         (lambda (m)
           (html 
-           ((:tr :valign "top")
+           (:tr
             (:td (lml-format "~(~A ~@[~{~S ~}~]~)"
                              name
                              (method-qualifiers m))
@@ -248,19 +250,6 @@
   (declare (ignore parent))
   (apply #'make-instance 'doclisp-macro
     :name name args))
-
-;;; ---------------------------------------------------------------------------
-
-(defmethod display-part ((part doclisp-macro) (mode (eql :table-summary))
-                          &key &allow-other-keys)
-  (let ((gf (find-part (some-parent part) 'macro (name part))))
-    (documenting part
-      ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
-       (:th 
-        (if gf
-          (make-link-for mode name (url gf))
-          (link-for mode)))
-       (:td (when documentation? (lml-princ short-documentation)))))))
 
 
 ;;; ---------------------------------------------------------------------------

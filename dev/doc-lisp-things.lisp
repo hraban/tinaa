@@ -94,7 +94,7 @@
 (defmethod display-part ((part package-system) (mode (eql :detail)))
   (documenting part
     (:h2 name)
-    (when documentation (htm (:blockquote documentation)))
+    (maybe-show-documentation part)
     (loop for kind in (subpart-kinds part) do
           (when (plusp (size (parts kind)))
             (htm

@@ -60,7 +60,7 @@ Change *short-documentation-length* to determine how much is returned."))
 
 ;;; ---------------------------------------------------------------------------
 
-(defgeneric document-part-to-file (part &optional file)
+(defgeneric document-part-to-file (part)
   (:documentation ""))
 
 ;;; ---------------------------------------------------------------------------
@@ -111,6 +111,17 @@ Change *short-documentation-length* to determine how much is returned."))
 (defgeneric span-class-for-part-name (name-holder part)
   (:documentation "Returns the class to be used when displaying the part's name."))
 
+;;; ---------------------------------------------------------------------------
 
+(defgeneric show-part-parents (part)
+  (:documentation "Generate HTML to show the parents of a part. Called for a part only when it actually has parents \(using an around method\)."))
 
+;;; ---------------------------------------------------------------------------
 
+(defgeneric output-table-summary-of-parts (part subpart-name heading)
+  (:documentation ""))
+
+;;; ---------------------------------------------------------------------------
+
+(defgeneric build-index-links (for-part index-part current-index)
+  (:documentation ""))

@@ -1,5 +1,113 @@
+(in-package tinaa)
+
+(progn
+  (fad:delete-directory-and-files "user-home:docs;asdf;moptilities;"
+                                  :if-does-not-exist :ignore)
+  (setf ms
+        (document-system 'asdf-system 'moptilities
+                         "user-home:docs;asdf;moptilities;")))
+
+(progn
+  (fad:delete-directory-and-files "user-home:docs;asdf;tinaa;"
+                                  :if-does-not-exist :ignore)
+  (setf ms
+        (document-system 'asdf-system 'tinaa
+                         "user-home:docs;asdf;tinaa;")))
+
+As it stands today, name-holders will appear as folders at the root level. Every
+name-holder / name-holder-kind pair must therefore be unique. Each name-holder's 
+folder will contain the documentation for the parts it names. 
+
+- license file needs a back link
+- We need an overall contents page...
+  is this different than the one for the root asdf-system?
+  - contents link not working
+- Indexes for ASDF-System - a combined index of it's packages...
+- if there are no indexes, don't show "Indexes:" text on page
+
+
+#+Ignore
+;; returns a list of properties found in the defsystems I have...
+(let ((props nil))
+  (fad:walk-directory
+   "Billy-Pilgrim:repository:darcs:asdf-systems"
+   (lambda (file)
+     (let ((system-def (find-defsystem file)))
+       (print file)
+       (when system-def
+         (loop for key in (cddr system-def) by #'cddr do
+               (push key props)))))
+   :test (lambda (x) (string-equal (pathname-type x) "asd")))
+  (sort (remove-duplicates props) #'string-lessp))
+
+;;; ---------------------------------------------------------------------------
+
+(defun find-defsystem (stream-or-file)
+  (let ((*package* (find-package :asdf)))
+    (map-forms-in-file 
+     (lambda (form)
+       (when (and (consp form)
+                  (eql (car form) 'asdf:defsystem))
+         (return-from find-defsystem form)))
+     stream-or-file)))
+
+;;; ---------------------------------------------------------------------------
+
+(deftestsuite test-format-list () 
+  ())
+
+(deftestsuite test-default-format-list (test-format-list) 
+  ()
+  (:test ((ensure-same (format-list '(1 2 3)) "1, 2, and 3." :test #'string-equal)))
+  (:test ((ensure-same (format-list '(1 2)) "1 and 2." :test #'string-equal)))
+  (:test ((ensure-same (format-list '(1)) "1." :test #'string-equal)))
+  (:test ((ensure-same (format-list '()) "none." :test #'string-equal))))
+
+(deftestsuite test-format-list-with-changes (test-format-list) 
+  ()
+  (:test ((ensure-same (format-list '(1 2 3) :end-with "") "1, 2, and 3" :test #'string-equal)))
+  (:test ((ensure-same (format-list '(1 2) :final-separator ", ") "1, 2." :test #'string-equal)))
+  (:test ((ensure-same (format-list '() :empty-list "zip") "zip." :test #'string-equal))))
+
+
+
+We can show parents too -- pointers back up...
+
+Suppose we had a unique mapping from systems / packages -> names (e.g., GUIDs)
+  then Tinaa could know how to point to things... 
+  in the complex case, we could point to a web of documentations...
+  in the simple case, we know we're building it all and stay local. We build up 
+  the map as we go.
+  use symbolic links?
+  version control
+  use checksum?
+
+  level of detail -- where do you find the natural 'breaks'. For CL, it's packages.
+
+write out
+  system 
+
+produces a checksum of the (lisp) files in a directory hierarchy (doesn't handle spaces)
+  find . -name "*.lisp" -type f -print | xargs cat | md5
+
 ASDF-systems 
-  show files from root (not full names)
+  move license to bottom (or separate page or something if it's long)
+  vertical align in table (CSS...)
+  find and create links for URLs in strings
+ 
+  have separate folders for each name-holder
+    use when creating indexes and URLs
+
+  - show files from root (not full names)
+
+  * only show 'direct' files (not all files)
+  * tinaa, e.g. says it has 10 extenal symbols but shows only 9
+  * bind says two, shows none
+  * cl-containers only shows a few
+  * want a nicer way to show files (extract the "common root")
+  * sort files
+  * sort packages
+  * more indexes
 
   missing indexes (none built)
     probably want sub-indexs for packages PLUS overall indexes
@@ -7,6 +115,15 @@ ASDF-systems
   parse files
 
   if package is part of a system, include link back to system
+    this might be something on a separate page / index
+    soemthing that we can build when documenting multiple systems
+      in the AIT case, though, where do we keep this state? write it out.
+
+      this could be nice - a map of systems dependencies, packages to systems
+        list of symbol-names to packages, etc. Helpful in archeology
+
+      use a DB? -- makes it sound bigger than tinaa if I do that.x
+
 
 Package
   in index and in detail page, show internal / external [in general, 
@@ -14,32 +131,14 @@ Package
 
   Missing indexes links on details
 
-  ok - function 
-    move # methods to title (out of method summary section)
-
   Change heading to Package X then a sub-heading of symbol kinds
 
 Design
 
   allow additional stuff to get generated on a page via plug-ins
 
-  allow filters for documentation -> HTML
+  allow filters for documentation -> HTML 
 
-                           
-
-(progn
-  (fad:delete-directory-and-files "user-home:docs;asdf;moptilities;"
-                                  :if-does-not-exist :ignore)
-  (document-system 'asdf-system 'moptilities "user-home:docs;asdf;moptilities;"))
-
-;; why are making package parts multiply?
-  the packages in other-package are not eq to those in package
-Package: METABANG.MOPTILITIES (NIL)
-Package: CLOSER-MOP (NIL)
-Package: LISPWORKS (NIL)
-Package: CLOSER-MOP (NIL)
-Package: LISPWORKS (NIL)
-Package: LISPWORKS (NIL)
 
 (progn
   (fad:delete-directory-and-files "user-home:docs;moptilities;")
@@ -59,16 +158,6 @@ permuted index is missing conditions and classes?
 (setf m (document-system 'package 'moptilities "user-home:docs;moptilities;"))
 (setf ma (document-system 'asdf-system 'moptilities "user-home:docs;asdf;moptilities;"))
 
-ASDF-Systems: 
-  * only show 'direct' files (not all files)
-  * tinaa, e.g. says it has 10 extenal symbols but shows only 9
-  * bind says two, shows none
-  * cl-containers only shows a few
-  * want a nicer way to show files (extract the "common root")
-  * sort files
-  * sort packages
-  * more indexes
-  ok - We seem to be missing a lot of packages
 
 How do we deal with edge->dot in a permuted index?
   need to skip non-words?

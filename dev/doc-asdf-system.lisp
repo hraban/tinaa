@@ -1,7 +1,29 @@
 (in-package doclisp)
 
+#|
+;; empirically most of the properties found in ASDF system definitions
+(:author :components :depends-on :description :in-order-to :licence
+         :long-description :maintainer :name :perform :properties :serial :version)
+
+;; we can about these
+:author  :licence :maintainer :version
+
+:description        => short-documentation
+:long-description   => documentation 
+:components         => files
+:depends-on         => dependencies
+
+;; we might case about these
+:name  :serial :in-order-to  :perform :properties
+
+|#
+
 (defclass* doclisp-asdf-system (name-holder-mixin doclisp-assembly)
-  ()
+  ((author-name nil r)
+   (author-mail nil r)
+   (maintainer-name nil ir)
+   (maintainer-mail nil ir))
+  
   (:default-initargs
     :header "ASDF System"
     :part-kind "asdf-system"
@@ -11,7 +33,36 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object doclisp-asdf-system) &key)
-  (setf (slot-value object'instance) (dsc:find-system (name object))))
+  (setf (slot-value object'instance) (dsc:find-system (name object)))
+  (setf (values (slot-value object 'author-name) 
+                (slot-value object 'author-mail))
+        (find-name-and-email (system-property (name object) 'author))
+        (values (slot-value object 'maintainer-name)
+                (slot-value object 'maintainer-mail))
+        (find-name-and-email (system-property (name object) 'maintainer))))
+
+;;; ---------------------------------------------------------------------------
+
+(defun find-name-and-email (string)
+  "Returns \(as multiple values\) a name and e-mail address as parsed from a string. Handles only \"name <mail>\" right now. if the string isn't in this from,then this function assumes that the string contains only a name. Also doesn't handle group projects!"
+  (let ((pos-< (position #\< string :test #'char-equal))
+        (pos-> (position #\> string :test #'char-equal)))
+    (if (and pos-< pos-> (< pos-< pos->))
+      (values (subseq string 0 (1- pos-<)) 
+              (subseq string (1+ pos-<) pos->))
+      (values string nil))))
+
+#+LIFT
+(deftestsuite test-find-name-and-email ()
+  ()
+  (:test ((ensure-same (find-name-and-email "gwking <gwking@foo.com>")
+                       (values "gwking" "gwking@foo.com") :test #'string-equal)))
+  (:test ((ensure-same (find-name-and-email "gwking gwking@foo.com")
+                       (values "gwking gwking@foo.com" nil) :test #'string-equal)))
+  (:test ((ensure-same (find-name-and-email "")
+                       (values "" nil) :test #'string-equal)))
+  (:test ((ensure-same (find-name-and-email "gwking >gwking@foo.com<")
+                       (values "gwking >gwking@foo.com<" nil) :test #'string-equal))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -31,15 +82,18 @@
 
 (defmethod short-documentation ((part doclisp-asdf-system))
   (or (system-property (name part) 'description)
+      (awhen (system-property (name part) 'long-description) 
+        (let ((max-length (size it)))
+          (subseq it 0 (min max-length *short-documentation-length*)))) 
       (call-next-method)))
 
 ;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds ((part doclisp-asdf-system))
-  (list '(direct-package :heading "Direct Package" :part-kind package)
-        '(other-package :heading "Other Package" :part-kind package)
-        '(direct-dependency :heading "Direct Dependency" :part-kind asdf-system)
+  (list '(direct-dependency :heading "Direct Dependency" :part-kind asdf-system)
         '(other-dependency :heading "Other Dependency" :part-kind asdf-system)
+        '(direct-package :heading "Direct Package" :part-kind package)
+        '(other-package :heading "Other Package" :part-kind package)
         '(direct-file :heading "Direct File" :part-kind file)
         '(other-file :heading "Other File" :part-kind file)))
 
@@ -105,7 +159,7 @@
     (setf result (mapcar (lambda (file) 
                            (aand (ignore-errors (file-package file))
                                  (find-package it)
-                                 (package-name it)))
+                                 (canonical-package-id it)))
                          files))
     (remove nil
             (remove-if
@@ -148,28 +202,113 @@
                          &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "ASDF System ~A" name))
-    (when documentation (html (:blockquote (lml-princ documentation))))
+    (maybe-show-documentation part)
     
+    (when (or (author-name part)
+              (maintainer-name part)
+              (system-property name 'licence)
+              (system-property name 'version))
+      (flet ((output-name (heading name mail)
+               (html (:tr
+                      (:th (lml-princ heading)) 
+                      (:td 
+                       (cond ((and name mail)
+                              (html ((:a :href (format nil "mailto:~A" mail))
+                                     (lml-princ name))))
+                             (name
+                              (html (lml-princ name))))))))
+             (output-property (heading value)
+               (html (:tr 
+                      (:th (lml-princ heading))
+                      (:td (lml-princ value))))))
+        (html
+         ((:div :class "part-summary")
+          (:table 
+           (when (author-name part)
+             (output-name "Author:" (author-name part) (author-mail part)))
+           (when (and (maintainer-name part)
+                      (not (string-equal (author-name part) (maintainer-name part))))
+             (output-name "Maintainer:" (maintainer-name part) (maintainer-mail part)))
+           (awhen (system-property name 'version)
+             (output-property "Version:" it))
+           (awhen (system-property name 'licence)
+             (cond ((> (size it) *short-documentation-length*)
+                    (let ((url (build-license-page part)))
+                      (html 
+                       (:tr 
+                        (:th "License:")
+                        (:td (lml-princ (subseq it 0 *short-documentation-length*))
+                             "... [" ((:a :href url) "More") "]")))))
+                   (t (output-property "License:" it)))))))))
+    
+    (show-part-parents part)
+                
     ;; summaries
-    (output-table-summary part :table-summary 1)))
+    (output-table-summary part 1)))
 
-#+WEIRD
-(defmethod partname-list ((part doclisp-asdf-system) (part-name (eql 'package)))
-  (let ((result nil))
-    (map-system-files
-     (name part)
-     (lambda (file)
-       (print file)
-       (awhen (ignore-errors (file-package file)) 
-         (princ it)
-         (push (package-name (find-package it)) result)))
-     :include-pathname? t
-     :system-closure? t
-     :include-associates? nil)
+;;; ---------------------------------------------------------------------------
+
+(defun build-license-page (part)
+  (let* ((file (url->file (url part)))
+         (*document-file* 
+          (make-pathname 
+           :name "license"
+           :defaults (namestring (translate-logical-pathname file)))))
+    (with-new-file (*document-stream* 
+                    *document-file*)
+      (with-html-output (*document-stream*)
+        (html
+         (:html
+          (:head
+           (:title (lml-format "License | ~A ~:(~A~) [Tinaa]"
+                               (header part) (name part)))
+           ((:link :rel "stylesheet" :href (stylesheet-url part))))
+          (:body
+           ;;?? this and documenting-page macro should be refactored
+           (doclisp-header nil :force-contents-link? t)
+           
+           ((:div :class "contents")
+            (:h2 (lml-format "License for ASDF System ~A" (name part)))
+            ((:div :class "license")
+             (lml-princ (system-property (name part) 'licence)))
+            (:div ((:a :href (relative-url (url part))) "Back")))
+           
+           (doclisp-footer part :force-contents-link? t)))))
     
-    (remove-if
-     #'ignore-package-p
-     (remove-duplicates result))))
+      (values (namestring (pathname-name+type *document-file*))))))
+       
+;;; ---------------------------------------------------------------------------
+
+(defmethod output-table-summary-of-parts (part (subpart-name (eql 'other-file)) heading)
+  (let ((parts (item-at (subparts part) subpart-name))
+        (count 1)
+        (system nil))
+    
+    (when (some-key-value-p parts
+                            (lambda (name part)
+                              (declare (ignore name))
+                              (and (document? part)
+                                   (documentation-exists-p part :table-summary))))
+      (html
+       ((:div :class "table-summary")
+        (:h3 (lml-princ heading)) 
+        ((:table :id (string-downcase heading))
+         (iterate-container 
+          parts
+          (lambda (thing) 
+            (when (document? thing)
+              (unless (eq system (system thing))
+                (setf system (system thing))
+                (let ((sub-system (find-part part 'asdf-system system))) 
+                  (html
+                   ((:tr :class "subsystem-name")
+                    (:th (if sub-system 
+                           (display-part sub-system :name)
+                           (lml-princ system)))))))
+              
+              (let ((*current-part-index* count))
+                (display-part thing :table-summary))
+              (incf count))))))))))
 
 
 ;;; ---------------------------------------------------------------------------
@@ -215,13 +354,34 @@
                          &key &allow-other-keys)
   (documenting part
    ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
-    ((:td :valign "top" :width 200) 
-     (spy name url (system part) (enough-filename part) (filename part))
-     
-     (link-for mode)))))
+    ((:th :valign "top") 
+     (lml-princ  (enough-filename part))))))
 
 
 
+;;; ---------------------------------------------------------------------------
+;;; misc.
+;;; ---------------------------------------------------------------------------
 
-
+#+Ignore
+;; returns a list of properties found in the defsystems I have...
+(let ((props nil))
+  (flet ((find-defsystem (stream-or-file)
+           (let ((*package* (find-package :asdf)))
+             (map-forms-in-file 
+              (lambda (form)
+                (when (and (consp form)
+                           (eql (car form) 'asdf:defsystem))
+                  (return-from find-defsystem form)))
+              stream-or-file))))
+    (fad:walk-directory
+     "Billy-Pilgrim:repository:darcs:asdf-systems"
+     (lambda (file)
+       (let ((system-def (find-defsystem file)))
+         (print file)
+         (when system-def
+           (loop for key in (cddr system-def) by #'cddr do
+                 (push key props)))))
+     :test (lambda (x) (string-equal (pathname-type x) "asd"))))
+  (sort (remove-duplicates props) #'string-lessp))
 

@@ -149,7 +149,8 @@
                           &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "~A ~:(~A~)" (header part) name))
-    (when documentation? (html (:blockquote (lml-princ documentation))))
+    (maybe-show-documentation part)
+    (show-part-parents part)
     
     (awhen (default-initargs (instance part))
       (html 
@@ -177,7 +178,7 @@
                     (no-thing))))))))))))
                 
     ;; summaries
-    (output-table-summary part :table-summary 2)))
+    (output-table-summary part 2)))
 
 
 ;;; ---------------------------------------------------------------------------

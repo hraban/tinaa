@@ -28,29 +28,34 @@ DISCUSSION
                                             :depends-on ("api" "package"))
                                      (:file "utilities"
                                             :depends-on ("macros"))
+                                     (:file "definitions"
+                                            :depends-on ("package"))
+                                     (:file "files-and-urls"
+                                            :depends-on ("package"))
                                      (:file "tinaa"
-                                            :depends-on ("api" "macros" "class-defs"))
+                                            :depends-on ("api" "class-defs"))
+                                     (:file "generate-output"
+                                            :depends-on ("tinaa"))
+                                     
                                      (:file "doc-package"
-                                            :depends-on ("tinaa"))
+                                            :depends-on ("tinaa" "macros"))
                                      (:file "doc-class"
-                                            :depends-on ("tinaa"))
+                                            :depends-on ("tinaa" "macros"))
                                      (:file "doc-variable"
-                                            :depends-on ("tinaa"))
+                                            :depends-on ("tinaa" "macros"))
                                      (:file "doc-function"
-                                            :depends-on ("tinaa"))
+                                            :depends-on ("tinaa" "macros"))
                                      (:file "doc-symbol"
-                                            :depends-on ("tinaa"))
+                                            :depends-on ("tinaa" "macros"))
                                      (:file "doc-asdf-system"
-                                            :depends-on ("tinaa"))
-                                     
-                                     #+Ignore
-                                     (:file "doc-glu-system"
-                                            :depends-on ("package" "tinaa"))
-                                     
+                                            :depends-on ("tinaa""macros"))
+                                                                          
                                      (:file "build-indexes"
-                                            :depends-on ("tinaa" "doc-symbol"))
+                                            :depends-on ("tinaa" "doc-symbol" "macros"))
                                      (:file "permuted-index"
-                                            :depends-on ("build-indexes"))
+                                            :depends-on ("build-indexes")) 
+                                     (:file "build-contents"
+                                            :depends-on ("package")) 
                                      (:file "templates"
                                             :depends-on ("tinaa"))
                                      (:file "epilogue"

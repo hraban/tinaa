@@ -4,10 +4,6 @@
 
 $Id: build-indexes.lisp,v 1.4 2005/02/16 03:13:16 gwking Exp $
 
-Copyright 1992 - 2004 Experimental Knowledge Systems Lab, 
-University of Massachusetts Amherst MA, 01003-4610
-Professor Paul Cohen, Director
-
 Author: Gary King
 
 DISCUSSION
@@ -154,7 +150,12 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod build-indexes (part)
+(defmethod build-indexes ((part basic-doclisp-part))
+  (values))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod build-indexes ((part name-holder-mixin))
   (iterate-elements
    (index-kinds part)
    (lambda (index-description)
@@ -201,23 +202,27 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
-(defun index-file-name (part subpart-name) 
-  (declare (ignore part))
+(defun local-index-url (part index-name)
+  ;; local-index means the index that will in the _current_ directory
+  (namestring (pathname-name+type (index-file-name part index-name))))
+
+;;; ---------------------------------------------------------------------------
+
+(defun index-file-name (part index-name) 
   (namestring
    (make-pathname 
-   :name (format nil "index-of-~(~A~)" subpart-name)
+   :name (format nil "index-of-~(~A~)" index-name)
    :type "html"
-   :defaults *document-root*)))
+   :defaults (translate-logical-pathname (url->file (url part))))))
 
 ;;; ---------------------------------------------------------------------------
 
-(defun index-url-name (part subpart-name) 
-  (make-root-pointing-url 
-   part (namestring (pathname-name+type (index-file-name part subpart-name)))))
+(defmethod build-index-links ((for-part (eql nil)) index-part current-index)
+  (values))
 
 ;;; ---------------------------------------------------------------------------
 
-(defun build-index-links (for-part index-part current-index)
+(defmethod build-index-links ((for-part basic-doclisp-part) index-part current-index)
   (when (any-indexes-p index-part)
     (html
      ((:DIV :CLASS "index-links")
@@ -236,7 +241,7 @@ DISCUSSION
               ((:DIV :CLASS "index")
                (if (eq index-kind current-index)
                  (lml-format "~:(~A~)" index-kind)
-                 (html ((:a :href (index-url-name for-part index-name))
+                 (html ((:a :href (local-index-url for-part index-name))
                         (lml-format "~:(~A~)" index-kind))))))))))))))
 
 ;;; ---------------------------------------------------------------------------

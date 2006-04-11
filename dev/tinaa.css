@@ -1,3 +1,121 @@
+body {
+	font: 90% Times New Roman, Times, serif;
+}
+
+.contents {
+	margin-right: 1em;
+	margin-left: 1em;
+}
+
+.documentation {
+	margin-right: 1em;
+	margin-left: 1em;	
+}
+
+.part-parents {
+	margin-left: 1em;
+}
+
+.part-parents h3 {
+	display: inline;
+	margin-right: 0.5em;
+}
+
+.license {
+	margin-right: 1em;
+	margin-left: 1em;
+	margin-bottom: 1em;
+}
+
+/*<group=table-of-contents>*/
+
+.table-of-contents {
+  border-collapse: collapse;
+	vertical-align: top;
+	text-align: left;
+}
+
+.table-of-contents table {
+    border-collapse: collapse;
+	padding-right: 1em;
+	padding-left: 1em;
+}
+
+.table-of-contents tr {
+}
+
+.table-of-contents th {
+	font-weight: bold;
+	width: 200px;
+	font-family: Arial, Helvetica, sans-serif;
+	text-align: left;
+}
+
+.table-of-contents td {
+	padding-left: 1em;
+}
+	
+/*</group>*/
+
+/*<group=part-summary>*/
+
+.part-summary {
+	margin-right: 2em;
+	margin-left: 2em;
+}
+
+.part-summary tr {
+	text-align: left;
+	vertical-align: top;
+}
+
+.part-summary td {
+	text-align: left;
+	padding-bottom: 0.0em;
+	padding-top: 0.0em;
+}
+
+.part-summary th {
+	text-align: left;
+	width: 100px;
+	font-style: italic;
+}
+	
+/*</group>*/
+
+/*<group=table-summary>*/
+
+.table-summary {
+  border-collapse: collapse;
+	vertical-align: top;
+	margin-right: 1em;
+	margin-left: 1em;
+	text-align: left;
+}
+
+.table-summary table {
+	margin-left: 1em;
+}
+
+.table-summary tr {
+	text-align: left;
+	vertical-align: top;
+}
+
+.table-summary td {
+	text-align: left;
+	padding-bottom: 0.5em;
+	padding-top: 0.2em;
+}
+
+.table-summary th {
+	text-align: left;
+	font-weight: normal;
+	width: 200px;
+}
+	
+/*</group>*/
+
 #header{   background: #009933;  color: white;  border: 1px solid black;  font-family: sans-serif;  margin-top: 0.5em; padding: 0.5em;  height: 22px;}
 
 #header a[href] { color: #ffff33; text-decoration: none;
@@ -46,36 +164,6 @@ h3 {
 	margin-left: 0;
 }
 
-body {
-	font: 90% Times New Roman, Times, serif;
-}
-
-.table-summary {
-  border-collapse: collapse;
-	vertical-align: top;
-	margin-right: 1em;
-	margin-left: 1em;
-	text-align: left;
-}
-
-.table-summary tr {
-	text-align: left;
-	vertical-align: top;
-}
-
-.table-summary td {
-	text-align: left;
-	padding-bottom: 0.5em;
-	padding-top: 0.2em;
-}
-
-.table-summary th {
-	text-align: left;
-	font-weight: normal;
-	width: 200px;
-	font-variant: small-caps;
-}
-
 a[href] {
 	text-decoration: none;
 }
@@ -100,6 +188,26 @@ a[href]:hover {
 }
 
 .oddrow {  background-color: #ccffcc}
+
+/*<group=Index>*/
+
+.back-to-top {
+	float: right;
+}
+
+.index-name {
+	width: 200px;
+	float: left;
+	clear: left;
+	margin-left: 3em;
+     text-indent: -1em;
+	margin-top: 0.2em;
+}
+
+.index-kind {
+	float: left;
+	padding-right: 2.0em;
+}
 
 .index-links {
 	float: right;
@@ -149,21 +257,5 @@ a[href]:hover {
 	float: left;
 	font: 150% Verdana, Arial, Helvetica, sans-serif;
 }
-
-.back-to-top {
-	float: right;
-}
-
-.index-name {
-	width: 200px;
-	float: left;
-	clear: left;
-	margin-left: 3em;
-     text-indent: -1em;
-	margin-top: 0.2em;
-}
-
-.index-kind {
-	float: left;
-	padding-right: 2.0em;
-}
+	
+/*</group>*/

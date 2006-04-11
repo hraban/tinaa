@@ -92,7 +92,7 @@
 (defmethod display-part ((part doclisp-glu-system) (mode (eql :detail)))
   (documenting-page (part)
     (:h2 (lml-format "glu System ~A" name))
-    (when documentation (html (:blockquote (lml-princ documentation))))
+    (maybe-show-documentation part)
     
     ;; summaries
     (output-table-summary part :table-summary 1)))

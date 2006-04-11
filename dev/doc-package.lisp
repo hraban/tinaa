@@ -15,7 +15,7 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object doclisp-package) &key)
-  (format t "~%Package: ~A (~A)" (name object) (parents object))
+  (format t "~%Package: ~A" (name object))
   (setf (slot-value object 'instance) (find-package (name object))))
 
 ;;; ---------------------------------------------------------------------------
@@ -49,7 +49,7 @@
                              &allow-other-keys)
   (if (find-package name)
     (apply #'make-instance 'doclisp-package
-           :name (intern (package-name (find-package name))) args)
+           :name (intern (package-name (find-package name)) :keyword) args)
     (error 'cannot-make-part :parent parent :kind kind :name name
            :reason "package not found.")))
 
@@ -292,46 +292,46 @@
              (lml-princ "External"))
            (lml-princ " Symbols"))
       (html
-       (:blockquote
-        (when documentation (html (:P (lml-princ documentation))))
+       (show-part-parents part)
+       (maybe-show-documentation part)
+       
+       (:P
+        (when (package-use-list package)
+          (lml-princ sentence-starter)
+          (lml-princ "uses the packages ")
+          (display-list-of-potential-parts
+           part (sort
+                 (mapcar #'nice-package-name (package-use-list package))
+                 #'string-lessp) 'package)
+          (lml-princ ".  ")
+          (setf sentence-starter "It "))
         
-        (:P
-         (when (package-use-list package)
-           (lml-princ sentence-starter)
-           (lml-princ "uses the packages ")
-           (display-list-of-potential-parts
-            part (sort
-                  (mapcar #'nice-package-name (package-use-list package))
-                  #'string-lessp) 'package)
-           (lml-princ ".  ")
-           (setf sentence-starter "It "))
-         
-         #+Ignore
-         (when (package-used-by-list package)
-           (lml-princ sentence-starter)
-           (lml-princ "is used by the packages ")
-           (display-list-of-potential-parts
-            part (sort (mapcar #'nice-package-name (package-used-by-list package))
-                       #'string-lessp) 'package)
-           (lml-princ ".  ")
-           (setf sentence-starter "It "))
-         
-         (when (package-nicknames package)
-           (lml-princ sentence-starter)
-           (lml-princ "is also known as ")
-           (display-list-of-potential-parts
-            part (sort (mapcar #'string-capitalize (package-nicknames package))
-                       #'string-lessp) 'package)
-           (lml-princ ".  ")
-           (setf sentence-starter "It "))
-         
-         (lml-princ sentence-starter)
-         (lml-format "has ~,,,D total symbols and ~,,,D external ones."
-                     (symbol-count package :internal)
-                     (symbol-count package :external)))))
+        #+Ignore
+        (when (package-used-by-list package)
+          (lml-princ sentence-starter)
+          (lml-princ "is used by the packages ")
+          (display-list-of-potential-parts
+           part (sort (mapcar #'nice-package-name (package-used-by-list package))
+                      #'string-lessp) 'package)
+          (lml-princ ".  ")
+          (setf sentence-starter "It "))
+        
+        (when (package-nicknames package)
+          (lml-princ sentence-starter)
+          (lml-princ "is also known as ")
+          (display-list-of-potential-parts
+           part (sort (mapcar #'string-capitalize (package-nicknames package))
+                      #'string-lessp) 'package)
+          (lml-princ ".  ")
+          (setf sentence-starter "It "))
+        
+        (lml-princ sentence-starter)
+        (lml-format "has ~,,,D total symbols and ~,,,D external ones."
+                    (symbol-count package :internal)
+                    (symbol-count package :external))))
             
       ;; summaries
-      (output-table-summary part :table-summary 1))))
+      (output-table-summary part 1))))
 
 ;;; ---------------------------------------------------------------------------
 

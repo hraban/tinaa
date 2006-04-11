@@ -36,8 +36,9 @@
   (documenting-page (part)
     (:h2 (lml-format "~A ~:(~A~)" (header part) name))
     
-    (when documentation? (html (:blockquote (lml-princ documentation))))
-    
+    (maybe-show-documentation part)
+    (show-part-parents part)
+
     (:h3 "Value: " 
          (if (boundp (name part))
            (lml-format "~S" (symbol-value (name part)))
