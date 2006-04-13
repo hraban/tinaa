@@ -14,6 +14,13 @@
         (document-system 'asdf-system 'tinaa
                          "user-home:docs;asdf;tinaa;")))
 
+(profile:with-profiling  
+  (setf ms
+        (document-system 'asdf-system 'tinaa
+                         "user-home:docs;asdf;tinaa;"
+                         :write-files? nil
+                         :show-parts-without-documentation? nil)))
+
 As it stands today, name-holders will appear as folders at the root level. Every
 name-holder / name-holder-kind pair must therefore be unique. Each name-holder's 
 folder will contain the documentation for the parts it names. 
