@@ -211,7 +211,8 @@
                  (multiple-value-bind (more? symbol access package) (symbol-fn)
                    (unless more?
                      (return))
-                   (when (funcall filter symbol access package)
+                   (when (and (eq (symbol-package symbol) package)
+                              (funcall filter symbol access package))
                      (push symbol result))))))
            (when (member :internal (symbol-kinds part)) 
              (with-package-iterator (symbol-fn (list package) :internal)
@@ -219,7 +220,9 @@
                  (multiple-value-bind (more? symbol access package) (symbol-fn)
                    (unless more?
                      (return))
-                   (when (funcall filter symbol access package)
+                   (when (and (eq (symbol-package symbol) package)
+                              (funcall filter symbol access package))
+                     #+Old (funcall filter symbol access package)
                      (push symbol result))))))
            (sort result #'string-lessp))
           (t
@@ -295,7 +298,7 @@
        (show-part-parents part)
        (maybe-show-documentation part)
        
-       (:P
+       ((:div :class "part-summary")
         (when (package-use-list package)
           (lml-princ sentence-starter)
           (lml-princ "uses the packages ")
