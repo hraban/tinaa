@@ -33,13 +33,15 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object doclisp-asdf-system) &key)
-  (setf (slot-value object'instance) (dsc:find-system (name object)))
-  (setf (values (slot-value object 'author-name) 
-                (slot-value object 'author-mail))
-        (find-name-and-email (system-property (name object) 'author))
-        (values (slot-value object 'maintainer-name)
-                (slot-value object 'maintainer-mail))
-        (find-name-and-email (system-property (name object) 'maintainer))))
+  (let ((system (dsc:find-system (name object))))
+    (assert (system-loaded-p (name object)))
+    (setf (slot-value object'instance) system)
+    (setf (values (slot-value object 'author-name) 
+                  (slot-value object 'author-mail))
+          (find-name-and-email (system-property (name object) 'author))
+          (values (slot-value object 'maintainer-name)
+                  (slot-value object 'maintainer-mail))
+          (find-name-and-email (system-property (name object) 'maintainer)))))
 
 ;;; ---------------------------------------------------------------------------
 
