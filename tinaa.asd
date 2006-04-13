@@ -14,7 +14,7 @@ DISCUSSION
 
 (defsystem tinaa
   :author "Gary Warren King <gwking@metabang.com>"
-  :version "0.5"
+  :version "0.4"
   :maintainer "Gary Warren King <gwking@metabang.com>"
   :licence "Various license"
 
@@ -33,7 +33,7 @@ DISCUSSION
                                      (:file "files-and-urls"
                                             :depends-on ("package"))
                                      (:file "tinaa"
-                                            :depends-on ("api" "class-defs"))
+                                            :depends-on ("api" "class-defs" "definitions"))
                                      (:file "generate-output"
                                             :depends-on ("tinaa"))
                                      
