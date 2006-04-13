@@ -3,14 +3,18 @@
 ;;; ---------------------------------------------------------------------------
 
 (defun document-system (system-kind system-name destination &rest args
-                                    &key (show-parts-without-documentation? t))
+                                    &key (show-parts-without-documentation? t)
+                                    (write-files? t))
   "Create TINAA documentation for a system. System-kind should be 'package or 
 some other value for which it makes sense (e.g., an EKSL-system or an ASDF
 system if you have those loaded...). System-name is the identifier of the 
 system. Destination is the location in the file system where you want the 
 documentation to go. Finally, you can pass in other arguments that are specific
 to the kind of system you are documenting."
-  (assert (fad:directory-pathname-p destination))
+  (when write-files?
+    (assert (fad:directory-pathname-p destination)))
+  (remf args :show-parts-without-documentation?)
+  (remf args :write-files?)
   (let ((*root-part* (apply #'make-part nil system-kind system-name 
                             :document? t 
                             :name-holder :self 
@@ -18,8 +22,11 @@ to the kind of system you are documenting."
         (*packages-to-document* nil)
         (*output-calls* (make-container 'associative-container)))
     (grovel-part *root-part*)
-    (ensure-directories-exist destination)
-    (build-documentation *root-part* destination) 
+    
+    (format t "~%Writing files")
+    (when write-files?
+      (ensure-directories-exist destination)
+      (build-documentation *root-part* destination)) 
     
     (when show-parts-without-documentation?
       (format t "~%The following parts appear to have no documentation:")
