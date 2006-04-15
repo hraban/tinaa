@@ -35,7 +35,7 @@ DISCUSSION
                                      (:file "tinaa"
                                             :depends-on ("api" "class-defs" "definitions"))
                                      (:file "generate-output"
-                                            :depends-on ("tinaa"))
+                                            :depends-on ("tinaa" "macros"))
                                      
                                      (:file "doc-package"
                                             :depends-on ("tinaa" "macros"))

@@ -278,6 +278,16 @@
 
 ;;; ---------------------------------------------------------------------------
 
+(defun slot-writer-name (writer)
+  (cond ((and (consp writer) (eq (first writer) 'setf))
+         (second writer))
+        ((atom writer)
+         writer)
+        (t
+         (error "I don't know how to understand the slot writer '~A'" writer))))
+
+;;; ---------------------------------------------------------------------------
+
 (defmethod display-part ((part doclisp-slot) (mode (eql :table-summary))
                           &key &allow-other-keys)
   (let* ((instance (direct-instance part)) 
@@ -289,12 +299,12 @@
     (let ((readers (getf slot-info :readers))
           (writers (getf slot-info :writers)))
       (loop for reader in readers do
-            (when (find reader writers :key #'second)
+            (when (find reader writers :key #'slot-writer-name)
               (push reader accessors)))
       (loop for accessor in accessors do
             (setf (getf slot-info :readers) (remove accessor (getf slot-info :readers))
                   (getf slot-info :writers) (remove accessor (getf slot-info :writers)
-                                                    :key #'second))))
+                                                    :key #'slot-writer-name))))
     
     (documenting part
       ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
