@@ -21,6 +21,12 @@ body {
 	margin-right: 0.5em;
 }
 
+.package-symbols {
+	margin-left: 1em;
+	margin-bottom: 0.5em;
+	margin-top: 0.5em;
+}
+
 .license {
 	margin-right: 1em;
 	margin-left: 1em;
