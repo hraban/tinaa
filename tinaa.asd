@@ -31,7 +31,7 @@ DISCUSSION
                                      (:file "definitions"
                                             :depends-on ("package"))
                                      (:file "files-and-urls"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "definitions"))
                                      (:file "tinaa"
                                             :depends-on ("api" "class-defs" "definitions"))
                                      (:file "generate-output"

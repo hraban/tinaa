@@ -8,7 +8,7 @@
 (defvar *root-part* nil)
 (defvar *current-index* nil)
 (defvar *current-part-index* 0)
-(defvar *current-part* nil)
+(defvar *current-part* nil) 
 (defparameter *short-documentation-length* 100
   "The number of characters of documentation to show in summaries.")
 (defvar *packages-to-document* nil)

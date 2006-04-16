@@ -1,11 +1,12 @@
 (in-package tinaa)
 
 (progn
-  (fad:delete-directory-and-files "user-home:docs;asdf;moptilities;"
-                                  :if-does-not-exist :ignore)
   (setf ms
         (document-system 'asdf-system 'moptilities
-                         "user-home:docs;asdf;moptilities;")))
+                         "user-home:docs;asdf;moptilities;"
+                         :write-files? nil)))
+
+(build-documentation ms "user-home:docs;asdf;moptilities;" :erase-first? t)
 
 (progn
   (fad:delete-directory-and-files "user-home:docs;asdf;tinaa;"

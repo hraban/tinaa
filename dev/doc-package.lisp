@@ -248,19 +248,29 @@
 
 ;;; ---------------------------------------------------------------------------
 
-#+No
-(defmethod document-part-to-file ((part doclisp-package) &optional file)
+(defmethod document-part-to-file ((part doclisp-package))
   (fluid-bind (((symbol-kinds part) '(:external)))
     (update-document-part-p part)
     (call-next-method))
   
-  (fluid-bind (((symbol-kinds part) '(:internal :external)))
+  (fluid-bind (((symbol-kinds part) '(:internal :external))
+               (*document-file* (make-pathname :name "internal-index"
+                                               :type "html"
+                                               :defaults *document-file*)))
     (update-document-part-p part)
-    (call-next-method 
-     part
-     (make-pathname :name "internal-index"
-                    :type "html"
-                    :defaults file))))
+    (call-next-method part)))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod show-part-parents :after ((part doclisp-package))
+  ;;?? hacky!!!! - depends too much on other stuff that is going on.
+  (if (equal (symbol-kinds part) '(:external))
+    (html 
+     ((:div :class "package-symbols")
+      "See " ((:a :href "internal-index.html") "internal symbols") " too"))
+    (html 
+     ((:div :class "package-symbols")
+      "See only " ((:a :href "index.html") "external symbols")))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -288,12 +298,12 @@
     (documenting-page (part)
       (:h2 (lml-format "Package ~A - " package-name)
            (when (member :internal (symbol-kinds part))
-             (lml-princ "Internal"))
+             (lml-princ "internal"))
            (when (member :external (symbol-kinds part))
              (when (member :internal (symbol-kinds part))
                (lml-princ " and "))
-             (lml-princ "External"))
-           (lml-princ " Symbols"))
+             (lml-princ "external"))
+           (lml-princ " symbols"))
       (html
        (show-part-parents part)
        (maybe-show-documentation part)

@@ -25,7 +25,6 @@ to the kind of system you are documenting."
     
     (format t "~%Writing files")
     (when write-files?
-      (ensure-directories-exist destination)
       (build-documentation *root-part* destination)) 
     
     (when show-parts-without-documentation?
@@ -53,9 +52,13 @@ to the kind of system you are documenting."
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod build-documentation ((part doclisp-assembly) root)
+(defmethod build-documentation ((part doclisp-assembly) root &key (erase-first? nil))
   (let ((*document-root* (namestring (translate-logical-pathname root)))
         (*root-part* part))
+    (when erase-first?
+      (fad:delete-directory-and-files *document-root*
+                                      :if-does-not-exist :ignore))
+    (ensure-directories-exist *document-root*)
     (map-parts-from-leaves 
      part
      (lambda (sub-part)
@@ -69,7 +72,9 @@ to the kind of system you are documenting."
          (setf (flag? sub-part) t)
          (when (and (document? sub-part) 
                     (documentation-exists-p sub-part :detail))
-           (document-part-to-file sub-part))))))
+           (let ((*document-file* (namestring (translate-logical-pathname 
+                                               (url->file (url sub-part)))))) 
+             (document-part-to-file sub-part)))))))
 
   (write-css-file root)
   (build-contents-page root (content-things-from-part part)))
@@ -77,9 +82,7 @@ to the kind of system you are documenting."
 ;;; ---------------------------------------------------------------------------
 
 (defmethod document-part-to-file ((part basic-doclisp-part))
-  (let ((*document-file* (namestring (translate-logical-pathname 
-                                      (url->file (url part)))))
-        (*current-part* part))
+  (let ((*current-part* part))
     (ensure-directories-exist *document-file*)
     (with-open-file (*document-stream* *document-file* 
                                        :direction :output
