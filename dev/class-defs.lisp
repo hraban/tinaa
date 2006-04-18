@@ -1,5 +1,16 @@
 (in-package doclisp)
 
+(defcondition part-kind-unknown-error ()
+  ((parent :unbound ir)
+   (kind :unbound ir)
+   (name :unbound ir)
+   (args :unbound ir))
+  (:report (lambda (c s)
+             (format s "Part kind ~S unknown. Unable to create part named ~S for parent ~S with arguments ~S."
+                     (kind c) (name c) (parent c) (args c)))))
+
+;;; ---------------------------------------------------------------------------
+
 (defclass* basic-doclisp-part ()
   ((name "" ir)
    (parents nil ia)
