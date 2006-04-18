@@ -225,8 +225,8 @@ DISCUSSION
 (defmethod build-index-links ((for-part basic-doclisp-part) index-part current-index)
   (when (any-indexes-p index-part)
     (html
-     ((:DIV :CLASS "index-links")
-      ((:DIV :CLASS "index") "Indexes:")
+     ((:div :class "index-links")
+      ((:div :class "index") "Indexes:")
       (iterate-elements
        (index-kinds for-part)
        (lambda (index-description)
@@ -238,7 +238,7 @@ DISCUSSION
            (when (some-element-p part-kinds (lambda (kind) 
                                               (index-for-kind-p for-part kind)))
              (html
-              ((:DIV :CLASS "index")
+              ((:div :class "index")
                (if (eq index-kind current-index)
                  (lml-format "~:(~A~)" index-kind)
                  (html ((:a :href (local-index-url for-part index-name))

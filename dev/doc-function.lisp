@@ -34,7 +34,7 @@
 (defmethod display-part ((part doclisp-function) (mode (eql :detail))
                           &key &allow-other-keys)
   (documenting-page (part)
-    (:h2 (lml-format "Function ~:(~A~)" name))
+    (:h2 (lml-format "~@(~A~) ~:(~A~)" (header part) name))
     (show-part-parents part)
     
     (display-function part)
