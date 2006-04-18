@@ -16,10 +16,6 @@ DISCUSSION
 
 (in-package doclisp)
 
-
-
-;;; ---------------------------------------------------------------------------
-
 ;; from utils
 (defmethod name (object)
   (type-of object))
@@ -31,10 +27,25 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod make-part (parent kind name &key &allow-other-keys)
-  (declare (ignore parent kind name))
-  ;;(break)
-  (values nil))
+(defparameter *make-part-methods* nil
+  "Used to help ensure that we don't use up the stack trying to find a good method... Probably too baroque.")
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod make-part (parent kind name &rest args &key &allow-other-keys)
+  (unless *make-part-methods*
+    (setf *make-part-methods* 
+          (compute-applicable-methods #'make-part (list nil nil nil))))
+   
+  (let ((tinaa-symbol (form-symbol-in-package :tinaa kind)))
+    (if (set-equal 
+         *make-part-methods*
+         (compute-applicable-methods 
+          #'make-part
+          (list parent tinaa-symbol name args)))
+      ;; we tried this already
+      (error 'part-kind-unknown-error :parent parent :kind kind :name name :args args)
+      (apply #'make-part parent tinaa-symbol name args))))
 
 ;;; ---------------------------------------------------------------------------
 

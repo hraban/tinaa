@@ -6,6 +6,11 @@
                          "user-home:docs;asdf;moptilities;"
                          :write-files? nil)))
 
+(asdf:oos 'asdf:load-op 'floyd-warshall)
+(document-system 'asdf-system 'floyd-warshall
+                 "user-home:docs;asdf;floyd-warshall;"
+                 :write-files? t)
+
 (build-documentation ms "user-home:docs;asdf;moptilities;" :erase-first? t)
 
 (progn
