@@ -164,6 +164,7 @@
    (lambda (symbol access package)
      (declare (ignore access package))
      (and (fboundp symbol)
+          (not (macro-function symbol))
           (typep (symbol-function symbol) 'function)
           (not (typep (symbol-function symbol) 'standard-generic-function))))))
 
