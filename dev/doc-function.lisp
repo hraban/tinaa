@@ -142,7 +142,7 @@
                               (t
                                (lml-princ "&lt; ")
                                (if part
-                                 (display-part part :function)
+                                 (display-part writer part :function)
                                  (lml-format "~S" name))
                                (lml-princ " &gt;&nbsp;"))))))))))))))))
 

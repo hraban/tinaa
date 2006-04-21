@@ -1,5 +1,13 @@
 (in-package tinaa)
 
+- Indexes for ASDF-System - a combined index of it's packages...
+- if there are no indexes, don't show "Indexes:" text on page
+
+As it stands today, name-holders will appear as folders at the root level. Every
+name-holder / name-holder-kind pair must therefore be unique. Each name-holder's 
+folder will contain the documentation for the parts it names. 
+
+
 (progn
   (setf ms
         (document-system 'asdf-system 'moptilities
@@ -27,43 +35,6 @@
                          :write-files? nil
                          :show-parts-without-documentation? nil)))
 
-As it stands today, name-holders will appear as folders at the root level. Every
-name-holder / name-holder-kind pair must therefore be unique. Each name-holder's 
-folder will contain the documentation for the parts it names. 
-
-- license file needs a back link
-- We need an overall contents page...
-  is this different than the one for the root asdf-system?
-  - contents link not working
-- Indexes for ASDF-System - a combined index of it's packages...
-- if there are no indexes, don't show "Indexes:" text on page
-
-
-#+Ignore
-;; returns a list of properties found in the defsystems I have...
-(let ((props nil))
-  (fad:walk-directory
-   "Billy-Pilgrim:repository:darcs:asdf-systems"
-   (lambda (file)
-     (let ((system-def (find-defsystem file)))
-       (print file)
-       (when system-def
-         (loop for key in (cddr system-def) by #'cddr do
-               (push key props)))))
-   :test (lambda (x) (string-equal (pathname-type x) "asd")))
-  (sort (remove-duplicates props) #'string-lessp))
-
-;;; ---------------------------------------------------------------------------
-
-(defun find-defsystem (stream-or-file)
-  (let ((*package* (find-package :asdf)))
-    (map-forms-in-file 
-     (lambda (form)
-       (when (and (consp form)
-                  (eql (car form) 'asdf:defsystem))
-         (return-from find-defsystem form)))
-     stream-or-file)))
-
 ;;; ---------------------------------------------------------------------------
 
 (deftestsuite test-format-list () 
@@ -83,9 +54,6 @@ folder will contain the documentation for the parts it names.
   (:test ((ensure-same (format-list '() :empty-list "zip") "zip." :test #'string-equal))))
 
 
-
-We can show parents too -- pointers back up...
-
 Suppose we had a unique mapping from systems / packages -> names (e.g., GUIDs)
   then Tinaa could know how to point to things... 
   in the complex case, we could point to a web of documentations...
@@ -104,20 +72,19 @@ produces a checksum of the (lisp) files in a directory hierarchy (doesn't handle
   find . -name "*.lisp" -type f -print | xargs cat | md5
 
 ASDF-systems 
-  move license to bottom (or separate page or something if it's long)
+  ok - move license to bottom (or separate page or something if it's long)
   vertical align in table (CSS...)
   find and create links for URLs in strings
  
-  have separate folders for each name-holder
+  ok - want a nicer way to show files (extract the "common root")
+  ok - have separate folders for each name-holder
     use when creating indexes and URLs
+  ok - show files from root (not full names)
 
-  - show files from root (not full names)
-
-  * only show 'direct' files (not all files)
+  ok - only show 'direct' files (not all files)
   * tinaa, e.g. says it has 10 extenal symbols but shows only 9
   * bind says two, shows none
   * cl-containers only shows a few
-  * want a nicer way to show files (extract the "common root")
   * sort files
   * sort packages
   * more indexes
@@ -477,6 +444,7 @@ ok - improve
 ok - Make it clear that is is tinaa version in footer, not software
 ok - Several symbols are left out when doing portable-threads .
   This is because the symbols are in CCL and CCL isn't a *package-to-document*
+ok - We can show parents too -- pointers back up...
 
 
 defer - alphabet if more than k-entries for a section
