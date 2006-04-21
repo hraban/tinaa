@@ -145,8 +145,8 @@
   
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-class) (mode (eql :detail))
-                          &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part doclisp-class)
+                         (mode (eql :detail)) &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "~A ~:(~A~)" (header part) name))
     (maybe-show-documentation part)
@@ -178,7 +178,7 @@
                     (no-thing))))))))))))
                 
     ;; summaries
-    (output-table-summary part 2)))
+    (output-table-summary writer part 2)))
 
 
 ;;; ---------------------------------------------------------------------------
@@ -288,8 +288,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-slot) (mode (eql :table-summary))
-                          &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part doclisp-slot)
+                         (mode (eql :table-summary)) &key &allow-other-keys)
   (let* ((instance (direct-instance part)) 
          (slot-info (slot-properties instance (name part)))
          (add-comma? nil)

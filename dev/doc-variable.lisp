@@ -31,8 +31,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-variable) (mode (eql :detail))
-                          &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part doclisp-variable)
+                         (mode (eql :detail)) &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "~A ~:(~A~)" (header part) name))
     

@@ -18,7 +18,9 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
-(defun build-index-of-kind (part subpart-info)
+#+Remove
+;;?? Gary King 2006-04-20: GWK - no longer used
+(defun build-index-of-kind (writer part subpart-info)
   (bind ((parts (item-at (subparts part) (name subpart-info)))
          (symbol-list (sort
                        (delete-duplicates
@@ -54,9 +56,11 @@ DISCUSSION
                             ((:div :class "the-letter") (lml-princ current-symbol))
                             ((:div :class "back-to-top") 
                              ((:a :href "#top") "Back to top"))))))
-                  (html (:p (display-part part :index)))))))))))))
+                  (html (:p (display-part writer part :index)))))))))))))
 
-(defun build-index (part parts-to-index heading)
+;;; ---------------------------------------------------------------------------
+
+(defun build-index (writer part parts-to-index heading)
   (bind ((symbol-list (sort
                        (delete-duplicates
                         (append *required-index-contents*
@@ -89,7 +93,7 @@ DISCUSSION
                           ((:div :class "the-letter") (lml-princ current-symbol))
                           ((:div :class "back-to-top") 
                            ((:a :href "#top") "Back to top"))))))
-                (html (:p (display-part part :index))))))))))))
+                (html (:p (display-part writer part :index))))))))))))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -113,15 +117,15 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part basic-doclisp-part) (mode (eql :index))
-                         &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
+                         (mode (eql :index)) &key &allow-other-keys)
   (html 
    ((:div :class "index-name")
-    (display-part-for-index part (part-name part)))))
+    (display-part-for-index writer part (part-name part)))))
 
 ;;; ---------------------------------------------------------------------------
 
-(defun display-part-for-index (part string)
+(defun display-part-for-index (writer part string)
   (html
    ((:span :class (span-class-for-part-name (name-holder part) part))
     ;;?? Gary King 2006-03-31: this is also in display-part <part> <eql :function>
@@ -132,11 +136,11 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-symbol) (mode (eql :index))
-                          &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part doclisp-symbol)
+                         (mode (eql :index)) &key &allow-other-keys)
   (let ((name-holder (name-holder part)))
     (html
-     ((:div :class "index-name") (display-part-for-index part (part-name part)))
+     ((:div :class "index-name") (display-part-for-index writer part (part-name part)))
      (iterate-elements
       (sort (collect-keys (subparts (name-holder part))) #'string-lessp)
       (lambda (kind)
@@ -146,23 +150,23 @@ DISCUSSION
               (html
                ((:div :class "index-kind")
                 (display-part-for-index 
-                 real-part (string-downcase (part-kind real-part)))))))))))))
+                 writer real-part (string-downcase (part-kind real-part)))))))))))))
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod build-indexes ((part basic-doclisp-part))
+(defmethod build-indexes ((writer basic-page-writer) (part basic-doclisp-part))
   (values))
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod build-indexes ((part name-holder-mixin))
+(defmethod build-indexes ((writer basic-page-writer) (part name-holder-mixin))
   (iterate-elements
    (index-kinds part)
    (lambda (index-description)
      (bind (((part-kinds 
               &key 
               (heading (symbol->string (first part-kinds)))
-              (build-using #'build-index)
+              (build-using (curry #'build-index writer))
               (index-name heading)
               (index-kind (string->symbol index-name))) index-description))
        (when (some-element-p part-kinds
@@ -177,28 +181,6 @@ DISCUSSION
                              (item-at (subparts part) kind)
                              :filter #'index-part-p))
                       heading))))))))
-#+Ignore
-(progn
-  (map-subpart-kinds
-   part
-   (lambda (subpart-info)
-     (when (index-for-kind-p part subpart-info)
-       
-       (let ((*document-file* (index-file-name part subpart-info)))
-         (with-open-file (*document-stream* *document-file* 
-                                            :direction :output
-                                            :if-exists :supersede
-                                            :if-does-not-exist :create)
-           
-           (build-index-of-kind part subpart-info))))))
-  
-  (let ((*document-file* (namestring (make-pathname 
-                          :name (format nil "permuted-index-~(~A~)"
-                                        (name part))
-                          :type "html"
-                          :defaults *document-root*)))) 
-    (with-new-file (*document-stream* *document-file*)
-      (build-permuted-index part))))
 
 ;;; ---------------------------------------------------------------------------
 

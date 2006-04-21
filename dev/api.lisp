@@ -25,10 +25,10 @@ This is a list of instances of subpart-kind."))
 
 ;;; ---------------------------------------------------------------------------
 
-(defgeneric display-part (part mode &key &allow-other-keys)
+(defgeneric display-part (page-writer part mode &key &allow-other-keys)
   (:documentation "Output information about a part. Example modes are 
 :subpart-list, :detail, :summary.")
-  (:method :around (part mode &key &allow-other-keys)
+  (:method :around ((writer simple-page-writer) part mode &key &allow-other-keys)
            (when (documentation-exists-p part mode)
              (call-next-method)))) 
 
@@ -60,7 +60,7 @@ Change *short-documentation-length* to determine how much is returned."))
 
 ;;; ---------------------------------------------------------------------------
 
-(defgeneric document-part-to-file (part)
+(defgeneric document-part-to-file (page-writer part)
   (:documentation ""))
 
 ;;; ---------------------------------------------------------------------------
@@ -93,7 +93,9 @@ Change *short-documentation-length* to determine how much is returned."))
   (:method (part mode)
            ;; one around method -- oh vey!
            (length-at-least-p 
-            (compute-applicable-methods #'display-part (list part mode))
+            (compute-applicable-methods 
+             #'display-part 
+             (list (page-writer (root-parent part))  part mode))
             2)))
 
 ;;; ---------------------------------------------------------------------------
@@ -118,7 +120,7 @@ Change *short-documentation-length* to determine how much is returned."))
 
 ;;; ---------------------------------------------------------------------------
 
-(defgeneric output-table-summary-of-parts (part subpart-name heading)
+(defgeneric output-table-summary-of-parts (writer part subpart-name heading)
   (:documentation ""))
 
 ;;; ---------------------------------------------------------------------------

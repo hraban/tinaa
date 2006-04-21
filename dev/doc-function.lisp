@@ -31,8 +31,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-function) (mode (eql :detail))
-                          &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part doclisp-function)
+                         (mode (eql :detail)) &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "~@(~A~) ~:(~A~)" (header part) name))
     (show-part-parents part)
@@ -94,8 +94,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-generic-function) (mode (eql :detail))
-                          &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part doclisp-generic-function)
+                         (mode (eql :detail)) &key &allow-other-keys)
   (let ((method-count (length (generic-function-methods (instance part)))))
     (documenting-page (part)
       (:h2 (lml-format "Generic Function ~:(~A~) \(~D method~:P\)"
@@ -148,8 +148,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part basic-doclisp-part) (mode (eql :function))
-                         &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
+                         (mode (eql :function)) &key &allow-other-keys)
   (html 
    ((:span :class "function-parameter")
     ;;?? Gary King 2006-03-31: this is also in display-part-for-index
@@ -220,8 +220,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-method) (mode (eql :table-summary))
-                          &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part doclisp-method)
+                         (mode (eql :table-summary)) &key &allow-other-keys)
   (let ((gf (find-part (name-holder part) 'generic-function (name part))))
     (documenting part
       ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))

@@ -33,7 +33,7 @@ use clustering?
 (defclass* other-dependency-edge (tinaa-edge)
   ())
 
-(defmethod make-part-graph ((part basic-doclisp-part))
+(defmethod make-part-graph ((part basic-doclisp-part) &key)
   (values))
 
 (defmethod add-part-vertex ((graph cl-graph:basic-graph) (part basic-doclisp-part))
@@ -53,11 +53,12 @@ use clustering?
   ;; edges are 
   (let ((g (cl-graph:make-graph 'cl-graph:graph-container)))
     (labels ((do-part (part depth)
-               (let ((new-depth (when depth (1- depth))))
-                 (add-edges part new-depth 'direct-package 'direct-package-edge)
-                 ;(add-edges part new-depth 'other-package 'other-package-edge)
-                 (add-edges part new-depth 'direct-dependency 'direct-dependency-edge)
-                 #+Ignore (add-edges part new-depth 'other-dependency 'other-dependency-edge)))
+               (spy part depth)
+               (when (or (not depth) (plusp depth))
+                 (add-edges part depth 'direct-package 'direct-package-edge)
+                 ;(add-edges part depth 'other-package 'other-package-edge)
+                 (add-edges part depth 'direct-dependency 'direct-dependency-edge)
+                 #+Ignore (add-edges part depth 'other-dependency 'other-dependency-edge)))
              (add-edges (part depth part-kind edge-class)
                (let ((part-vertex (add-part-vertex g part)))
                  (iterate-elements 
@@ -67,15 +68,16 @@ use clustering?
                      g part-vertex (add-part-vertex g other-part) 
                      :edge-class edge-class
                      :if-duplicate-do :ignore)
-                    (when (or (not depth) (plusp depth))
-                      (do-part other-part (when depth (1- depth)))))))))
+                    (do-part other-part (when depth (1- depth))))))))
       (do-part part depth))
     g))
 
+#|
 (cl-graph:graph->dot 
- (make-part-graph ms :depth 3)
+ (make-part-graph ms :depth 1)
  "user-home:temporary;foo.dot"
  :vertex-labeler (lambda (v s) (princ (part-name (element v)) s)))
 (cl-graph:graph->dot 
  (make-part-graph ms :depth 3)
  t)
+|#

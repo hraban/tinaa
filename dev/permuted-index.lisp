@@ -21,7 +21,8 @@
   "A permuted index includes each n-word entry up to n times, at points corresponding to the use of each word in the entry as the sort key. For example, a symbol FOO-BAR would occur twice, once under FOO and BAR. This allows you to use any word in the symbol's name to search for that symbol."
   (declare (ignore heading))
   
-  (bind ((parts (loop for symbol-part in parts-to-index nconc
+  (bind ((writer (page-writer (root-parent main-part)))
+         (parts (loop for symbol-part in parts-to-index nconc
                       (parts-matching-symbol symbol-part main-part)))
          (symbol-list (sort
                        (delete-duplicates
@@ -74,7 +75,7 @@
                           ((:div :class "the-letter") (lml-princ current-letter))
                           ((:div :class "back-to-top") 
                            ((:a :href "#top") "Back to top"))))))
-                (display-part part :permuted-index :spaces (- max-size index)))))))))))
+                (display-part writer part :permuted-index :spaces (- max-size index)))))))))))
 
 #+Testing
 ;;?? trying to use this iterator to not all the <pre></pre> stuff
@@ -92,7 +93,7 @@
                       ((:div :class "the-letter") (lml-princ current-letter))
                       ((:div :class "back-to-top") 
                        ((:a :href "#top") "Back to top"))))))
-            (display-part part :permuted-index :spaces (- max-size index))))
+            (display-part writer part :permuted-index :spaces (- max-size index))))
         (move-forward part-iterator)))
 
 ;;; ---------------------------------------------------------------------------
@@ -107,11 +108,11 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part basic-doclisp-part) (mode (eql :permuted-index))
-                         &key (spaces 0) &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
+                         (mode (eql :permuted-index)) &key (spaces 0) &allow-other-keys)
   (html
    (:pre (lml-princ (make-string-of-size spaces #\ )) 
-         (display-part-for-index part (part-name part))
+         (display-part-for-index writer part (part-name part))
          (lml-format " \(~(~A~)\)" (part-kind-abbreviation part)))))
 
 ;;; ---------------------------------------------------------------------------

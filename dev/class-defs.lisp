@@ -27,6 +27,16 @@
 
 ;;; ---------------------------------------------------------------------------
 
+(defclass* basic-page-writer ()
+  ())
+
+;;; ---------------------------------------------------------------------------
+
+(defclass* simple-page-writer (basic-page-writer)
+  ())
+
+;;; ---------------------------------------------------------------------------
+
 (defmethod index-kinds ((part basic-doclisp-part))
   (index-kinds (name-holder part)))
 
@@ -83,8 +93,18 @@
                              :initial-element-fn 
                              (lambda ()
                                (make-container
-                                'alist-container))) r))
-  (:documentation "A part with sub-parts."))
+                                'alist-container))) r)
+   (page-writer-class :unbound ir)
+   (page-writer :unbound r))
+  (:documentation "A part with sub-parts.")
+  (:default-initargs
+    :page-writer-class 'simple-page-writer))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod initialize-instance :after ((object doclisp-assembly) &key)
+  (setf (slot-value object 'page-writer)
+        (make-instance (page-writer-class object))))
 
 ;;; ---------------------------------------------------------------------------
 

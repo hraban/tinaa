@@ -73,6 +73,7 @@ DISCUSSION
 ;;; ---------------------------------------------------------------------------
 
 (defun root-parent (part)
+  "Go up the parent chain until there are no parents... that's the root."
   (if (some-parent part)
     (root-parent (some-parent part))
     part))
@@ -309,8 +310,8 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part basic-doclisp-part) (mode (eql :name))
-                         &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
+                         (mode (eql :name)) &key &allow-other-keys)
   (html 
    (if (documentation-exists-p part :detail)
      (html ((:a :href (relative-url (url part)))

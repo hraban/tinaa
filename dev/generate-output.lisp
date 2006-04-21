@@ -23,6 +23,11 @@ to the kind of system you are documenting."
         (*output-calls* (make-container 'associative-container)))
     (grovel-part *root-part*)
     
+    (map-parts-from-leaves 
+     *root-part*
+     (lambda (sub-part)
+       (setf (url sub-part) (url-for-part sub-part))))
+    
     (format t "~%Writing files")
     (when write-files?
       (build-documentation *root-part* destination)) 
@@ -54,17 +59,14 @@ to the kind of system you are documenting."
 
 (defmethod build-documentation ((part doclisp-assembly) root &key (erase-first? nil))
   (let ((*document-root* (namestring (translate-logical-pathname root)))
-        (*root-part* part))
+        (*root-part* part)
+        (root-parent (root-parent part)))
     (when erase-first?
       (fad:delete-directory-and-files *document-root*
                                       :if-does-not-exist :ignore))
     (ensure-directories-exist *document-root*)
-    (map-parts-from-leaves 
-     part
-     (lambda (sub-part)
-       (setf (url sub-part) (url-for-part sub-part))))
-    
     (set-flags part nil)
+    
     (map-parts-from-leaves 
      part
      (lambda (sub-part)
@@ -74,22 +76,22 @@ to the kind of system you are documenting."
                     (documentation-exists-p sub-part :detail))
            (let ((*document-file* (namestring (translate-logical-pathname 
                                                (url->file (url sub-part)))))) 
-             (document-part-to-file sub-part)))))))
+             (document-part-to-file (page-writer root-parent) sub-part)))))))
 
   (write-css-file root)
   (build-contents-page root (content-things-from-part part)))
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod document-part-to-file ((part basic-doclisp-part))
+(defmethod document-part-to-file ((writer basic-page-writer) (part basic-doclisp-part))
   (let ((*current-part* part))
     (ensure-directories-exist *document-file*)
     (with-open-file (*document-stream* *document-file* 
                                        :direction :output
                                        :if-exists :supersede
                                        :if-does-not-exist :create)
-      (display-part part :detail))
-    (build-indexes part)))
+      (display-part writer part :detail))
+    (build-indexes writer part)))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -157,18 +159,18 @@ to the kind of system you are documenting."
 
 ;;; ---------------------------------------------------------------------------
 
-(defun output-table-summary (part parts-per-row) 
+(defun output-table-summary (writer part parts-per-row) 
   (declare (ignore parts-per-row))
   (map-subpart-kinds
    part
    (lambda (subpart-info)
      (when (document? subpart-info)
        (output-table-summary-of-parts 
-        part (name subpart-info) (heading subpart-info))))))
+        writer part (name subpart-info) (heading subpart-info))))))
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod output-table-summary-of-parts (part subpart-name heading)
+(defmethod output-table-summary-of-parts (writer part subpart-name heading)
   (let ((parts (item-at (subparts part) subpart-name))
         (count 1))
     
@@ -187,7 +189,7 @@ to the kind of system you are documenting."
           (lambda (thing) 
             (when (document? thing)
               (let ((*current-part-index* count))
-                (display-part thing :table-summary))
+                (display-part writer thing :table-summary))
               (incf count))))))))))
 
 ;;; ---------------------------------------------------------------------------
@@ -225,8 +227,8 @@ to the kind of system you are documenting."
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part basic-doclisp-part) (mode (eql :table-summary))
-                          &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
+                         (mode (eql :table-summary)) &key &allow-other-keys)
   (documenting part
    ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
        (:th (link-for mode))

@@ -200,8 +200,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-asdf-system) (mode (eql :detail))
-                         &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part doclisp-asdf-system)
+                         (mode (eql :detail)) &key &allow-other-keys)
   (documenting-page (part)
     (:h2 (lml-format "ASDF System ~A" name))
     (maybe-show-documentation part)
@@ -246,7 +246,7 @@
     (show-part-parents part)
                 
     ;; summaries
-    (output-table-summary part 1)))
+    (output-table-summary writer part 1)))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -281,7 +281,9 @@
        
 ;;; ---------------------------------------------------------------------------
 
-(defmethod output-table-summary-of-parts (part (subpart-name (eql 'other-file)) heading)
+(defmethod output-table-summary-of-parts (writer part
+                                                 (subpart-name (eql 'other-file))     
+                                                 heading)
   (let ((parts (item-at (subparts part) subpart-name))
         (count 1)
         (system nil))
@@ -305,11 +307,11 @@
                   (html
                    ((:tr :class "subsystem-name")
                     (:th (if sub-system 
-                           (display-part sub-system :name)
+                           (display-part writer sub-system :name)
                            (lml-princ system)))))))
               
               (let ((*current-part-index* count))
-                (display-part thing :table-summary))
+                (display-part writer thing :table-summary))
               (incf count))))))))))
 
 
@@ -352,8 +354,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-file) (mode (eql :table-summary))
-                         &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part doclisp-file)
+                         (mode (eql :table-summary)) &key &allow-other-keys)
   (documenting part
    ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
     ((:th :valign "top") 

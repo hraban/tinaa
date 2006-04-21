@@ -248,7 +248,7 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod document-part-to-file ((part doclisp-package))
+(defmethod document-part-to-file ((writer basic-page-writer) (part doclisp-package))
   (fluid-bind (((symbol-kinds part) '(:external)))
     (update-document-part-p part)
     (call-next-method))
@@ -258,7 +258,7 @@
                                                :type "html"
                                                :defaults *document-file*)))
     (update-document-part-p part)
-    (call-next-method part)))
+    (call-next-method)))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -290,8 +290,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((part doclisp-package) (mode (eql :detail))
-                          &key &allow-other-keys)
+(defmethod display-part ((writer simple-page-writer) (part doclisp-package)
+                         (mode (eql :detail)) &key &allow-other-keys)
   (let* ((package (find-package (name part)))
          (package-name (string-capitalize (package-name package)))
          (sentence-starter (format nil "Package ~A " package-name)))
@@ -344,7 +344,7 @@
                     (symbol-count package :external))))
             
       ;; summaries
-      (output-table-summary part 1))))
+      (output-table-summary writer part 1))))
 
 ;;; ---------------------------------------------------------------------------
 
