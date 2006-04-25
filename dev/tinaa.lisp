@@ -320,6 +320,17 @@ DISCUSSION
 
 ;;; ---------------------------------------------------------------------------
 
+(defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
+                         (mode (eql :name+type)) &key &allow-other-keys)
+  (html 
+   (lml-princ (header part)) " "
+   (if (documentation-exists-p part :detail)
+     (html ((:a :href (relative-url (url part)))
+            (lml-princ (part-name part))))
+     (lml-princ (part-name part)))))
+
+;;; ---------------------------------------------------------------------------
+
 (defun parts-with-no-documentation (part)
   (let ((result nil))
     (map-parts-from-leaves

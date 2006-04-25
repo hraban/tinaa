@@ -275,22 +275,6 @@
 
 ;;; ---------------------------------------------------------------------------
 
-#+Ignore
-;; sort of works but has a lot of duplication
-(defmethod build-documentation ((part doclisp-package) root)
-  (fluid-bind (((symbol-kinds part) '(:external)))
-    (update-document-part-p part)
-    (call-next-method))
-  
-  (fluid-bind (((symbol-kinds part) '(:internal :external)))
-    (update-document-part-p part)
-    (call-next-method 
-     part
-     (merge-pathnames (make-pathname :directory `(:relative "internal"))
-                      root))))
-
-;;; ---------------------------------------------------------------------------
-
 (defmethod display-part ((writer simple-page-writer) (part doclisp-package)
                          (mode (eql :detail)) &key &allow-other-keys)
   (let* ((package (find-package (name part)))
@@ -359,6 +343,18 @@
      (loop for x being each symbol of package
            when (eq (symbol-package x) package)
            summing 1))))
+
+#+Temp
+(defun symbols (package kind)
+  (ecase kind
+    (:external
+     (loop for x being each external-symbol of package
+           when (eq (symbol-package x) package)
+           collect x))
+    (:internal
+     (loop for x being each symbol of package
+           when (eq (symbol-package x) package)
+           collect x))))
 
 
 

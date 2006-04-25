@@ -1,6 +1,6 @@
 (in-package tinaa)
 
-(defun build-contents-page (root top-level-things)
+(defmethod build-contents-page ((writer basic-page-writer) root top-level-things)
   (let ((*document-file* (merge-pathnames 
 		          "index.html"
 		          (namestring (translate-logical-pathname root)))))

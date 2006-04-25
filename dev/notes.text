@@ -1,39 +1,34 @@
 (in-package tinaa)
 
-- Indexes for ASDF-System - a combined index of it's packages...
+- graphs: what if more than one graph per part?
+- need to associate url's
+- need to include in pages...
+
+- in part-of: if have X a, X b, X c -> X: a, b, c...
+- System properties Tinaa could use to control output...
+- in index and in detail page, show internal / external [in general, 
+    allow some sort of modifier, perhaps in combination with a style sheet]
+- Indexes for ASDF-System - a combined index of its packages...
 - if there are no indexes, don't show "Indexes:" text on page
+? - filenames (on asdf-system page) can use entire space
+? - (on asdf-system page), make it clear what the headings in the other files list are
+- (on asdf-system page), make it clear that e-mail is an e-mail! (graphic)
+- (on asdf-system page), make it clear what a "dependency" is 
+- tinaa, e.g. says it has 10 extenal symbols but shows only 9
+  - problem is that slots aren't shown on package page b/c (I think)
+    package tinaa has no slots as parts. The slots are parts of the classes...
+- bind says 41 internal, shows far fewer
+- sort files
+- initargs names not printed correctly (in doc-class.lisp)
 
 As it stands today, name-holders will appear as folders at the root level. Every
 name-holder / name-holder-kind pair must therefore be unique. Each name-holder's 
 folder will contain the documentation for the parts it names. 
 
-
 (progn
-  (setf ms
-        (document-system 'asdf-system 'moptilities
-                         "user-home:docs;asdf;moptilities;"
-                         :write-files? nil)))
-
-(asdf:oos 'asdf:load-op 'floyd-warshall)
-(document-system 'asdf-system 'floyd-warshall
-                 "user-home:docs;asdf;floyd-warshall;"
-                 :write-files? t)
-
-(build-documentation ms "user-home:docs;asdf;moptilities;" :erase-first? t)
-
-(progn
-  (fad:delete-directory-and-files "user-home:docs;asdf;tinaa;"
-                                  :if-does-not-exist :ignore)
   (setf ms
         (document-system 'asdf-system 'tinaa
                          "user-home:docs;asdf;tinaa;")))
-
-(profile:with-profiling  
-  (setf ms
-        (document-system 'asdf-system 'tinaa
-                         "user-home:docs;asdf;tinaa;"
-                         :write-files? nil
-                         :show-parts-without-documentation? nil)))
 
 ;;; ---------------------------------------------------------------------------
 
@@ -72,21 +67,8 @@ produces a checksum of the (lisp) files in a directory hierarchy (doesn't handle
   find . -name "*.lisp" -type f -print | xargs cat | md5
 
 ASDF-systems 
-  ok - move license to bottom (or separate page or something if it's long)
   vertical align in table (CSS...)
   find and create links for URLs in strings
- 
-  ok - want a nicer way to show files (extract the "common root")
-  ok - have separate folders for each name-holder
-    use when creating indexes and URLs
-  ok - show files from root (not full names)
-
-  ok - only show 'direct' files (not all files)
-  * tinaa, e.g. says it has 10 extenal symbols but shows only 9
-  * bind says two, shows none
-  * cl-containers only shows a few
-  * sort files
-  * sort packages
   * more indexes
 
   missing indexes (none built)
@@ -106,29 +88,13 @@ ASDF-systems
 
 
 Package
-  in index and in detail page, show internal / external [in general, 
-    allow some sort of modifier, perhaps in combination with a style sheet]
-
   Missing indexes links on details
-
-  Change heading to Package X then a sub-heading of symbol kinds
 
 Design
 
   allow additional stuff to get generated on a page via plug-ins
 
   allow filters for documentation -> HTML 
-
-
-(progn
-  (fad:delete-directory-and-files "user-home:docs;moptilities;")
-  (document-system 'package 'moptilities "user-home:docs;moptilities;"))
-
-
-for packages
-  want shared 'contents'
-  separate sets of indexes
-  separate 'cover' pages
 
 permuted index is missing conditions and classes?
   includes only generic functions?
@@ -266,13 +232,10 @@ lookup to the HyperSpec? It'd be nice if package authors provided a
 way to map from symbols to documentation URLs, preferably in a 
 programmatic way that integrates with SLIME.
 
-Should we allow different views of a thing
-
 sort container for associative containers
 
 how do we extend it 
   e.g., get internal or external symbols of a package
-
   options become part of a web form? generate pages for all option combinations?
 
 given a system and a part-name, I get parts. I'll need to (potentially) make
@@ -445,6 +408,11 @@ ok - Make it clear that is is tinaa version in footer, not software
 ok - Several symbols are left out when doing portable-threads .
   This is because the symbols are in CCL and CCL isn't a *package-to-document*
 ok - We can show parents too -- pointers back up...
-
-
+  ok - move license to bottom (or separate page or something if it's long)
+  ok - want a nicer way to show files (extract the "common root")
+  ok - have separate folders for each name-holder
+    use when creating indexes and URLs
+  ok - show files from root (not full names)
+  ok - only show 'direct' files (not all files)
+  
 defer - alphabet if more than k-entries for a section

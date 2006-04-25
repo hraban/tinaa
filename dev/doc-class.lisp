@@ -322,7 +322,8 @@
              (when add-comma? (lml-princ ", "))
              (html ((:span :class "property-heading") "Initargs:")
                    ((:span :class "property-value") 
-                    (lml-format "~(~A~)" (list->formatted-string it ", " ""))))
+                    ;;?? hacky -- wish I could remember format directives!
+                    (apply #'lml-format "~(~#[~;~S~:;~@{~#[~;~]~S~^,~}~]~)" it)))
              (setf add-comma? t))
            
            (awhen accessors

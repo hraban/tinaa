@@ -4,7 +4,7 @@
 
 (defun document-system (system-kind system-name destination &rest args
                                     &key (show-parts-without-documentation? t)
-                                    (write-files? t))
+                                    (write-files? t) (page-writer-class nil))
   "Create TINAA documentation for a system. System-kind should be 'package or 
 some other value for which it makes sense (e.g., an EKSL-system or an ASDF
 system if you have those loaded...). System-name is the identifier of the 
@@ -15,6 +15,10 @@ to the kind of system you are documenting."
     (assert (fad:directory-pathname-p destination)))
   (remf args :show-parts-without-documentation?)
   (remf args :write-files?)
+  
+  ;; remove argument if it's null (so that we get the default)
+  (unless page-writer-class (remf args :page-writer-class))
+  
   (let ((*root-part* (apply #'make-part nil system-kind system-name 
                             :document? t 
                             :name-holder :self 
@@ -30,7 +34,7 @@ to the kind of system you are documenting."
     
     (format t "~%Writing files")
     (when write-files?
-      (build-documentation *root-part* destination)) 
+      (build-documentation (page-writer *root-part*) *root-part* destination)) 
     
     (when show-parts-without-documentation?
       (format t "~%The following parts appear to have no documentation:")
@@ -43,43 +47,54 @@ to the kind of system you are documenting."
 
 ;;; ---------------------------------------------------------------------------
 
-(defun write-css-file (destination &rest args &key (if-exists :supersede)
+(defun write-css-file (writer destination &rest args &key (if-exists :supersede)
                                    &allow-other-keys)
   (let ((output (merge-pathnames 
 		 "tinaa.css"
 		 (namestring (translate-logical-pathname destination)))))
     (apply #'copy-file 
-           (or 
-            (pathname-for-system-file 'tinaa "tinaa.css")
-            (error "can't find tinaa.css"))
+           (css-file-for-writer writer) 
            output
            :if-exists if-exists args)))
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod build-documentation ((part doclisp-assembly) root &key (erase-first? nil))
+(defmethod css-file-for-writer ((writer basic-page-writer))
+  (or 
+   (pathname-for-system-file 'tinaa "tinaa.css")
+   (error "can't find tinaa.css")))
+
+;;; ---------------------------------------------------------------------------
+
+(defmethod build-documentation :around
+           ((writer basic-page-writer) (part doclisp-assembly)
+            root &key (erase-first? nil))
   (let ((*document-root* (namestring (translate-logical-pathname root)))
-        (*root-part* part)
-        (root-parent (root-parent part)))
+        (*root-part* part))
     (when erase-first?
       (fad:delete-directory-and-files *document-root*
                                       :if-does-not-exist :ignore))
     (ensure-directories-exist *document-root*)
-    (set-flags part nil)
-    
-    (map-parts-from-leaves 
-     part
-     (lambda (sub-part)
-       (when (not (flag? sub-part))
-         (setf (flag? sub-part) t)
-         (when (and (document? sub-part) 
-                    (documentation-exists-p sub-part :detail))
-           (let ((*document-file* (namestring (translate-logical-pathname 
-                                               (url->file (url sub-part)))))) 
-             (document-part-to-file (page-writer root-parent) sub-part)))))))
+    (call-next-method)))
 
-  (write-css-file root)
-  (build-contents-page root (content-things-from-part part)))
+;;; ---------------------------------------------------------------------------
+
+(defmethod build-documentation ((writer basic-page-writer) (part doclisp-assembly)
+                                root &key &allow-other-keys)
+  (set-flags part nil)
+  (map-parts-from-leaves 
+   part
+   (lambda (sub-part)
+     (when (not (flag? sub-part))
+       (setf (flag? sub-part) t)
+       (when (and (document? sub-part) 
+                  (documentation-exists-p sub-part :detail))
+         (let ((*document-file* (namestring (translate-logical-pathname 
+                                             (url->file (url sub-part)))))) 
+           (document-part-to-file writer sub-part))))))
+
+  (write-css-file writer root)
+  (build-contents-page writer root (content-things-from-part part)))
 
 ;;; ---------------------------------------------------------------------------
 

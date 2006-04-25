@@ -124,8 +124,11 @@
 ;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-asdf-system) (part-name (eql 'other-file)))
-  (loop for system in (collect-system-dependencies (name part)) nconc
-        (partname-list (make-instance 'doclisp-asdf-system :name system) 'direct-file)))
+  (sort 
+   (loop for system in (collect-system-dependencies (name part)) nconc
+         (partname-list (make-instance 'doclisp-asdf-system :name system) 'direct-file))
+   #'string-lessp
+   :key #'cdr))
 
 ;;; ---------------------------------------------------------------------------
   
@@ -296,7 +299,7 @@
       (html
        ((:div :class "table-summary")
         (:h3 (lml-princ heading)) 
-        ((:table :id (string-downcase heading))
+        ((:table :id (substitute-if #\- 'whitespacep (string-downcase heading)))
          (iterate-container 
           parts
           (lambda (thing) 
@@ -307,7 +310,7 @@
                   (html
                    ((:tr :class "subsystem-name")
                     (:th (if sub-system 
-                           (display-part writer sub-system :name)
+                           (display-part writer sub-system :name+type)
                            (lml-princ system)))))))
               
               (let ((*current-part-index* count))
@@ -358,34 +361,9 @@
                          (mode (eql :table-summary)) &key &allow-other-keys)
   (documenting part
    ((:tr :class (if (oddp *current-part-index*) "oddrow" ""))
-    ((:th :valign "top") 
-     (lml-princ  (enough-filename part))))))
+    (:td (lml-princ  (enough-filename part))))))
 
 
 
-;;; ---------------------------------------------------------------------------
-;;; misc.
-;;; ---------------------------------------------------------------------------
 
-#+Ignore
-;; returns a list of properties found in the defsystems I have...
-(let ((props nil))
-  (flet ((find-defsystem (stream-or-file)
-           (let ((*package* (find-package :asdf)))
-             (map-forms-in-file 
-              (lambda (form)
-                (when (and (consp form)
-                           (eql (car form) 'asdf:defsystem))
-                  (return-from find-defsystem form)))
-              stream-or-file))))
-    (fad:walk-directory
-     "Billy-Pilgrim:repository:darcs:asdf-systems"
-     (lambda (file)
-       (let ((system-def (find-defsystem file)))
-         (print file)
-         (when system-def
-           (loop for key in (cddr system-def) by #'cddr do
-                 (push key props)))))
-     :test (lambda (x) (string-equal (pathname-type x) "asd"))))
-  (sort (remove-duplicates props) #'string-lessp))
 

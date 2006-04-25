@@ -17,10 +17,11 @@
 
 
 (progn
-  (setf ms
+  (setf mopu
         (document-system 'asdf-system 'moptilities
                          "user-home:docs;asdf;moptilities;"
-                         :write-files? nil)))
+                         :write-files? t
+                         :page-writer-class 'page-writer-with-graphs)))
 
 
 (document-system 'asdf-system 'floyd-warshall
@@ -30,8 +31,6 @@
 (build-documentation ms "user-home:docs;asdf;moptilities;" :erase-first? t)
 
 (progn
-  (fad:delete-directory-and-files "user-home:docs;asdf;tinaa;"
-                                  :if-does-not-exist :ignore)
   (setf ms
         (document-system 'asdf-system 'tinaa
                          "user-home:docs;asdf;tinaa;")))

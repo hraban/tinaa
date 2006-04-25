@@ -91,6 +91,10 @@ body {
 
 /*<group=table-summary>*/
 
+#other-file td {
+	padding-left: 1em;
+}
+
 .table-summary {
   border-collapse: collapse;
 	vertical-align: top;
