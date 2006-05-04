@@ -5,15 +5,15 @@
 ;;
 ;; i.e., /users/gwking/docs/package/tinaa/"
 ;;
-(document-system :package 'tinaa
-                 "user-home:docs;package;tinaa;")
+(tinaa:document-system :package 'tinaa
+                       "user-home:docs;package;tinaa;")
 
 
 ;; Build documentation for the ASDF-System Tinaa and write it to
 ;; the directory "user-home:docs;asdf;tinaa;"
 ;;
-(document-system :asdf-system 'tinaa
-                 "user-home:docs;asdf;tinaa;")
+(tinaa:document-system :asdf-system 'tinaa
+                       "user-home:docs;asdf;tinaa;")
 
 
 (progn
