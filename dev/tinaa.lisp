@@ -14,7 +14,7 @@ DISCUSSION
 
 |#
 
-(in-package doclisp)
+(in-package #:doclisp)
 
 ;; from utils
 (defmethod name (object)

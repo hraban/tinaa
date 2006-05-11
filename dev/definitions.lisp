@@ -1,4 +1,4 @@
-(in-package tinaa)
+(in-package #:tinaa)
 
 (defparameter *tinaa-home-page* "http://common-lisp.net/project/tinaa/")
 (defparameter *tinaa-version* "0.3")

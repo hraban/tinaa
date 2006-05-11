@@ -1,4 +1,4 @@
-(in-package tinaa)
+(in-package #:tinaa)
 
 (let ((result (make-array 50000 :fill-pointer 0 :adjustable t)))
   (defun string->html (string &optional (max-length nil))

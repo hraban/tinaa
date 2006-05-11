@@ -1,4 +1,4 @@
-(in-package tinaa)
+(in-package #:tinaa)
 
 #+Test
 (document-system 'tapir-system 'foo "home:tapir;")

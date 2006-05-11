@@ -1,4 +1,4 @@
-(in-package tinaa)
+(in-package #:tinaa)
 
 (setf *default-packages-to-ignore* 
       (delete nil 

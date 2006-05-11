@@ -3,7 +3,7 @@
   (:import-from "TINAA"
                 #:*document-root*
                 #:url->file))
-(in-package tinaa-tests)
+(in-package #:tinaa-tests)
 
 (defun pathnames-same-p (p1 p2)
   (string-equal (namestring (translate-logical-pathname p1))

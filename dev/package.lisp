@@ -1,4 +1,4 @@
-(in-package common-lisp-user)
+(in-package #:common-lisp-user)
 
 (defpackage #:tinaa
   (:use #:common-lisp #:moptilities #:metatilities #:lml2 #:metabang.bind 

@@ -1,4 +1,4 @@
-(in-package doclisp)
+(in-package #:doclisp)
 
 #|
 ;; empirically most of the properties found in ASDF system definitions

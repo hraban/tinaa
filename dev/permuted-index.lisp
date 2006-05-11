@@ -1,4 +1,4 @@
-(in-package tinaa)
+(in-package #:tinaa)
 
 (defun parts-matching-symbol (symbol-part name-holder)
   "Returns a list of parts in name-holder than have the same name as symbol"

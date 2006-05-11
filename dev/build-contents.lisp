@@ -1,4 +1,4 @@
-(in-package tinaa)
+(in-package #:tinaa)
 
 (defmethod build-contents-page ((writer basic-page-writer) root top-level-things)
   (let ((*document-file* (merge-pathnames 

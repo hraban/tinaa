@@ -1,4 +1,4 @@
-(in-package tinaa)
+(in-package #:tinaa)
 
 #|
 make package and system look different

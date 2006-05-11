@@ -1,4 +1,4 @@
-(in-package doclisp)
+(in-package #:doclisp)
 
 (defclass* doclisp-symbol (doclisp-part)
   ()

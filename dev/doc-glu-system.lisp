@@ -1,4 +1,4 @@
-(in-package doclisp)
+(in-package #:doclisp)
 
 (defclass* doclisp-glu-system (name-holder-mixin doclisp-assembly)
   ()

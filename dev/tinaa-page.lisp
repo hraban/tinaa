@@ -1,4 +1,4 @@
-(in-package doclisp)
+(in-package #:doclisp)
 (with-open-file (*document-stream* "ccl:tina.html" 
                                    :direction :output
                                    :if-exists :supersede

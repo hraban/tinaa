@@ -1,4 +1,4 @@
-(in-package doclisp)
+(in-package #:doclisp)
 
 (defcondition part-kind-unknown-error ()
   ((parent :unbound ir)

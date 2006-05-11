@@ -1,4 +1,4 @@
-(in-package tinaa)
+(in-package #:tinaa)
 
 (defgeneric document-part-p (name-holder part)
   (:documentation ""))

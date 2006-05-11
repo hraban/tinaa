@@ -1,4 +1,4 @@
-(in-package tinaa)
+(in-package #:tinaa)
 
 ;; Build documentation for the package Tinaa and write it to
 ;; the directory "user-home:docs;package;tinaa;"

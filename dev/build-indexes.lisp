@@ -9,7 +9,7 @@ Author: Gary King
 DISCUSSION
 
 |#
-(in-package doclisp)
+(in-package #:doclisp)
 
 (defvar *required-index-contents* 
   '("A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K"
