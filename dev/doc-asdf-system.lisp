@@ -149,7 +149,7 @@
            part
            :include-pathname? t
            :system-closure? system-closure?
-           :include-associates? nil)))
+           :include-non-source? nil)))
 
 ;;; ---------------------------------------------------------------------------
 
