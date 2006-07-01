@@ -81,4 +81,13 @@
 (defun set-flags (part value)
   (map-parts-from-leaves part (lambda (p) (setf (flag? p) value))))
 
+;;; ---------------------------------------------------------------------------
 
+;;?? also in regenerate-websites
+(defun lml-insert-file (file)
+  (if (probe-file file)
+      (with-open-file (in file :direction :input)
+        (do ((line (read-line in nil 'eof) (read-line in nil 'eof)))
+	    ((eq line 'eof))
+	  (html (lml-princ line))))
+    (format *trace-output* "Warning: unable to insert LML file ~S" file)))

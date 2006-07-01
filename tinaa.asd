@@ -23,7 +23,7 @@ DISCUSSION
                                      (:file "class-defs"
                                             :depends-on ("package"))
                                      (:file "api"
-                                            :depends-on ("package"))
+                                            :depends-on ("package" "class-defs"))
                                      (:file "macros"
                                             :depends-on ("api" "package"))
                                      (:file "utilities"
@@ -73,4 +73,5 @@ DISCUSSION
   :depends-on (defsystem-compatibility
                metatilities
                lml2
+               trivial-shell
                cl-graph))

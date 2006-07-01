@@ -264,6 +264,9 @@ DISCUSSION
                                   (setf (item-at (item-at (subparts part) kind) (name sub-part))
                                         sub-part))
                                 
+                                (format t "~%~20,A ~20,A ~20,A" 
+                                        part-name subpart-kind (part-type sub-part)) 
+                                
                                 ;;?? Gary King 2005-12-30: perhaps a hack
                                 ;;?? Gary King 2006-03-31: perhaps another hack <smile>
                                 ;;   make-part needn't return a part of the same kind as subpart-kind (cf class / conditions)
