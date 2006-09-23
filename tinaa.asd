@@ -14,7 +14,7 @@ DISCUSSION
 
 (defsystem tinaa
   :author "Gary Warren King <gwking@metabang.com>"
-  :version "0.4"
+  :version "0.5.1"
   :maintainer "Gary Warren King <gwking@metabang.com>"
   :licence "Various license"
 
