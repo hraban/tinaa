@@ -263,7 +263,7 @@ DISCUSSION
                                 (unless (eq subpart-kind kind)
                                   (setf (item-at (item-at (subparts part) kind) (name sub-part))
                                         sub-part))
-                                
+                                #+(or)
                                 (format t "~%~20,A ~20,A ~20,A" 
                                         part-name subpart-kind (part-type sub-part)) 
                                 
