@@ -249,7 +249,8 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod document-part-to-file ((writer basic-page-writer) (part doclisp-package))
+(defmethod document-part-to-file ((writer basic-page-writer)
+				  (part doclisp-package))
   (fluid-bind (((symbol-kinds part) '(:external)))
     (update-document-part-p part)
     (call-next-method))
@@ -263,7 +264,7 @@
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod show-part-parents :after ((part doclisp-package))
+(defmethod maybe-show-documentation :before ((part doclisp-package))
   ;;?? hacky!!!! - depends too much on other stuff that is going on.
   (if (equal (symbol-kinds part) '(:external))
     (html 
