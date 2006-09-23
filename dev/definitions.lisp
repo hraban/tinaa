@@ -14,3 +14,5 @@
 (defvar *packages-to-document* nil)
 (defvar *default-packages-to-ignore* nil) 
 (defvar *output-calls* nil)
+(defvar *css-file* nil
+  "If set, this should point to the CSS file that Tinaa should use.")

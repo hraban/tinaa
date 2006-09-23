@@ -21,5 +21,6 @@
    #:parents
    #:instance
    
-   #:document-system))
+   #:document-system
+   #:*css-file*))
 

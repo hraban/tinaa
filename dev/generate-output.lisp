@@ -6,19 +6,23 @@
                                     &key (show-parts-without-documentation? t)
                                     (write-files? t) (page-writer-class nil))
   "Create TINAA documentation for a system. System-kind should be 'package or 
-some other value for which it makes sense (e.g., an EKSL-system or an ASDF
-system if you have those loaded...). System-name is the identifier of the 
+some other value for which it makes sense (e.g., an 'asdf-system if ASDFis
+loaded...). System-name is the identifier of the 
 system. Destination is the location in the file system where you want the 
 documentation to go. Finally, you can pass in other arguments that are specific
-to the kind of system you are documenting."
+to the kind of system you are documenting.
+
+Note that system-kind will be coerced into a symbol interned in the Tinaa 
+package because this makes Tinaa easier to use. If you happen to write your 
+own system-kind, it will need to be a class defined in the Tinaa package."
   (when write-files?
     (assert (fad:directory-pathname-p destination)))
   (remf args :show-parts-without-documentation?)
   (remf args :write-files?)
-  
+  ;;
   ;; remove argument if it's null (so that we get the default)
   (unless page-writer-class (remf args :page-writer-class))
-  
+  (setf system-kind (intern (string system-kind) :tinaa))
   (let ((*root-part* (apply #'make-part nil system-kind system-name 
                             :document? t 
                             :name-holder :self 
@@ -26,43 +30,44 @@ to the kind of system you are documenting."
         (*packages-to-document* nil)
         (*output-calls* (make-container 'associative-container)))
     (grovel-part *root-part*)
-    
     (map-parts-from-leaves 
      *root-part*
      (lambda (sub-part)
        (setf (url sub-part) (url-for-part sub-part))))
-    
     (format t "~%Writing files")
     (when write-files?
       (build-documentation (page-writer *root-part*) *root-part* destination)) 
-    
     (when show-parts-without-documentation?
       (format t "~%The following parts appear to have no documentation:")
       (iterate-elements
        (parts-with-no-documentation *root-part*)
        (lambda (part)
          (format t "~%  ~A" (part-name part)))))
-    
     *root-part*))
 
 ;;; ---------------------------------------------------------------------------
 
 (defun write-css-file (writer destination &rest args &key (if-exists :supersede)
                                    &allow-other-keys)
-  (let ((output (merge-pathnames 
-		 "tinaa.css"
-		 (namestring (translate-logical-pathname destination)))))
+  (let* ((css-file (css-file-for-writer writer))
+	 (output (merge-pathnames 
+		  "tinaa.css"
+		  (namestring (translate-logical-pathname destination)))))
     (apply #'copy-file 
-           (css-file-for-writer writer) 
+	   css-file
            output
            :if-exists if-exists args)))
 
 ;;; ---------------------------------------------------------------------------
 
 (defmethod css-file-for-writer ((writer basic-page-writer))
-  (or 
-   (pathname-for-system-file 'tinaa "tinaa.css")
-   (error "can't find tinaa.css")))
+  (or
+   (css-file writer)
+   (setf (css-file writer)
+	 (or 
+	  *css-file*
+	  (pathname-for-system-file 'tinaa "tinaa.css")
+	  (error "can't find CSS file")))))
 
 ;;; ---------------------------------------------------------------------------
 
