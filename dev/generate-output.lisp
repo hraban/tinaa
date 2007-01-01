@@ -266,8 +266,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
   (and (parents part)
        (not (null (car (parents part))))))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod show-part-parents ((part basic-doclisp-part))
   (html
    ((:div :class "part-parents") 
@@ -285,10 +283,9 @@ own system-kind, it will need to be a class defined in the Tinaa package."
            (unless (zerop (decf count))
              (lml-princ ", ")))))))))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod maybe-show-documentation ((part basic-doclisp-part))
   (let ((documentation (part-documentation part)))
     (when documentation 
       (html ((:div :class "documentation") 
              (lml-princ (string->html documentation)))))))
+

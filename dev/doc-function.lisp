@@ -83,38 +83,37 @@
     (format stream "\(defgeneric ~(~A~) " (getf info :name))
     (format stream "~(~A~)" (getf info :lambda-list))
     (when (and (getf info :method-combination)
-               (not (eq (ccl::method-combination-name (getf info :method-combination)) 
+               (not (eq (ccl::method-combination-name
+			 (getf info :method-combination)) 
                         'standard)))
-      (format stream "~%  \(:method-combination ~(~A~)\)" (getf info :method-combination)))
+      (format stream "~%  \(:method-combination ~(~A~)\)" 
+	      (getf info :method-combination)))
     (if (documentation symbol 'function)
-      (format stream "~%  \(:documentation ~S\)\)" (documentation symbol 'function))
+      (format stream "~%  \(:documentation ~S\)\)"
+	      (documentation symbol 'function))
       (format stream "~%  \(:documentation \"\"\)\)~%")))
   (terpri stream)
   (values))
 
 ;;; ---------------------------------------------------------------------------
 
-(defmethod display-part ((writer simple-page-writer) (part doclisp-generic-function)
+(defmethod display-part ((writer simple-page-writer) 
+			 (part doclisp-generic-function)
                          (mode (eql :detail)) &key &allow-other-keys)
   (let ((method-count (length (generic-function-methods (instance part)))))
     (documenting-page (part)
       (:h2 (lml-format "Generic Function ~:(~A~) \(~D method~:P\)"
                        name method-count))
-      
       (display-function part)
-      
       (show-part-parents part)
-    
-      (when documentation? (html (:blockquote (lml-princ documentation))))
-      
+      (maybe-show-documentation part)
       #+Ignore
       (when (aand (generic-function-method-combination (instance part))
-                  (not (eq it (generic-function-method-combination #'display-part))))
+                  (not (eq it (generic-function-method-combination 
+			       #'display-part))))
         (html 
-         (:P "Method combination")))
-      
+         (:p "Method combination")))
       (:h3 "Method Summary")
-      
       ((:table :class "method-table")
        (iterate-container
         (sort 

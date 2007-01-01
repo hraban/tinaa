@@ -25,7 +25,8 @@
                     ((char= char #\newline)
                      (add-string "<br>"))
                     ((char= char #\")
-                     (if left-quote? (add-string "&#147;") (add-string "&#148;"))
+                     (if left-quote? (add-string "&#147;") 
+			 (add-string "&#148;"))
                      (setf left-quote? (not left-quote?)))
                     (t
                      (add-char char))))

@@ -61,6 +61,9 @@ There are several things it could do more nicely (class diagrams, prettier table
       (:H3 "What is happening")
       ((:TABLE :CLASS "system-news") 
        (:TR
+        (:TH "23 September 2006")
+        (:TD "Tagged version 0.5.1; minor cleanup, added *css-file* special variable, can call document-system with non-Tinaa package symbols for the system-kind."))
+       (:TR
         (:TH "2 Feb 2006")
         (:TD "Improved style sheet; many minor bug fixes. Investigating SBCL support (see this " ((:A :HREF "http://paste.lisp.org/display/16110") "paste") " for details...)"))       
        (:TR
