@@ -1,23 +1,27 @@
-;;;-*- Mode: Lisp; Package: COMMON-LISP-USER -*-
-
-#| simple-header
-
-Author: Gary King
-
-DISCUSSION
-
-|#
+;;;-*- Mode: Lisp; Package: common-lisp-user -*-
 
 (in-package :common-lisp-user)
 (defpackage :asdf-tinaa (:use #:asdf #:cl))
 (in-package :asdf-tinaa)
 
+;; try hard
+(unless (find-system 'asdf-system-connections nil)
+ (when (find-package 'asdf-install)
+   (funcall (intern (symbol-name :install) :asdf-install)
+   	     'asdf-system-connections)))
+;; give up with a useful (?) error message
+(unless (find-system 'asdf-system-connections nil)
+  (terpri)
+  (format t "~&;; Warning: getting Tinaa to work with CL-Markdown requires ASDF-system-connections. See http://www.cliki.net/asdf-system-connections for details and download instructions."))
+
+(when (find-system 'asdf-system-connections nil)
+  (asdf:operate 'asdf:load-op 'asdf-system-connections))
+
 (defsystem tinaa
   :author "Gary Warren King <gwking@metabang.com>"
-  :version "0.5.1"
   :maintainer "Gary Warren King <gwking@metabang.com>"
-  :licence "Various license"
-
+  :version "0.5.1"
+  :licence "Basically BSD, see file COPYING for details"
   :components ((:module "dev"
                         :components ((:file "package")
                                      (:file "class-defs"
@@ -75,3 +79,11 @@ DISCUSSION
                lml2
                trivial-shell
                cl-graph))
+
+#+asdf-system-connections 
+(defsystem-connection tinaa-and-cl-markdown 
+  :requires (tinaa cl-markdown)
+  :components ((:module 
+		"dev"
+		:components ((:file "cl-markdown-integration")))))
+
