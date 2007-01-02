@@ -1,7 +1,11 @@
 (in-package #:tinaa)
 
+(defmethod string->html ((string t) &optional (max-length nil))
+  (declare (ignore max-length))
+  nil)
+
 (let ((result (make-array 50000 :fill-pointer 0 :adjustable t)))
-  (defun string->html (string &optional (max-length nil))
+  (defmethod string->html ((string string) &optional (max-length nil))
     (when (and (numberp max-length)
                (> max-length (array-dimension result 0)))
       (setf result (make-array max-length :fill-pointer 0 :adjustable t)))

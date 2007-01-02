@@ -1,18 +1,4 @@
-;;;-*- Mode: Lisp; Package: DOCLISP -*-
-
-#| simple-header
-
-$Id: tinaa.lisp,v 1.12 2005/02/16 03:06:21 gwking Exp $
-
-Copyright 1992 - 2004 Experimental Knowledge Systems Lab, 
-University of Massachusetts Amherst MA, 01003-4610
-Professor Paul Cohen, Director
-
-Author: Gary King
-
-DISCUSSION
-
-|#
+;;;-*- Mode: Lisp; Package: doclisp -*-
 
 (in-package #:doclisp)
 
