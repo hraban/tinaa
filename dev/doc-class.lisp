@@ -1,9 +1,5 @@
 (in-package #:doclisp)
 
-;;; ---------------------------------------------------------------------------
-;;; class
-;;; ---------------------------------------------------------------------------
-
 (defclass doclisp-class (doclisp-assembly)
   ()
   (:default-initargs
@@ -11,24 +7,8 @@
     :part-kind "class"
     :part-type 'class))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod initialize-instance :after ((object doclisp-class) &key)
   (setf (slot-value object 'instance) (find-class (name object))))
-
-;;; ---------------------------------------------------------------------------
-
-#+Remove
-;;??Gary King 2005-12-30: 
-(defmethod find-part ((parent doclisp-assembly) (kind (eql 'slot)) name)
-  (iterate-container
-   (mopu:superclasses (instance parent))
-   (lambda (class)
-     (let ((class-part (make-part (some-parent parent) 'class (class-name class))))
-       (return-from find-part (item-at (item-at (subparts class-part) 'slot) name)))))
-  (values nil))
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'class)) name &rest args &key
                               &allow-other-keys)
@@ -37,21 +17,12 @@
                            'doclisp-condition 'doclisp-class)
     :name name args))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod subpart-kinds ((part doclisp-class))
   (list '(superclass :heading "Direct Superclass" :part-kind class)
         '(subclass :heading "Direct Subclass" :part-kind class)
         'slot 
         '(direct-method :heading "Direct Method" :part-kind method)
         '(other-method :heading "Other Method" :part-kind method)))
-
-#+Old
-(defmethod subpart-kinds ((part doclisp-class))
-  (list '(class :heading "Direct Superclass")
-        'slot 'method))
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'method)))
   (sort
@@ -61,8 +32,6 @@
      (string-lessp (if (consp a) (second a) a)
                    (if (consp b) (second b) b)))))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'direct-method)))
   (sort
    (direct-specializers-of 
@@ -70,8 +39,6 @@
    (lambda (a b)
      (string-lessp (if (consp a) (second a) a)
                    (if (consp b) (second b) b)))))
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'other-method)))
   (sort
@@ -84,14 +51,10 @@
      (string-lessp (if (consp a) (second a) a)
                    (if (consp b) (second b) b)))))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'slot)))
   (sort
    (slot-names (instance part))
    #'string-lessp))
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'class)))
   (sort
@@ -101,17 +64,11 @@
     (mapcar #'class-name (direct-superclasses (name part))))
    #'string-lessp))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'superclass)))
   (interesting-superclasses (name part)))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod partname-list ((part doclisp-class) (part-name (eql 'subclass)))
   (interesting-subclasses (name part)))
-
-;;; ---------------------------------------------------------------------------
 
 (defun interesting-superclasses (thing)
   (sort
@@ -121,8 +78,6 @@
     (mapcar #'class-name (direct-superclasses thing)))
    #'string-lessp))
 
-;;; ---------------------------------------------------------------------------
-
 (defun interesting-subclasses (thing)
   (sort
    (delete-if
@@ -131,20 +86,15 @@
     (mapcar #'class-name (direct-subclasses thing)))
    #'string-lessp))
 
-;;; ---------------------------------------------------------------------------
-
 (defun class-uninteresting-p (class-name)
-  (member (symbol-package (class-name-of (get-class class-name)))
-          (list (find-package :common-lisp)
-                (find-package :common-lisp-user))))
-                              
-;;; ---------------------------------------------------------------------------
+  (let ((package (canonical-package-id
+		  (symbol-package (class-name-of (get-class class-name))))))
+    (or (ignore-package-p package)
+	(not (member package (packages-to-document))))))
 
 (defmethod part-documentation ((part doclisp-class))
   (documentation (instance part) 'type))
   
-;;; ---------------------------------------------------------------------------
-
 (defmethod display-part ((writer simple-page-writer) (part doclisp-class)
                          (mode (eql :detail)) &key &allow-other-keys)
   (documenting-page (part)
