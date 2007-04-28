@@ -16,7 +16,7 @@ Note that system-kind will be coerced into a symbol interned in the Tinaa
 package because this makes Tinaa easier to use. If you happen to write your 
 own system-kind, it will need to be a class defined in the Tinaa package."
   (when write-files?
-    (assert (fad:directory-pathname-p destination)))
+    (assert (directory-pathname-p destination)))
   (remf args :show-parts-without-documentation?)
   (remf args :write-files?)
   ;;
@@ -77,8 +77,8 @@ own system-kind, it will need to be a class defined in the Tinaa package."
   (let ((*document-root* (namestring (translate-logical-pathname root)))
         (*root-part* part))
     (when erase-first?
-      (fad:delete-directory-and-files *document-root*
-                                      :if-does-not-exist :ignore))
+      (delete-directory *document-root*
+                        :if-does-not-exist :ignore))
     (ensure-directories-exist *document-root*)
     (call-next-method)))
 
