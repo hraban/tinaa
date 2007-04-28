@@ -3,23 +3,18 @@
 (defgeneric document-part-p (name-holder part)
   (:documentation ""))
 
-;;; ---------------------------------------------------------------------------
-
 (defgeneric subpart-kinds (assembly)
   (:documentation "Returns a list of the kinds of the subparts of assembly.
 This is a list of instances of subpart-kind."))
-
-;;; ---------------------------------------------------------------------------
 
 (defgeneric index-kinds (part)
   (:documentation "Returns a list describing what indexes to generate for this part. This list is a list of lists of subpart kinds. Each item in the list generates one index and the index will include all of these part kinds.")
   (:method ((part t)) nil))
 
-;;; ---------------------------------------------------------------------------
-
 (defgeneric partname-list (part part-kind)
   (:documentation "Returns a list of the names of the subparts of part of type 'part-kind'. Usually, these will be symbols but they could be strings too.")
   (:method :around (part part-kind)
+       (declare (ignore part part-kind))
 	   (handler-case (call-next-method)
 	     (error () (princ ".") nil))))
 
