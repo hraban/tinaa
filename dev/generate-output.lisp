@@ -58,8 +58,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
            output
            :if-exists if-exists args)))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod css-file-for-writer ((writer basic-page-writer))
   (or
    (css-file writer)
@@ -68,8 +66,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
 	  *css-file*
 	  (pathname-for-system-file 'tinaa "tinaa.css")
 	  (error "can't find CSS file")))))
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod build-documentation :around
            ((writer basic-page-writer) (part doclisp-assembly)
@@ -81,8 +77,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
                         :if-does-not-exist :ignore))
     (ensure-directories-exist *document-root*)
     (call-next-method)))
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod build-documentation ((writer basic-page-writer) (part doclisp-assembly)
                                 root &key &allow-other-keys)
@@ -101,8 +95,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
   (write-css-file writer root)
   (build-contents-page writer root (content-things-from-part part)))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod document-part-to-file ((writer basic-page-writer) (part basic-doclisp-part))
   (let ((*current-part* part))
     (ensure-directories-exist *document-file*)
@@ -113,22 +105,16 @@ own system-kind, it will need to be a class defined in the Tinaa package."
       (display-part writer part :detail))
     (build-indexes writer part)))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod doclisp-header ((part (eql nil)) &key force-contents-link?)
   (declare (ignore force-contents-link?))
   (html ((:div :id "header"))))
    
-;;; ---------------------------------------------------------------------------
-
 (defmethod doclisp-header ((part basic-doclisp-part)
                            &key force-contents-link?)
   (html
    ((:div :id "header")
     (add-contents-link part force-contents-link?)
     (build-index-links part *root-part* *current-index*))))
-
-;;; ---------------------------------------------------------------------------
 
 (defun add-tinaa-link ()
   (html 
@@ -137,8 +123,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
     ((:img :src (format nil "~Aimages/logo.jpg" *tinaa-home-page*)
            :width 90
            :height 82)))))
-
-;;; ---------------------------------------------------------------------------
 
 ;;?? probably still a defun
 (defmethod doclisp-footer (part &key force-contents-link?)
