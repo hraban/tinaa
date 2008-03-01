@@ -32,8 +32,8 @@ own system-kind, it will need to be a class defined in the Tinaa package."
      *root-part*
      (lambda (sub-part)
        (setf (url sub-part) (url-for-part sub-part))))
-    (format t "~%Writing files")
     (when write-files?
+      (format t "~%Writing files")
       (build-documentation (page-writer *root-part*) *root-part* destination)) 
     (when show-parts-without-documentation?
       (format t "~%The following parts appear to have no documentation:")
@@ -67,7 +67,8 @@ own system-kind, it will need to be a class defined in the Tinaa package."
            ((writer basic-page-writer) (part doclisp-assembly)
             root &key (erase-first? nil))
   (let ((*document-root* (namestring (translate-logical-pathname root)))
-        (*root-part* part))
+        (*root-part* part)
+	(*print-readably* nil))
     (when erase-first?
       (delete-directory *document-root*
                         :if-does-not-exist :ignore))
