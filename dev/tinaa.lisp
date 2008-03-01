@@ -6,17 +6,11 @@
 (defmethod name (object)
   (type-of object))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod name ((object symbol))
   object)
 
-;;; ---------------------------------------------------------------------------
-
 (defparameter *make-part-methods* nil
   "Used to help ensure that we don't use up the stack trying to find a good method... Probably too baroque.")
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent kind name &rest args &key &allow-other-keys)
   (unless *make-part-methods*
@@ -94,32 +88,22 @@
 (defun packages-to-document ()
   *packages-to-document*)
 
-;;; ---------------------------------------------------------------------------
-
 (defun add-package-to-document (package-name)
   (unless (ignore-package-p package-name)
     (pushnew (canonical-package-id package-name) *packages-to-document*)))
 
-;;; ---------------------------------------------------------------------------
-
 (defun ignore-package-p (p)
   (member p (packages-to-ignore)))
-
-;;; ---------------------------------------------------------------------------
 
 (defun packages-to-ignore ()
   ;; hack
   *default-packages-to-ignore*)
-
-;;; ---------------------------------------------------------------------------
 
 (defun canonical-package-id (package)
   (ignore-errors
    (form-keyword (typecase package
                    (package (package-name package))
                    (t (package-name (find-package package)))))))
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds :around ((assembly doclisp-assembly))
   (mapcar (lambda (kind)
@@ -129,33 +113,21 @@
                      :name name args)))
           (call-next-method)))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod name-holder ((part (eql nil)))
   nil)
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod name-holder ((part name-holder-mixin))
   (or (name-holder (some-parent part)) part))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod part-name ((part basic-doclisp-part))
   (string-downcase (symbol-name (name part))))
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod print-object ((system basic-doclisp-part) stream)
   (print-unreadable-object (system stream :type t :identity t)
     (format stream "~A" (name system))))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod part-documentation ((part basic-doclisp-part))
   nil)
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod short-documentation ((part basic-doclisp-part))
   (let ((doc (part-documentation part)))
@@ -164,8 +136,6 @@
                    "...")
       doc)))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod find-part ((part name-holder-mixin) kind name)
   (or (aand (item-at (subparts part) kind)
             (item-at it name))
@@ -173,12 +143,8 @@
            (find-part (name-holder part) kind name))
       (call-next-method)))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod grovel-part ((part basic-doclisp-part))
   )
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds ((part basic-doclisp-part))
   (values nil))
@@ -266,17 +232,11 @@
                  (finish-grovel part))))
       (do-it main-part))))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod start-grovel ((part basic-doclisp-part))
   (values))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod finish-grovel ((part basic-doclisp-part))
   (values))
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod finish-grovel ((part doclisp-assembly))
   (map-subpart-kinds
@@ -292,12 +252,8 @@
                                       (apply #'concatenate 'string 
                                              (mapcar #'symbol-name it))))))))))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod include-kind-in-index-p ((part basic-doclisp-part) (kind t))
   nil)
-
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
                          (mode (eql :name)) &key &allow-other-keys)
@@ -307,8 +263,6 @@
             (lml-princ (part-name part))))
      (lml-princ (part-name part)))))
 
-;;; ---------------------------------------------------------------------------
-
 (defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
                          (mode (eql :name+type)) &key &allow-other-keys)
   (html 
@@ -317,8 +271,6 @@
      (html ((:a :href (relative-url (url part)))
             (lml-princ (part-name part))))
      (lml-princ (part-name part)))))
-
-;;; ---------------------------------------------------------------------------
 
 (defun parts-with-no-documentation (part)
   (let ((result nil))
@@ -334,8 +286,6 @@
                        (zerop (size (part-documentation subpart))))))
          (push subpart result))))
     result))
-
-;;; ---------------------------------------------------------------------------
 
 (defun part-can-have-documention-p (part)
   (not (or (typep part 'doclisp-symbol)         ; won't have any

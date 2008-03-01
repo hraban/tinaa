@@ -1,4 +1,4 @@
-;;;-*- Mode: Lisp; Package: DOCLISP -*-
+;;;-*- Mode: Lisp; Package: doclisp -*-
 
 #| simple-header
 

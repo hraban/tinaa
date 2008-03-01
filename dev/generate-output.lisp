@@ -43,8 +43,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
          (format t "~%  ~A" (part-name part)))))
     *root-part*))
 
-;;; ---------------------------------------------------------------------------
-
 (defun write-css-file (writer destination &rest args &key (if-exists :supersede)
                                    &allow-other-keys)
   (let* ((css-file (css-file-for-writer writer))
