@@ -126,6 +126,7 @@ DISCUSSION
 ;;; ---------------------------------------------------------------------------
 
 (defun display-part-for-index (writer part string)
+  (declare (ignore writer))
   (html
    ((:span :class (span-class-for-part-name (name-holder part) part))
     ;;?? Gary King 2006-03-31: this is also in display-part <part> <eql :function>
@@ -200,6 +201,7 @@ DISCUSSION
 ;;; ---------------------------------------------------------------------------
 
 (defmethod build-index-links ((for-part (eql nil)) index-part current-index)
+  (declare (ignore index-part current-index))
   (values))
 
 ;;; ---------------------------------------------------------------------------
