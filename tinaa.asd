@@ -75,7 +75,7 @@
      (:static-file "tinaa.css")))
    (:module "website"
 	    :components ((:module "source"
-				  :components ((:static-file "index.lml"))))))
+				  :components ((:static-file "index.md"))))))
   
   :depends-on (:defsystem-compatibility
                :metatilities
