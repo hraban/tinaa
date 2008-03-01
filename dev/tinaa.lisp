@@ -149,47 +149,6 @@
 (defmethod subpart-kinds ((part basic-doclisp-part))
   (values nil))
 
-;;; ---------------------------------------------------------------------------
-
-(defmethod grovel-part ((main-part doclisp-assembly))
-  (let ((seen (make-container 'associative-container)))
-    (labels ((do-it (part)
-               (unless (item-at seen part)
-                 (setf (item-at seen part) t)
-                 (start-grovel part)
-                 (map-subpart-kinds 
-                  part
-                  (lambda (subpart-info)
-                    (let* (;;?? Gary King 2005-12-30:  bad name here
-                           (subpart-kind (part-kind subpart-info))
-                           (kind (name subpart-info))
-                           (parts-names (partname-list part kind))
-                           (name-holder (name-holder part)))
-                      ;; we make all parts at this level and then grovel over 'em
-                      (loop for sub-part in 
-                            (loop for part-name in parts-names
-                                  collect
-                                  (let ((sub-part (make-part
-                                                   part subpart-kind part-name
-                                                   :name-holder name-holder)))
-                                    (when sub-part
-                                      (unless (eq subpart-kind kind)
-                                        (setf (item-at (item-at (subparts part) kind) (name sub-part))
-                                              sub-part))
-                                      
-                                      ;;?? Gary King 2005-12-30: perhaps a hack
-                                      ;;?? Gary King 2006-03-31: perhaps another hack <smile>
-                                      ;;   make-part needn't return a part of the same kind as subpart-kind (cf class / conditions)
-                                      (when (eq subpart-kind (part-type sub-part)) 
-                                        (setf (item-at (item-at (subparts main-part) subpart-kind) (name sub-part))
-                                              sub-part))
-                                      (setf (item-at (item-at (subparts part) subpart-kind) (name sub-part))
-                                            sub-part))))
-                            when (document? sub-part) do
-                            (do-it sub-part)))))
-                 (finish-grovel part))))
-      (do-it main-part))))
-
 (defmethod grovel-part ((main-part doclisp-assembly))
   (let ((seen (make-container 'associative-container)))
     (labels ((do-it (part)
