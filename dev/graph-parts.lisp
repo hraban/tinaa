@@ -146,16 +146,19 @@ use clustering?
 ;;; ---------------------------------------------------------------------------
 
 (defgeneric graph-part-p (writer part)
-  (:method (writer part) (values nil)))
+  (:method (writer part)
+    (declare (ignore writer part)) (values nil)))
 
 ;;; ---------------------------------------------------------------------------
 
 (defmethod edge-kinds-for-part-graph (writer root part)
+  (declare (ignore writer root part))
   nil)
 
 ;;; ---------------------------------------------------------------------------
 
 (defmethod graph-part-p (writer (part doclisp-asdf-system))
+  (declare (ignore writer))
   (values t))
 
 ;;; ---------------------------------------------------------------------------
@@ -167,12 +170,14 @@ use clustering?
 
 (defmethod edge-kinds-for-part-graph (writer (root doclisp-asdf-system)
                                              (part doclisp-asdf-system))
+  (declare (ignore writer))
   `((direct-package direct-package-edge :target "uses")
     (direct-dependency direct-dependency-edge :source "depends")))
 
 ;;; ---------------------------------------------------------------------------
 
 (defmethod graph-part-p (writer (part doclisp-class))
+  (declare (ignore writer))
   (values t))
 
 ;;; ---------------------------------------------------------------------------
@@ -184,6 +189,7 @@ use clustering?
 
 (defmethod edge-kinds-for-part-graph (writer (root doclisp-asdf-system)
                                              (part doclisp-class))
+  (declare (ignore writer))
   `((subclass tinaa-edge :source "")
     (superclass tinaa-edge :target "")))
 
@@ -197,6 +203,7 @@ use clustering?
 (defmethod build-documentation :before
            ((writer page-writer-with-graphs) (part doclisp-assembly)
             root &key &allow-other-keys)
+  (declare (ignore root))
   (set-flags part nil)
   (map-parts-from-leaves 
    part
@@ -216,7 +223,8 @@ use clustering?
                            (part basic-doclisp-part))
   2)
   
-(defun graph-file-name-for-part (writer part &key (pathname-type *graph-image-format*))
+(defun graph-file-name-for-part
+    (writer part &key (pathname-type *graph-image-format*))
   (declare (ignore writer))
   (namestring (translate-logical-pathname 
                (url->file (url part) pathname-type))))

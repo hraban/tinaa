@@ -64,7 +64,7 @@
      (:file "build-contents"
 	    :depends-on ("package")) 
      (:file "graph-parts"
-	    :depends-on ("package")) 
+	    :depends-on ("package" "definitions")) 
                                      
      (:file "templates"
 	    :depends-on ("tinaa"))
