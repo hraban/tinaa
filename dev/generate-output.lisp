@@ -14,7 +14,7 @@ Note that system-kind will be coerced into a symbol interned in the Tinaa
 package because this makes Tinaa easier to use. If you happen to write your 
 own system-kind, it will need to be a class defined in the Tinaa package."
   (when write-files?
-    (assert (directory-name-p destination)))
+    (assert (directory-pathname-p destination)))
   (remf args :show-parts-without-documentation?)
   (remf args :write-files?)
   ;;
