@@ -1,9 +1,14 @@
 (in-package #:common-lisp-user)
 
 (defpackage #:tinaa
-  (:use #:common-lisp #:moptilities #:metatilities 
-	#:lml2 #:metabang.bind 
-        #:cl-containers #:defsystem-compatibility)
+  (:use #:common-lisp
+	#:moptilities
+	#:metatilities 
+	#:lml2 
+	#:metabang.bind 
+        #:cl-containers
+	#:defsystem-compatibility
+	#:anaphora)
   (:nicknames #:doclisp)
   (:documentation "A simple, yet extensible, Common Lisp documentation package.")
   (:import-from metatilities #:fn #:depth #:value #:name)

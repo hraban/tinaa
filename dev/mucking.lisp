@@ -52,3 +52,9 @@
                  (push key props)))))
      :test (lambda (x) (string-equal (pathname-type x) "asd"))))
   (sort (remove-duplicates props) #'string-lessp))
+
+(defpackage #:tinaa
+  (:use #:common-lisp
+	#:moptilities
+	#:metatilities 
+	))

@@ -81,7 +81,8 @@
                :metatilities
                :lml2
                :trivial-shell
-               :cl-graph))
+               :cl-graph
+	       :anaphora))
 
 #+asdf-system-connections 
 (defsystem-connection tinaa-and-cl-markdown 
