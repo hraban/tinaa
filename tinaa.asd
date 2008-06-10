@@ -20,7 +20,7 @@
 (defsystem tinaa
   :author "Gary Warren King <gwking@metabang.com>"
   :maintainer "Gary Warren King <gwking@metabang.com>"
-  :version "0.5.7"
+  :version "0.5.8"
   :licence "Basically BSD, see file COPYING for details"
   :components
   ((:module
