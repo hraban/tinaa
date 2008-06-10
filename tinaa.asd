@@ -77,7 +77,7 @@
 	    :components ((:module "source"
 				  :components ((:static-file "index.md"))))))
   
-  :depends-on (:defsystem-compatibility
+  :depends-on ((:version :defsystem-compatibility "0.1.2")
                :metatilities
                :lml2
                :trivial-shell
