@@ -4,9 +4,14 @@
   (declare (ignore max-length))
   (let ((docs (call-next-method)))
     (when docs
-      (nth-value 
-       1 
-       (cl-markdown:markdown docs :stream nil)))))
+      ;; if we get an error calling markdown, just use the original string
+      ;;?? FIXME -- should probably warn about this. It happens, e.g., 
+      ;; in CL-PPCRE which has at least one docstring with a {1} in it.
+      (or (ignore-errors
+	    (nth-value 
+	     1 
+	     (cl-markdown:markdown docs :stream nil)))
+	  docs))))
 
 #+(or)
 (defmethod maybe-show-documentation ((part basic-doclisp-part))
