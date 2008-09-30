@@ -14,7 +14,6 @@ use clustering?
 (defvar *graphviz-directory* "/users/gwking/bin/gv/"
   "The location of the various GraphViz files. In particular, dot, neato, circo and twopi should live in this directory.")
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* tinaa-graph (cl-graph:dot-graph-mixin cl-graph:graph-container)
   ()
@@ -22,62 +21,50 @@ use clustering?
     :default-edge-class 'tinaa-edge
     :dot-attributes `(:size (,*graph-size-in-inches* ,*graph-size-in-inches*))))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* tinaa-vertex (cl-graph:dot-vertex cl-graph:graph-container-vertex)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* tinaa-asdf-system-vertex (tinaa-vertex)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* tinaa-package-vertex (tinaa-vertex)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod cl-graph:vertex->dot ((thing tinaa-package-vertex) stream)
   (format stream "shape=\"plaintext\""))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* tinaa-edge (cl-graph:dot-directed-edge)
   ((label "" ir)))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* direct-package-edge (tinaa-edge)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod cl-graph:edge->dot ((thing direct-package-edge) stream)
   (format stream "weight=\"5\""))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* other-package-edge (tinaa-edge)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* direct-dependency-edge (tinaa-edge)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* other-dependency-edge (tinaa-edge)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod add-part-vertex ((graph cl-graph:basic-graph) (part basic-doclisp-part))
   (cl-graph:add-vertex graph part :if-duplicate-do :ignore))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod add-part-vertex ((graph cl-graph:basic-graph) (part doclisp-package))
   (cl-graph:add-vertex graph part 
@@ -88,7 +75,6 @@ use clustering?
                          ,@(when (url part)
                              `(:url ,(relative-url (url part)))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod add-part-vertex ((graph cl-graph:basic-graph) (part doclisp-asdf-system))
   (cl-graph:add-vertex graph part 
@@ -99,7 +85,6 @@ use clustering?
                          ,@(when (url part)
                              `(:url ,(relative-url (url part)))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun build-part-graph (writer root &key (depth (depth-for-part writer root)))
   ;; vertexes are systems and packages
@@ -131,7 +116,6 @@ use clustering?
       (do-part root depth))
     g))
 
-;;; ---------------------------------------------------------------------------
 
 (defun write-part-graph (writer part)
   (when (graph-part-p writer part)
@@ -143,30 +127,25 @@ use clustering?
          graph (layout-engine-for-part writer part)
          *graph-image-format* *document-file*)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defgeneric graph-part-p (writer part)
   (:method (writer part)
     (declare (ignore writer part)) (values nil)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod edge-kinds-for-part-graph (writer root part)
   (declare (ignore writer root part))
   nil)
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod graph-part-p (writer (part doclisp-asdf-system))
   (declare (ignore writer))
   (values t))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part-graph (writer (part doclisp-asdf-system))
   (build-part-graph writer part))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod edge-kinds-for-part-graph (writer (root doclisp-asdf-system)
                                              (part doclisp-asdf-system))
@@ -174,18 +153,15 @@ use clustering?
   `((direct-package direct-package-edge :target "uses")
     (direct-dependency direct-dependency-edge :source "depends")))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod graph-part-p (writer (part doclisp-class))
   (declare (ignore writer))
   (values t))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part-graph (writer (part doclisp-class))
   (build-part-graph writer part))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod edge-kinds-for-part-graph (writer (root doclisp-asdf-system)
                                              (part doclisp-class))
@@ -193,12 +169,10 @@ use clustering?
   `((subclass tinaa-edge :source "")
     (superclass tinaa-edge :target "")))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* page-writer-with-graphs (simple-page-writer)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod build-documentation :before
            ((writer page-writer-with-graphs) (part doclisp-assembly)
@@ -213,7 +187,6 @@ use clustering?
        (when (document? sub-part)
          (write-part-graph writer sub-part))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod layout-engine-for-part ((writer t) 
                                    (part basic-doclisp-part))

@@ -33,7 +33,6 @@
                    
            (doclisp-footer nil :force-contents-link? nil))))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun content-things-from-part (part)
   "Returns a list of < kind name url > triples for the subparts of part that should be displayed in the table of contents."
@@ -48,13 +47,11 @@
      :transform (lambda (part)
                   (list (part-kind part) (part-name part) (url-for-part part))))))
  
-;;; ---------------------------------------------------------------------------
 
 (defmethod include-in-contents-p (part) 
   (declare (ignore part))
   (values nil))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod include-in-contents-p ((part name-holder-mixin))
   (values t))

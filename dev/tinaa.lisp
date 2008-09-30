@@ -27,7 +27,6 @@
       (error 'part-kind-unknown-error :parent parent :kind kind :name name :args args)
       (apply #'make-part parent tinaa-symbol name args))))
 
-;;; ---------------------------------------------------------------------------
 
 ;;?? Gary King 2006-04-02:  fowls things up...
 #+Ignore
@@ -36,7 +35,6 @@
   (declare (dynamic-extent args))
   (apply #'make-part parent kind (string->symbol name) args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part :around (parent kind name &key &allow-other-keys)
   (aprog1
@@ -45,12 +43,10 @@
          (call-next-method))
     (pushnew parent (parents it))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun some-parent (part)
   (first (parents part)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun root-parent (part)
   "Go up the parent chain until there are no parents... that's the root."
@@ -58,24 +54,20 @@
     (root-parent (some-parent part))
     part))
 
-;;; ---------------------------------------------------------------------------
 
 (defun tinaa-home ()
   (system-source-directory 'tinaa))
 
-;;; ---------------------------------------------------------------------------
 
 (defun subpart-info (part kind)
   ;; consy
   (find kind (subpart-kinds part) :key #'name))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod document-part-p ((name-holder name-holder-mixin) (part basic-doclisp-part))
   (find (canonical-package-id (symbol-package (part-symbol-name part)))
         (packages-to-document)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun part-symbol-name (part)
   (if (and (consp (name part))
@@ -83,7 +75,6 @@
     (second (name part))
     (name part)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun packages-to-document ()
   *packages-to-document*)

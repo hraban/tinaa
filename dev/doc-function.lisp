@@ -7,7 +7,6 @@
     :part-kind "function"
     :part-type 'function))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'function)) name &rest args &key
                               &allow-other-keys)
@@ -15,7 +14,6 @@
   (apply #'make-instance 'doclisp-function
     :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod part-name ((part doclisp-function))
   (string-downcase (atypecase (name part)
@@ -24,12 +22,10 @@
                       (apply #'concatenate 'string 
                              (mapcar #'symbol-name it))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod part-documentation ((part doclisp-function))
   (documentation (name part) 'function))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part doclisp-function)
                          (mode (eql :detail)) &key &allow-other-keys)
@@ -42,9 +38,7 @@
     (maybe-show-documentation part)))
 
 
-;;; ---------------------------------------------------------------------------
 ;;; generic functions
-;;; ---------------------------------------------------------------------------
 
 (defclass* doclisp-generic-function (doclisp-function)
   ()
@@ -53,7 +47,6 @@
     :part-kind "generic function"
     :part-type 'generic-function))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'generic-function)) name &rest args &key
                               &allow-other-keys)
@@ -62,7 +55,6 @@
     :name name
     :instance (symbol-function name) args))
 
-;;; ---------------------------------------------------------------------------
 
 #+Ignore
 (defun gf-info (symbol)
@@ -75,7 +67,6 @@
      :methods (generic-function-methods  gf) 
      :name (generic-function-name  gf))))
 
-;;; ---------------------------------------------------------------------------
 
 #+Ignore
 (defun write-gf-template (symbol stream)
@@ -95,7 +86,6 @@
   (terpri stream)
   (values))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) 
 			 (part doclisp-generic-function)
@@ -145,7 +135,6 @@
                                  (lml-format "~S" name))
                                (lml-princ " &gt;&nbsp;"))))))))))))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
                          (mode (eql :function)) &key &allow-other-keys)
@@ -157,7 +146,6 @@
              (lml-princ (part-name part))))
       (lml-princ (part-name part))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun method-sorter (m1 m2)
   (cond ((string-lessp (method-name m1) (method-name m2))
@@ -198,9 +186,7 @@
                          ((string-lessp qp2 qp1)
                           (return-from sort-specializers nil)))))))))
          
-;;; ---------------------------------------------------------------------------
 ;;; method
-;;; ---------------------------------------------------------------------------
 
 (defclass* doclisp-method (doclisp-function)
   ()
@@ -209,7 +195,6 @@
     :part-kind "method"
     :part-type 'method))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'method)) name &rest args &key
                               &allow-other-keys)
@@ -217,7 +202,6 @@
   (apply #'make-instance 'doclisp-method
     :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part doclisp-method)
                          (mode (eql :table-summary)) &key &allow-other-keys)
@@ -231,9 +215,7 @@
        (:td (when documentation? (lml-princ short-documentation)))))))
 
 
-;;; ---------------------------------------------------------------------------
 ;;; macro
-;;; ---------------------------------------------------------------------------
 
 (defclass* doclisp-macro (doclisp-function)
   ()
@@ -242,7 +224,6 @@
     :part-kind "macro"
     :part-type 'macro))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'macro)) name &rest args &key
                               &allow-other-keys)
@@ -251,9 +232,7 @@
     :name name args))
 
 
-;;; ---------------------------------------------------------------------------
 ;;; utilities
-;;; ---------------------------------------------------------------------------
 
 ;;;; Copyright (C) 2003 Sven Van Caekenberghe.
 (defun symbol-name-tree (x)

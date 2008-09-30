@@ -40,7 +40,6 @@
 #+Test
 (string->html "\"hello,\" he said <briskly>. \"It's a nice day & all\"")
 
-;;; ---------------------------------------------------------------------------
 
 (defun display-arguments (arguments)
   (dolist (argument arguments)
@@ -52,7 +51,6 @@
           (t
            (lml-format "~( &lt; ~A &gt;~)" argument)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun display-function (part)
   (lml-princ "\( ")
@@ -60,13 +58,11 @@
   (display-arguments (function-arglist (name part)))
   (lml-princ " \)"))
 
-;;; ---------------------------------------------------------------------------
 
 (defun map-subpart-kinds (part fn)
   (loop for subpart-info in (subpart-kinds part) do
         (funcall fn subpart-info)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun map-parts-from-leaves (part fn)
   (let ((seen (make-container 'associative-container)))
@@ -81,12 +77,10 @@
                  (funcall fn part))))
       (do-it part fn))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun set-flags (part value)
   (map-parts-from-leaves part (lambda (p) (setf (flag? p) value))))
 
-;;; ---------------------------------------------------------------------------
 
 ;;?? also in regenerate-websites
 (defun lml-insert-file (file)

@@ -7,7 +7,6 @@
     :part-kind "symbol"
     :part-type 'symbol))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'symbol)) name &rest args &key
                               &allow-other-keys)
@@ -15,7 +14,6 @@
   (apply #'make-instance 'doclisp-symbol
     :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod span-class-for-part-name ((name-holder doclisp-package)
                                      (part doclisp-symbol))

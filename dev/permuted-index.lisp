@@ -15,7 +15,6 @@
                    (setf value matching))))
      :transform (lambda (x) (declare (ignore x)) value))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun build-permuted-index (main-part parts-to-index heading)
   "A permuted index includes each n-word entry up to n times, at points corresponding to the use of each word in the entry as the sort key. For example, a symbol FOO-BAR would occur twice, once under FOO and BAR. This allows you to use any word in the symbol's name to search for that symbol."
@@ -96,17 +95,14 @@
             (display-part writer part :permuted-index :spaces (- max-size index))))
         (move-forward part-iterator)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun make-string-of-size (size initial-element)
   (coerce (make-array size :initial-element initial-element) 'string))
 
-;;; ---------------------------------------------------------------------------
 
 (defun princ-n-spaces (stream n)
   (loop repeat n do (princ " " stream)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
                          (mode (eql :permuted-index)) &key (spaces 0) &allow-other-keys)
@@ -115,17 +111,14 @@
          (display-part-for-index writer part (part-name part))
          (lml-format " \(~(~A~)\)" (part-kind-abbreviation part)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod part-kind-abbreviation (part)
   (part-kind part))
   
-;;; ---------------------------------------------------------------------------
 
 (defun permuted-index-delimiter-p (ch)
   (char-equal ch #\-))
 
-;;; ---------------------------------------------------------------------------
 
 (defun permuted-index-locations (symbol delimiter-p)
   (bind ((name (symbol-name symbol))

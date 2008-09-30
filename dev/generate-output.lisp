@@ -133,13 +133,11 @@ own system-kind, it will need to be a class defined in the Tinaa package."
     (add-contents-link part force-contents-link?)
     (add-tinaa-link))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun url-name (url)
   (awhen (position #\# url :from-end t)
     (subseq url (1+ it))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-name-link-for (mode name url)
   (declare (ignore name mode))
@@ -147,7 +145,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
     ;; note the hack
     (html ((:a :name (url-name url))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-link-for ((mode (eql :table-summary)) name url)
   (with-html-output (*document-stream*)
@@ -158,7 +155,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
           (t
            (html ((:a :href (relative-url url)) (lml-princ name)))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun output-table-summary (writer part parts-per-row) 
   (declare (ignore parts-per-row))
@@ -169,7 +165,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
        (output-table-summary-of-parts 
         writer part (name subpart-info) (heading subpart-info))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod output-table-summary-of-parts (writer part subpart-name heading)
   (let ((parts (item-at (subparts part) subpart-name))
@@ -193,7 +188,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
                 (display-part writer thing :table-summary))
               (incf count))))))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun maybe-display-part (parent name kind mode)
   (declare (ignore mode))
@@ -211,7 +205,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
            nil
            ))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun display-list-of-potential-parts (part subpart-names subpart-kind)
   (let ((index 0)
@@ -226,7 +219,6 @@ own system-kind, it will need to be a class defined in the Tinaa package."
        (maybe-display-part part name subpart-kind :index)
        (incf index)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
                          (mode (eql :table-summary)) &key &allow-other-keys)
@@ -235,13 +227,11 @@ own system-kind, it will need to be a class defined in the Tinaa package."
        (:th (link-for mode))
        (:td (when documentation (lml-princ short-documentation))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod show-part-parents :around ((part basic-doclisp-part))
   (when (part-has-parents-p part)
     (call-next-method)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun part-has-parents-p (part)
   (and (parents part)

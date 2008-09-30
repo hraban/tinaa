@@ -10,12 +10,10 @@
     :part-kind "Tapir"
     :document? t))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object doclisp-tapir-system) &key)
   )
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'tapir-system)) name &rest args &key
                               &allow-other-keys)
@@ -23,19 +21,16 @@
   (apply #'make-instance 'doclisp-tapir-system
     :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds ((part doclisp-tapir-system))
   (list 'action)
   #+Ignore
   (list 'action 'sensor 'goal 'plan))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-tapir-system) (part-name (eql 'action)))
   (hac:actions-of-type 'hac:tapir-action-mixin))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-tapir-system) (part-name (eql 'sensor)))
   (sort
@@ -48,7 +43,6 @@
             (typep it 'tapir-sensor-mixin))))
    #'string-lessp))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-tapir-system) (part-name (eql 'goal)))
   (sort
@@ -61,7 +55,6 @@
             (typep it 'tapir-goal-mixin))))
    #'string-lessp))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-tapir-system) (part-name (eql 'plan)))
   (sort
@@ -74,52 +67,42 @@
             (typep it 'tapir-plan-mixin))))
    #'string-lessp))
 
-;;; ---------------------------------------------------------------------------
 ;;; tapir parts
-;;; ---------------------------------------------------------------------------
 
 (defclass* tapir-part (doclisp-assembly)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* tapir-action (tapir-part)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* tapir-sensor (tapir-part)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* tapir-goal (tapir-part)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* tapir-plan (tapir-part)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part ((parent doclisp-tapir-system) (kind (eql 'action)) name
                       &rest args &key &allow-other-keys)
   (apply #'make-instance 'tapir-action :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part ((parent doclisp-tapir-system) (kind (eql 'sensor)) name
                       &rest args &key &allow-other-keys)
   (apply #'make-instance 'tapir-sensor :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part ((parent doclisp-tapir-system) (kind (eql 'goal)) name
                       &rest args &key &allow-other-keys)
   (apply #'make-instance 'tapir-goal :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part ((parent doclisp-tapir-system) (kind (eql 'plan)) name
                       &rest args &key &allow-other-keys)

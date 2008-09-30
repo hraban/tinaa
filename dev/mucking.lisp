@@ -15,7 +15,6 @@
    :test (lambda (x) (string-equal (pathname-type x) "asd")))
   (sort (remove-duplicates props) #'string-lessp))
 
-;;; ---------------------------------------------------------------------------
 
 (defun find-defsystem (stream-or-file)
   (let ((*package* (find-package :asdf)))
@@ -27,9 +26,7 @@
      stream-or-file)))
 
 
-;;; ---------------------------------------------------------------------------
 ;;; misc.
-;;; ---------------------------------------------------------------------------
 
 #+Ignore
 ;; returns a list of properties found in the defsystems I have...

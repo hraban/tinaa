@@ -16,7 +16,6 @@ DISCUSSION
     "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V"
     "W" "X" "Y" "Z"))
 
-;;; ---------------------------------------------------------------------------
 
 #+Remove
 ;;?? Gary King 2006-04-20: GWK - no longer used
@@ -58,7 +57,6 @@ DISCUSSION
                              ((:a :href "#top") "Back to top"))))))
                   (html (:p (display-part writer part :index)))))))))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun build-index (writer part parts-to-index heading)
   (bind ((symbol-list (sort
@@ -95,7 +93,6 @@ DISCUSSION
                            ((:a :href "#top") "Back to top"))))))
                 (html (:p (display-part writer part :index))))))))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun build-index-letters (symbol-list parts &key (key 'identity))
   (html
@@ -115,7 +112,6 @@ DISCUSSION
         (html ((:div :class "dead-letter")
                (lml-format "~A" letter))))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part basic-doclisp-part)
                          (mode (eql :index)) &key &allow-other-keys)
@@ -123,7 +119,6 @@ DISCUSSION
    ((:div :class "index-name")
     (display-part-for-index writer part (part-name part)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun display-part-for-index (writer part string)
   (declare (ignore writer))
@@ -135,7 +130,6 @@ DISCUSSION
              (lml-princ string)))
       (lml-princ string)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part doclisp-symbol)
                          (mode (eql :index)) &key &allow-other-keys)
@@ -153,12 +147,10 @@ DISCUSSION
                 (display-part-for-index 
                  writer real-part (string-downcase (part-kind real-part)))))))))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod build-indexes ((writer basic-page-writer) (part basic-doclisp-part))
   (values))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod build-indexes ((writer basic-page-writer) (part name-holder-mixin))
   (iterate-elements
@@ -183,13 +175,11 @@ DISCUSSION
                              :filter #'index-part-p))
                       heading))))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun local-index-url (part index-name)
   ;; local-index means the index that will in the _current_ directory
   (namestring (pathname-name+type (index-file-name part index-name))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun index-file-name (part index-name) 
   (namestring
@@ -198,13 +188,11 @@ DISCUSSION
    :type "html"
    :defaults (translate-logical-pathname (url->file (url part))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod build-index-links ((for-part (eql nil)) index-part current-index)
   (declare (ignore index-part current-index))
   (values))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod build-index-links ((for-part basic-doclisp-part) index-part current-index)
   (when (any-indexes-p index-part)
@@ -228,7 +216,6 @@ DISCUSSION
                  (html ((:a :href (local-index-url for-part index-name))
                         (lml-format "~:(~A~)" index-kind))))))))))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun any-indexes-p (part)
   (iterate-elements
@@ -239,7 +226,6 @@ DISCUSSION
                                           (index-for-kind-p part kind)))
          (return-from any-indexes-p t))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun index-for-kind-p (part kind)
   (and (subpart-info part kind)
@@ -248,7 +234,6 @@ DISCUSSION
         (item-at (subparts part) kind)
         #'index-part-p)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun index-part-p (part)
   (and (document? part)

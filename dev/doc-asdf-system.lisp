@@ -30,7 +30,6 @@
     :document? t
     :part-type 'asdf-system))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object doclisp-asdf-system) &key)
   (let ((system (dsc:find-system (name object))))
@@ -43,7 +42,6 @@
                   (slot-value object 'maintainer-mail))
           (find-name-and-email (system-property (name object) 'maintainer)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun find-name-and-email (string)
   "Returns \(as multiple values\) a name and e-mail address as parsed from a string. Handles only \"name <mail>\" right now. if the string isn't in this from,then this function assumes that the string contains only a name. Also doesn't handle group projects!"
@@ -66,7 +64,6 @@
   (:test ((ensure-same (find-name-and-email "gwking >gwking@foo.com<")
                        (values "gwking >gwking@foo.com<" nil) :test #'string-equal))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'asdf-system)) name &rest args 
                              &key &allow-other-keys)
@@ -74,13 +71,11 @@
   (apply #'make-instance 'doclisp-asdf-system
          :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod part-documentation ((part doclisp-asdf-system))
   (or (system-property (name part) 'long-description)
       (system-property (name part) 'description)))
   
-;;; ---------------------------------------------------------------------------
 
 (defmethod short-documentation ((part doclisp-asdf-system))
   (or (system-property (name part) 'description)
@@ -89,7 +84,6 @@
           (subseq it 0 (min max-length *short-documentation-length*)))) 
       (call-next-method)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds ((part doclisp-asdf-system))
   (list '(direct-dependency :heading "Direct Dependency" :part-kind asdf-system)
@@ -99,18 +93,15 @@
         '(direct-file :heading "Direct File" :part-kind file)
         '(other-file :heading "Other File" :part-kind file)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-asdf-system) (part-name (eql 'direct-package)))
   (sort (system-packages part nil) #'string-lessp))
   
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-asdf-system) (part-name (eql 'other-package)))
   (sort (set-difference (system-packages part t) (system-packages part nil))
          #'string-lessp))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-asdf-system) (part-name (eql 'direct-file)))
   (let ((system-root (system-source-directory (name part))))
@@ -121,7 +112,6 @@
      #'string-lessp
      :key #'cdr)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-asdf-system) (part-name (eql 'other-file)))
   (sort 
@@ -130,7 +120,6 @@
    #'string-lessp
    :key #'cdr))
 
-;;; ---------------------------------------------------------------------------
   
 (defmethod partname-list ((part doclisp-asdf-system) (part-name (eql 'file)))
   (sort 
@@ -141,7 +130,6 @@
     :transform #'namestring)
    #'string-lessp))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod system-files ((part symbol) system-closure?)
   (mapcar #'namestring 
@@ -151,12 +139,10 @@
            :system-closure? system-closure?
            :include-non-source? nil)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod system-files ((part doclisp-asdf-system) system-closure?)
   (system-files (name part) system-closure?))
 
-;;; ---------------------------------------------------------------------------
 
 (defun system-packages (part system-closure?)
   (let ((result nil)
@@ -171,18 +157,15 @@
              #'ignore-package-p
              (remove-duplicates result)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-asdf-system) (part-name (eql 'direct-dependency)))
   (system-dependencies (name part)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-asdf-system) (part-name (eql 'other-dependency)))
   (set-difference (collect-system-dependencies (name part))
                   (system-dependencies (name part))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod index-kinds ((part doclisp-asdf-system))
   #+NotYet
@@ -201,7 +184,6 @@
           :index-kind 
           permuted)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part doclisp-asdf-system)
                          (mode (eql :detail)) &key &allow-other-keys)
@@ -251,7 +233,6 @@
     ;; summaries
     (output-table-summary writer part 1)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun build-license-page (part)
   (let* ((file (url->file (url part)))
@@ -282,7 +263,6 @@
     
       (values (namestring (pathname-name+type *document-file*))))))
        
-;;; ---------------------------------------------------------------------------
 
 (defmethod output-table-summary-of-parts (writer part
                                                  (subpart-name (eql 'other-file))     
@@ -318,9 +298,7 @@
               (incf count))))))))))
 
 
-;;; ---------------------------------------------------------------------------
 ;;; doclisp-file
-;;; ---------------------------------------------------------------------------
 
 (defclass* doclisp-file (basic-doclisp-part)
   ((system nil ir)
@@ -332,7 +310,6 @@
     :document? t
     :part-type 'file))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'file)) name &rest args 
                              &key &allow-other-keys)
@@ -350,12 +327,10 @@
            :system system
            args)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod part-name ((part doclisp-file))
   (string-downcase (filename part)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part doclisp-file)
                          (mode (eql :table-summary)) &key &allow-other-keys)

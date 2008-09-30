@@ -9,7 +9,6 @@
              (format s "Part kind ~S unknown. Unable to create part named ~S for parent ~S with arguments ~S."
                      (kind c) (name c) (parent c) (args c)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* basic-doclisp-part ()
   ((name "" ir)
@@ -25,22 +24,18 @@
   (:default-initargs
     :header ""))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* basic-page-writer ()
   ((css-file nil ia)))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* simple-page-writer (basic-page-writer)
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod index-kinds ((part basic-doclisp-part))
   (index-kinds (name-holder part)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object basic-doclisp-part) &key)
   (setf (slot-value object 'document?)
@@ -50,12 +45,10 @@
   (unless (part-type object)
     (error "The part-kind must be specified \(use default-initargs\)")))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod span-class-for-part-name ((name-holder t) (part basic-doclisp-part))
   "")
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* subpart-kind ()
   ((name nil ir)
@@ -64,7 +57,6 @@
    (document? t ir)
    (index? t ir)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object subpart-kind) &key)
   (unless (and (slot-boundp object 'heading) (heading object))
@@ -74,19 +66,16 @@
     (setf (slot-value object 'part-kind)
           (name object))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod print-object ((object subpart-kind) stream)
   (print-unreadable-object (object stream :type t)
     (format stream "~A" (name object))))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* doclisp-part (basic-doclisp-part)
   ()
   (:documentation "A part without pieces (a leaf)."))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* doclisp-assembly (basic-doclisp-part)
   ((subparts (make-container 'alist-container
@@ -100,18 +89,15 @@
   (:default-initargs
     :page-writer-class 'simple-page-writer))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object doclisp-assembly) &key)
   (setf (slot-value object 'page-writer)
         (make-instance (page-writer-class object))))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* name-holder-mixin ()
   ())
 
-;;; ---------------------------------------------------------------------------
 
 (defcondition cannot-make-part (error)
   ((parent nil ir)

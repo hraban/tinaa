@@ -1,8 +1,6 @@
 (in-package #:doclisp)
 
-;;; ---------------------------------------------------------------------------
 ;;; lisp package
-;;; ---------------------------------------------------------------------------
 
 (defclass package-system (doclisp-assembly)
   ())
@@ -10,19 +8,16 @@
 (defmethod initialize-instance :after ((object package-system) &key)
   (setf (slot-value object 'instance) (find-package (name object))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'package)) name)
   (make-instance 'package-system
     :parent parent
     :name name))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds ((part package-system))
   (list 'class 'variable 'function 'method))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part package-system) (part-name (eql 'class)))
   (sort
@@ -39,7 +34,6 @@
              ((subtypep cb ca) t)
              (t (string-lessp a b)))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part package-system) (part-name (eql 'variable)))
   (filtered-package-symbols 
@@ -48,7 +42,6 @@
      (declare (ignore access package))
      (boundp symbol))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part package-system) (part-name (eql 'function)))
   (filtered-package-symbols 
@@ -59,7 +52,6 @@
           (typep (symbol-function symbol) 'function)
           (not (typep (symbol-function symbol) 'standard-generic-function))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part package-system) (part-name (eql 'method)))
   (filtered-package-symbols 
@@ -69,7 +61,6 @@
      (and (fboundp symbol)
           (typep (symbol-function symbol) 'standard-generic-function)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun filtered-package-symbols (part filter)
   (let ((result nil))
@@ -82,14 +73,12 @@
             (push #+No (princ-to-string symbol) symbol result))))
       (sort result #'string-lessp))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-system-part ((part package-system) (part-kind (eql 'class))
                              part-name &key)
   (make-instance 'doclisp-class
     :name (u:form-symbol-in-package (name part) part-name)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((part package-system) (mode (eql :detail)))
   (documenting part

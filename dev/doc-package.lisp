@@ -1,8 +1,6 @@
 (in-package #:doclisp)
 
-;;; ---------------------------------------------------------------------------
 ;;; lisp package
-;;; ---------------------------------------------------------------------------
 
 (defclass* doclisp-package (name-holder-mixin doclisp-assembly)
   ((symbol-kinds (list :internal :external) ia))
@@ -12,18 +10,15 @@
     :document? t
     :part-type 'package))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object doclisp-package) &key)
   (format t "~%Package: ~A" (name object))
   (setf (slot-value object 'instance) (find-package (name object))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod document-part-p ((name-holder doclisp-package) (part doclisp-package))
   (values t))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod document-part-p ((name-holder doclisp-package) (part basic-doclisp-part))
   (and #+Ignore
@@ -43,7 +38,6 @@
                (t
                 (values nil))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'package)) name &rest args &key
                              &allow-other-keys)
@@ -53,28 +47,23 @@
     (error 'cannot-make-part :parent parent :kind kind :name name
            :reason "package not found.")))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod include-kind-in-index-p ((part doclisp-package) (kind (eql 'symbol)))
   nil)
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod include-kind-in-index-p ((part doclisp-package) (kind (eql 'method)))
   nil)
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod include-kind-in-index-p ((part doclisp-package) (kind t))
   t)
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds ((part doclisp-package))
   (list 'condition 'class 'variable 'constant 'function 'generic-function
         'macro '(symbol :document? nil)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod index-kinds ((part doclisp-package))
   (list '((class))
@@ -90,12 +79,10 @@
           :index-kind 
           permuted)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod part-documentation ((part doclisp-package))
   (documentation (instance part) t))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-package) (part-name (eql 'class)))
   (sort
@@ -109,7 +96,6 @@
              (not (conditionp class))))))
    #'class-sorter))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-package) (part-name (eql 'condition)))
   (sort
@@ -121,13 +107,11 @@
             (conditionp it))))
    #'class-sorter))
 
-;;; ---------------------------------------------------------------------------
 
 (defun  conditionp (thing)
   "Returns true if and only if thing is a condition"
   (mopu:subclassp thing 'condition))
 
-;;; ---------------------------------------------------------------------------
 
 (defun class-sorter (a b)
   (let ((ca (find-class a))
@@ -136,7 +120,6 @@
           ((subtypep cb ca) t)
           (t (string-lessp a b)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-package) (part-name (eql 'variable)))
   (filtered-package-symbols 
@@ -146,7 +129,6 @@
      (and (boundp symbol)
           (not (constantp symbol))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-package) (part-name (eql 'constant)))
   (filtered-package-symbols 
@@ -156,7 +138,6 @@
      (and (boundp symbol) 
           (constantp symbol)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-package) (part-name (eql 'function)))
   (filtered-package-symbols 
@@ -168,7 +149,6 @@
           (typep (symbol-function symbol) 'function)
           (not (typep (symbol-function symbol) 'standard-generic-function))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-package) (part-name (eql 'generic-function)))
   (filtered-package-symbols 
@@ -182,7 +162,6 @@
                            (writer-method-p m))))
                 (mopu:generic-function-methods (symbol-function symbol)))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-package) (part-name (eql 'macro)))
   (filtered-package-symbols 
@@ -191,7 +170,6 @@
      (declare (ignore access package))
      (and (macro-function symbol)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-package) (part-name (eql 'symbol)))
   (filtered-package-symbols 
@@ -200,7 +178,6 @@
      (declare (ignore symbol access package))
      t)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun filtered-package-symbols (part filter)
   (let ((result nil)
@@ -229,17 +206,14 @@
           (t
            (error "Package ~A not found." (name part))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun nice-package-name (package)
   (string-capitalize (package-name package)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod start-grovel :before ((part doclisp-package))
   (add-package-to-document (name part)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun update-document-part-p (package)
   (map-parts-from-leaves 
@@ -247,7 +221,6 @@
    (lambda (subpart)
      (setf (document? subpart) (document-part-p package subpart)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod document-part-to-file ((writer basic-page-writer)
 				  (part doclisp-package))
@@ -262,7 +235,6 @@
     (update-document-part-p part)
     (call-next-method)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod maybe-show-documentation :before ((part doclisp-package))
   ;;?? hacky!!!! - depends too much on other stuff that is going on.
@@ -274,7 +246,6 @@
      ((:div :class "package-symbols")
       "See only " ((:a :href "index.html") "external symbols")))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part doclisp-package)
                          (mode (eql :detail)) &key &allow-other-keys)
@@ -332,7 +303,6 @@
       ;; summaries
       (output-table-summary writer part 1))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun symbol-count (package kind)
   (ecase kind

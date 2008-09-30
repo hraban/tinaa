@@ -4,7 +4,6 @@
   `(let ((*html-stream* ,stream))
       ,@body))
 
-;;; ---------------------------------------------------------------------------
 
 (defmacro documenting (part &body body)
   `(symbol-macrolet ((name (part-name ,part))
@@ -22,7 +21,6 @@
        (with-html-output (*document-stream*)
          (html ,@body)))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmacro documenting-page ((part &key title force-contents-link?) &body body)
   `(documenting part

@@ -131,9 +131,7 @@
     (output-table-summary writer part 2)))
 
 
-;;; ---------------------------------------------------------------------------
 ;;; conditions
-;;; ---------------------------------------------------------------------------
 
 (defclass doclisp-condition (doclisp-class)
   ()
@@ -142,12 +140,10 @@
     :part-kind "condition"
     :part-type 'condition))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod initialize-instance :after ((object doclisp-condition) &key)
   (setf (slot-value object 'instance) (find-class (name object))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds ((part doclisp-condition))
   (list '(superclass :heading "Direct Superclass" :part-kind condition)
@@ -156,7 +152,6 @@
         '(direct-method :heading "Direct Method" :part-kind method)
         '(other-method :heading "Other Method" :part-kind method)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'condition)) name &rest args &key
                               &allow-other-keys)
@@ -165,16 +160,13 @@
                            'doclisp-condition 'doclisp-class)
     :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod part-documentation ((part doclisp-condition))
   ;; this works around what may or may not be a glitch in SBCL 
   ;; (see lisppaste 18639 for details
   (documentation (class-name (instance part)) 'type))
 
-;;; ---------------------------------------------------------------------------
 ;;; doclisp-slot
-;;; ---------------------------------------------------------------------------
 
 (defclass* doclisp-slot (doclisp-part)
   ((direct-parent :unbound w))
@@ -183,7 +175,6 @@
     :part-kind "slot"
     :part-type 'slot))
 
-;;; ---------------------------------------------------------------------------
 
 ;;?? bit of a hack in progress
 (defmethod direct-instance ((slot doclisp-slot))
@@ -201,7 +192,6 @@
                            (direct-slot-names superclass))))
            (return-from direct-instance it)))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod direct-parent ((slot doclisp-slot))
   (unless (and (slot-boundp slot 'direct-parent)
@@ -213,12 +203,10 @@
                                     (direct-slot-names (instance parent)))))))
   (slot-value slot 'direct-parent))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod part-documentation ((part doclisp-slot))
   (documentation (get-slot-definition (instance (direct-parent part)) (name part)) t))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'slot)) name &rest args &key
                               &allow-other-keys)
@@ -226,7 +214,6 @@
   (apply #'make-instance 'doclisp-slot
     :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defun slot-writer-name (writer)
   (cond ((and (consp writer) (eq (first writer) 'setf))
@@ -236,7 +223,6 @@
         (t
          (error "I don't know how to understand the slot writer '~A'" writer))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((writer simple-page-writer) (part doclisp-slot)
                          (mode (eql :table-summary)) &key &allow-other-keys)
@@ -318,19 +304,16 @@
            (when add-comma?
              (lml-princ ".")))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* tinaa-part-graph (cl-graph:graph-container)
   ((root-part nil ir))
   (:default-initargs
     :vertex-class 'tinaa-part-vertex))
 
-;;; ---------------------------------------------------------------------------
   
 (defclass* tinaa-part-vertex (cl-graph:graph-container-vertex)
   ((part nil ir)))
 
-;;; ---------------------------------------------------------------------------
 
 (defun make-local-class-graph (class-part)
   (bind ((g (cl-graph:make-graph 'tinaa-part-graph
@@ -358,7 +341,6 @@
             :edge-type :directed)))))
     g))
 
-;;; ---------------------------------------------------------------------------
 
 (defun class-graph->dot (graph)
   "Returns a string describing graph in DOT format."

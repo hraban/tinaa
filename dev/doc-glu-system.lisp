@@ -7,7 +7,6 @@
     :part-kind "glu-system"
     :document? t))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'glu-system)) name &rest args 
                              &key &allow-other-keys)
@@ -15,7 +14,6 @@
   (apply #'make-instance 'doclisp-glu-system
     :name name args))
 
-;;; ---------------------------------------------------------------------------
 
 (defclass* doclisp-file (basic-doclisp-part)
   ((filename nil ir))
@@ -24,7 +22,6 @@
     :part-kind "file"
     :document? t))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-part (parent (kind (eql 'file)) name &rest args 
                              &key &allow-other-keys)
@@ -34,12 +31,10 @@
     :filename name
     args))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod subpart-kinds ((part doclisp-glu-system))
   (list 'package 'glu-system 'file))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-glu-system) (part-name (eql 'package)))
   (let ((result nil))
@@ -55,7 +50,6 @@
      #'ignore-package-p
      (remove-duplicates result :test #'string-equal))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-glu-system) (part-name (eql 'glu-system)))
   (let ((result nil)
@@ -69,7 +63,6 @@
     
     result))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod partname-list ((part doclisp-glu-system) (part-name (eql 'file)))
   (let ((result nil))
@@ -82,12 +75,10 @@
     
     (sort result #'string-lessp)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod index-kinds ((part doclisp-glu-system))
   (list '(class) '(variable constant) '(function generic-function macro) '(package)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((part doclisp-glu-system) (mode (eql :detail)))
   (documenting-page (part)
@@ -97,7 +88,6 @@
     ;; summaries
     (output-table-summary part :table-summary 1)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod display-part ((part doclisp-file) (mode (eql :table-summary)))
   (documenting part
@@ -111,7 +101,6 @@
       (td :valign "top" :width 200 (link-for mode))
       (tr (td :valign "top" :width 200 (link-for mode))))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod part-name ((part doclisp-file))
   (string-downcase (filename part)))

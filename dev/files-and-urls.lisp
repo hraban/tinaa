@@ -1,6 +1,5 @@
 (in-package #:tinaa)
 
-;;; ---------------------------------------------------------------------------
 
 (defun url->file (url &optional (extension "html"))
   "Returns a file spec for the url rooted at *document-root*. The URL must be delimited using forward slashes \(#\/\). The *document-root* can be a logical pathname or a physical pathname on the current platform."
@@ -16,13 +15,11 @@
 		     :directory `(:relative ,@path))
       *document-root*))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun relative-url (url)
   "Returns a URL that points to the same things as `url` but relative to \(url *current-part*\)"
   (make-root-pointing-url *current-part* url))
 
-;;; ---------------------------------------------------------------------------
 
 (defun file-depth-below-root (url)
   (let* ((root (namestring (url->file "" nil)))
@@ -36,7 +33,6 @@
        (subseq leaf (+ pos (length root))) :test #'char-equal)
       0)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod url-for-part ((part basic-doclisp-part))
   (when (documentation-exists-p part :detail)
@@ -50,7 +46,6 @@
                     name-holder-name "-" name-holder-kind
                     "/" part-kind "-" part-name ".html")))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod url-for-part ((part name-holder-mixin))
   (bind ((part-name (part-name part))
@@ -58,12 +53,10 @@
     (string-downcase
      (concatenate 'string part-name "-" part-kind "/index.html"))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-root-pointing-url ((part (eql nil)) name)
   (values name t))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod make-root-pointing-url ((part basic-doclisp-part) name)
   (let ((depth (file-depth-below-root (url part))))
@@ -73,12 +66,10 @@
                              (list name))) nil)
       (values name t))))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod add-contents-link ((part (eql nil)) force-contents-link?)
   (declare (ignore force-contents-link?)))
 
-;;; ---------------------------------------------------------------------------
 
 (defmethod add-contents-link ((part basic-doclisp-part) force-contents-link?)
   (multiple-value-bind (url root-level?) 
@@ -86,7 +77,6 @@
     (when (or force-contents-link? (not root-level?))
       (html ((:a :class "contents-link" :href url :title "Go to contents") "Contents")))))
 
-;;; ---------------------------------------------------------------------------
 
 (defun stylesheet-url (part)
   (make-root-pointing-url part "tinaa.css"))
