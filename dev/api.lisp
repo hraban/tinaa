@@ -12,32 +12,20 @@ This is a list of instances of subpart-kind."))
   (:method ((part t)) nil))
 
 (defgeneric partname-list (part part-kind)
-  (:documentation "Returns a list of the names of the subparts of part of type 'part-kind'. Usually, these will be symbols but they could be strings too.")
-  (:method :around (part part-kind)
-       (declare (ignore part part-kind))
-	   (handler-case (call-next-method)
-	     (error () (princ ".") nil))))
-
+  (:documentation "Returns a list of the names of the subparts of part of type 'part-kind'. Usually, these will be symbols but they could be strings too."))
 
 (defgeneric display-part (page-writer part mode &key &allow-other-keys)
   (:documentation "Output information about a part. Example modes are 
-:subpart-list, :detail, :summary.")
-  (:method :around ((writer simple-page-writer) part mode &key &allow-other-keys)
-           (when (documentation-exists-p part mode)
-             (call-next-method)))) 
-
+:subpart-list, :detail, :summary.")) 
 
 (defgeneric document-system-part (system part stream)
   (:documentation ""))
 
-
 (defgeneric make-system-part (system part-kind part-name &key)
   (:documentation ""))
 
-
 (defgeneric part-name (part)
   (:documentation "Returns the name of the part as a string"))
-
 
 (defgeneric part-documentation (part)
   (:documentation "Returns whatever documentation is available for part using the Common Lisp documentation function."))
@@ -51,40 +39,24 @@ Change *short-documentation-length* to determine how much is returned."))
 (defgeneric document-part-to-file (page-writer part)
   (:documentation ""))
 
-
 (defgeneric url-for-part (part)
   (:documentation "Returns the url for the part, creating it if necessary."))
 
-
 (defgeneric find-part (ancester kind name)
-  (:documentation "Returns a existing part if it can be found.")
-  (:method (parent kind name)
-           (declare (ignore parent kind name))
-           (values nil)))
-
+  (:documentation "Returns a existing part if it can be found."))
 
 (defgeneric grovel-part (part)
   (:documentation ""))
 
-
 (defgeneric finish-grovel (part)
   (:documentation ""))
 
-
 (defgeneric documentation-exists-p (part mode)
-  (:documentation "")
-  (:method (part mode)
-           ;; one around method -- oh vey!
-           (length-at-least-p 
-            (compute-applicable-methods 
-             #'display-part 
-             (list (page-writer (root-parent part))  part mode))
-            2)))
-
+  (:documentation ""))
 
 (defgeneric make-part (parent kind name &key)
-  (:documentation "Make a part named 'name' of kind 'kind' whose parent is 'parent'."))
-
+  (:documentation
+   "Make a part named 'name' of kind 'kind' whose parent is 'parent'."))
 
 (defgeneric include-kind-in-index-p (part kind)
   (:documentation "Returns true if part should include kind in it's index."))
@@ -104,3 +76,4 @@ Change *short-documentation-length* to determine how much is returned."))
 
 (defgeneric build-index-links (for-part index-part current-index)
   (:documentation ""))
+
