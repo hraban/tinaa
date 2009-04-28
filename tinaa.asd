@@ -28,9 +28,9 @@
     :components
     ((:file "package")
      (:file "class-defs"
-	    :depends-on ("package"))
+	    :depends-on ("package" "api"))
      (:file "api"
-	    :depends-on ("package" "class-defs"))
+	    :depends-on ("package"))
      (:file "macros"
 	    :depends-on ("api" "package"))
      (:file "utilities"
@@ -78,7 +78,7 @@
 				  :components ((:static-file "index.md"))))))
   
   :depends-on ((:version :defsystem-compatibility "0.1.2")
-               :metatilities
+               (:version :metatilities "0.6.6")
                :lml2
                :trivial-shell
                :cl-graph
