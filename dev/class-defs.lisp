@@ -110,3 +110,24 @@
              (format s "Unable to make part named ~A of kind ~A because ~A" 
                      (name c) (kind c) (reason c)))))
   
+(defmethod partname-list :around (part part-kind)
+  (declare (ignore part part-kind))
+  (handler-case (call-next-method)
+    (error () (princ ".") nil)))
+
+(defmethod display-part
+    :around ((writer simple-page-writer) part mode &key &allow-other-keys)
+  (when (documentation-exists-p part mode)
+    (call-next-method)))
+
+(defmethod find-part (parent kind name)
+  (declare (ignore parent kind name))
+  (values nil))
+
+(defmethod documentation-exists-p (part mode)
+  ;; one around method -- oh vey!
+  (length-at-least-p 
+   (compute-applicable-methods 
+    #'display-part 
+    (list (page-writer (root-parent part))  part mode))
+   2))
