@@ -125,8 +125,7 @@
   (sort 
    (collect-elements
     (collect-system-files (name part)
-                          :include-pathname? t
-                          :include-associates? nil)
+                          :include-pathname? t)
     :transform #'namestring)
    #'string-lessp))
 

@@ -110,7 +110,7 @@
 
 (defun  conditionp (thing)
   "Returns true if and only if thing is a condition"
-  (mopu:subclassp thing 'condition))
+  (c2mop:subclassp thing 'condition))
 
 
 (defun class-sorter (a b)
