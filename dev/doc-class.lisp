@@ -60,7 +60,7 @@
   (sort
    (delete-if
     (lambda (class-name)
-      (class-uninteresting-p class-name)) 
+      (class-uninteresting-p class-name))
     (mapcar #'class-name (direct-superclasses (name part))))
    #'string-lessp))
 
@@ -87,10 +87,16 @@
    #'string-lessp))
 
 (defun class-uninteresting-p (class-name)
-  (let ((package (canonical-package-id
-		  (symbol-package (class-name-of (get-class class-name))))))
-    (or (ignore-package-p package)
-	(not (member package (packages-to-document))))))
+  (or (not (find-class class-name))
+      (let ((package (canonical-package-id
+		       (symbol-package 
+			(class-name-of (get-class class-name))))))
+	(or (ignore-package-p package)
+		  (not (member package (packages-to-document)))))
+       ;; make sure we can create it (e.g.., that it isn't just a 
+       ;; forward-referenced class
+      (null (ignore-errors
+	      (allocate-instance (find-class class-name))))))
 
 (defmethod part-documentation ((part doclisp-class))
   (documentation (instance part) 'type))
