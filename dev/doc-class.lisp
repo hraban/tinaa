@@ -101,31 +101,36 @@
     (:h2 (lml-format "~A ~:(~A~)" (header part) name))
     (maybe-show-documentation part)
     (show-part-parents part)
-    
-    (awhen (default-initargs (instance part))
-      (html 
-       ((:div :class "table-summary")
-        (:h3 "Default initargs")
-        ((:table :id "default-initargs")
-         (let ((iterator (make-iterator it))
-               (count 1))
-           (flet ((one-thing (thing)
-                    (bind (((name value nil) thing))
-                      (html
-                       (:th (lml-format "~(~S~) &rarr; ~S" name value)))))
-                  (no-thing ()
-                    (html
-                     (:th ""))))
-             (iterate-elements 
-              iterator
-              (lambda (default-initarg)
-                (html
-                 ((:tr :class (if (oddp count) "oddrow" ""))
-                  (one-thing default-initarg)
-                  (move-forward iterator)
-                  (if (current-element-p iterator)
-                    (one-thing (current-element iterator))
-                    (no-thing))))))))))))
+    (bind (((:values it error) (ignore-errors
+				 (default-initargs (instance part)))))
+      (cond (error
+	     (html 
+	      (:div "Unable to introspect class")))
+	    (it
+	     (html 
+	      ((:div :class "table-summary")
+	       (:h3 "Default initargs")
+	       ((:table :id "default-initargs")
+		(let ((iterator (make-iterator it))
+		      (count 1))
+		  (flet ((one-thing (thing)
+			   (bind (((name value nil) thing))
+			     (html
+			      (:th (lml-format "~(~S~) &rarr; ~S" 
+					       name value)))))
+			 (no-thing ()
+			   (html
+			    (:th ""))))
+		    (iterate-elements 
+		     iterator
+		     (lambda (default-initarg)
+		       (html
+			((:tr :class (if (oddp count) "oddrow" ""))
+			 (one-thing default-initarg)
+			 (move-forward iterator)
+			 (if (current-element-p iterator)
+			     (one-thing (current-element iterator))
+			     (no-thing))))))))))))))
                 
     ;; summaries
     (output-table-summary writer part 2)))
