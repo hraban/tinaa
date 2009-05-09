@@ -80,9 +80,14 @@
   :depends-on ((:version :defsystem-compatibility "0.1.2")
                (:version :metatilities "0.6.6")
                :lml2
+	       ;;; ugh, the order matters here. Add more duct tape
+	       ;; basically this needs to be before cl-graph
+	       #-asdf-system-connections :container-dynamic-classes
                :trivial-shell
                :cl-graph
-	       :anaphora))
+	       :anaphora
+	       (:version :cl-containers "0.11.5")
+	       ))
 
 #+asdf-system-connections 
 (defsystem-connection tinaa-and-cl-markdown 
