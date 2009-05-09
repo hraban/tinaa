@@ -47,12 +47,32 @@
 (defun some-parent (part)
   (first (parents part)))
 
-
+#+(or)
+;; what we ought to be able to use (see below)
 (defun root-parent (part)
   "Go up the parent chain until there are no parents... that's the root."
   (if (some-parent part)
     (root-parent (some-parent part))
     part))
+
+
+(defun root-parent (part)
+  "Go up the parent chain until there are no parents... that's the root."
+  ;; there are cases where tinaa can be confused and create loops. One
+  ;; case is when a class has a superclass and the superclass hasn't been
+  ;; defined.
+  (let ((searched (make-container 'simple-associative-container)))
+    (labels ((look-up (it)
+	       (cond ((item-at-1 searched it)
+		      ;; circularity!?
+		      (warn "~a is its own parent!" it)
+		      it)
+		     (t
+		      (setf (item-at-1 searched it) t)
+		      (if (some-parent it)
+			  (look-up (some-parent it))
+			  it)))))
+      (look-up part))))
 
 
 (defun tinaa-home ()
