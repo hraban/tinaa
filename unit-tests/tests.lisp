@@ -1,8 +1,3 @@
-(defpackage tinaa-tests
-  (:use "LIFT" "COMMON-LISP" "TINAA")
-  (:import-from "TINAA"
-                #:*document-root*
-                #:url->file))
 (in-package #:tinaa-tests)
 
 (defun pathnames-same-p (p1 p2)
