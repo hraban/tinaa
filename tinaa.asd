@@ -86,6 +86,7 @@
                :trivial-shell
                :cl-graph
 	       :anaphora
+	       :dynamic-classes
 	       (:version :cl-containers "0.11.5")
 	       ))
 
