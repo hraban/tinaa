@@ -20,7 +20,10 @@
 
 ### How it works
 
-Tinaa is based on the idea that a system is made up of parts and subparts and sub-subparts (all resting on the [back of a turtle][9]). Tinaa can document anything as long as you tell it:
+Tinaa is based on the idea that a system is made up of parts
+and subparts and sub-subparts (all resting on the [back of a
+turtle][9]). Tinaa can document anything as long as you tell
+it:
 
    [9]: http://en.wikipedia.org/wiki/Turtles_all_the_way_down (Wikipedia article on 'turtles all the way down')
 
@@ -40,34 +43,51 @@ Tinaa is based on the idea that a system is made up of parts and subparts and su
 
 ### Getting it
 
-A [Darcs][12] repository is available. The commands are listed below:
-    
-[12]: http://www.darcs.net/
+metabang.com is switching from [darcs][] to [git][]
+for source control; the current tinaa repository is on
+[github][github-cl-tinaa] and you can clone it using:
 
-    darcs get http://common-lisp.net/project/tinaa/
+    git clone git://github.com/gwkkwg/cl-tinaa
 
-Tinaa is [ASDF installable][13]. Its CLiki home is right [where][14] you'd expect.
+(note that this won't let you build CL-Markdown unless you
+also get all of its dependencies which I should list but don't 
+because I haven't found (er, made) the time to automate the
+process yet...)
 
-   [13]: http://www.cliki.net/asdf-install
-   [14]: http://www.cliki.net/tinaa
-
-There's also a handy [gzipped tar file][15].
+The easiest way to get setup with CL-Markdown is by using
+[QuickLisp][] or [ASDF-Install][14] (deprecated). If that
+doesn't float your boat, there is a handy [gzipped tar
+file][15]
 
    [15]: http://common-lisp.net/project/tinaa/tinaa_latest.tar.gz
 
 ### What it does now
 
-Tinaa currently knows how to document packages (consisting of variables, constants, functions, classes, generic function, macros and symbols) and ASDF-Systems (consisting of sub-systems and packages). [Here][16] is Tinaa's self-documentation.
+Tinaa currently knows how to document packages (consisting of
+variables, constants, functions, classes, generic function,
+macros and symbols) and ASDF-Systems (consisting of
+sub-systems and packages). [Here][16] is Tinaa's
+self-documentation.
 
    [16]: documentation/index.html
 
 ### What it doesn't do
 
-There are lots things it could do more nicely (class diagrams, prettier tables, callers and callees / cross referencing and so forth). 
+There are lots things it could do more nicely (class
+diagrams, prettier tables, callers and callees / cross
+referencing and so forth).
 
 ### What is happening
 
 <table class="system-news">
+<tr>
+	<th>
+		9 January 2011
+	</th>
+	<td>
+	  Glacial progress (regress?) continues. Moved to git.
+		</td>
+</tr>
 <tr>
 	<th>
 		1 March 2008
