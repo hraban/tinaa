@@ -45,9 +45,9 @@ it:
 
 metabang.com is switching from [darcs][] to [git][]
 for source control; the current tinaa repository is on
-[github][github-cl-tinaa] and you can clone it using:
+[github][github-tinaa] and you can clone it using:
 
-    git clone git://github.com/gwkkwg/cl-tinaa
+    git clone git://github.com/gwkkwg/tinaa
 
 (note that this won't let you build CL-Markdown unless you
 also get all of its dependencies which I should list but don't 
